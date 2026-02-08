@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useBrand } from "@/contexts/BrandContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,13 +19,13 @@ const Settings = () => {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Update state when brand data loads
-  useState(() => {
+  // Sync state when brand data loads or changes
+  useEffect(() => {
     if (brand) {
       setBusinessName(brand.business_name);
       setTagline(brand.tagline);
     }
-  });
+  }, [brand.business_name, brand.tagline]);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
