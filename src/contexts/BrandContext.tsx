@@ -19,8 +19,8 @@ interface BrandContextType {
 
 const defaultBrand: BrandSettings = {
   id: "",
-  business_name: "WEN-TECH",
-  tagline: "Nicaragua Unlock 505",
+  business_name: "",
+  tagline: "",
   logo_url: null,
 };
 
@@ -56,20 +56,31 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
       
       return data as BrandSettings;
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
+    staleTime: 0, // Always fetch fresh brand data
   });
 
   const updateBrand = async (updates: Partial<BrandSettings>) => {
     if (!brand?.id) return;
     
+    // Optimistic update: immediately set the new brand data in the cache
+    queryClient.setQueryData(["brand-settings"], (old: BrandSettings | undefined) => {
+      if (!old) return old;
+      return { ...old, ...updates };
+    });
+
     const { error } = await supabase
       .from("brand_settings")
       .update(updates)
       .eq("id", brand.id);
     
-    if (error) throw error;
+    if (error) {
+      // Revert on error
+      queryClient.invalidateQueries({ queryKey: ["brand-settings"] });
+      throw error;
+    }
     
-    queryClient.invalidateQueries({ queryKey: ["brand-settings"] });
+    // Refetch to confirm the server state
+    await queryClient.invalidateQueries({ queryKey: ["brand-settings"] });
   };
 
   const uploadLogo = async (file: File): Promise<string> => {
@@ -95,6 +106,15 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
       document.title = `${brand.business_name} | Servicio Técnico`;
     }
   }, [brand?.business_name]);
+
+  // Don't render children until brand data is loaded to prevent flash of default values
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="animate-pulse text-muted-foreground">Cargando...</div>
+      </div>
+    );
+  }
 
   return (
     <BrandContext.Provider
