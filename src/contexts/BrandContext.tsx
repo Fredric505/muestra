@@ -47,7 +47,7 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
         .from("brand_settings")
         .select("*")
         .limit(1)
-        .single();
+        .maybeSingle();
       
       if (error) {
         console.error("Error fetching brand settings:", error);
