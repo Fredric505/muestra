@@ -111,7 +111,7 @@ const NewRepair = () => {
           <!DOCTYPE html>
           <html>
             <head>
-              <title>Etiqueta WEN-TECH</title>
+              <title>Etiqueta ${brand.business_name}</title>
               <style>
                 @page { size: 40mm 25mm; margin: 0; }
                 @media print {
