@@ -1,12 +1,13 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { useBrand } from "@/contexts/BrandContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, Smartphone } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
@@ -39,7 +40,23 @@ const Login = () => {
         title: "Bienvenido",
         description: "Has iniciado sesión correctamente",
       });
-      navigate("/dashboard");
+      // Check role after login to redirect appropriately
+      const { data: userData } = await supabase.auth.getUser();
+      if (userData.user) {
+        const { data: roles } = await supabase
+          .from("user_roles")
+          .select("role")
+          .eq("user_id", userData.user.id);
+        
+        const userRoles = roles?.map(r => r.role) || [];
+        if (userRoles.includes("super_admin")) {
+          navigate("/super-admin");
+        } else {
+          navigate("/panel/dashboard");
+        }
+      } else {
+        navigate("/panel/dashboard");
+      }
     }
 
     setIsLoading(false);
@@ -100,6 +117,12 @@ const Login = () => {
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Ingresando..." : "Ingresar"}
               </Button>
+              <p className="text-center text-sm text-muted-foreground">
+                ¿No tienes cuenta?{" "}
+                <Link to="/register" className="text-primary hover:underline">
+                  Registra tu taller
+                </Link>
+              </p>
             </form>
           </CardContent>
         </Card>
