@@ -7,6 +7,7 @@ interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
   isAdmin: boolean;
+  isSuperAdmin: boolean;
   profile: { id: string; full_name: string; avatar_url: string | null } | null;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
@@ -28,11 +29,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [profile, setProfile] = useState<{ id: string; full_name: string; avatar_url: string | null } | null>(null);
 
   const fetchUserData = async (userId: string) => {
     try {
-      // Fetch profile
       const { data: profileData } = await supabase
         .from("profiles")
         .select("id, full_name, avatar_url")
@@ -43,38 +44,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setProfile(profileData);
       }
 
-      // Check admin role
       const { data: roleData } = await supabase
         .from("user_roles")
         .select("role")
-        .eq("user_id", userId)
-        .maybeSingle();
+        .eq("user_id", userId);
 
-      setIsAdmin(roleData?.role === "admin");
+      const roles = roleData?.map((r) => r.role) || [];
+      setIsAdmin(roles.includes("admin"));
+      setIsSuperAdmin(roles.includes("super_admin"));
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
   };
 
   useEffect(() => {
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
 
         if (session?.user) {
-          // Use setTimeout to avoid blocking the auth state change
           setTimeout(() => fetchUserData(session.user.id), 0);
         } else {
           setProfile(null);
           setIsAdmin(false);
+          setIsSuperAdmin(false);
         }
         setIsLoading(false);
       }
     );
 
-    // THEN get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -91,10 +90,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     return { error: error as Error | null };
   };
 
@@ -116,20 +112,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
     setProfile(null);
     setIsAdmin(false);
+    setIsSuperAdmin(false);
   };
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        session,
-        isLoading,
-        isAdmin,
-        profile,
-        signIn,
-        signUp,
-        signOut,
-      }}
+      value={{ user, session, isLoading, isAdmin, isSuperAdmin, profile, signIn, signUp, signOut }}
     >
       {children}
     </AuthContext.Provider>

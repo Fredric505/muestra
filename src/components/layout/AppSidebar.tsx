@@ -32,20 +32,20 @@ import { cn } from "@/lib/utils";
 import { ProfileEditDialog } from "@/components/ProfileEditDialog";
 
 const menuItems = [
-  { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
-  { title: "Nueva Reparación", url: "/repairs/new", icon: PlusCircle },
-  { title: "Reparaciones", url: "/repairs", icon: Wrench },
-  { title: "Historial", url: "/history", icon: History },
-  { title: "Ingresos", url: "/income", icon: DollarSign },
+  { title: "Dashboard", url: "/panel/dashboard", icon: LayoutDashboard },
+  { title: "Nueva Reparación", url: "/panel/repairs/new", icon: PlusCircle },
+  { title: "Reparaciones", url: "/panel/repairs", icon: Wrench },
+  { title: "Historial", url: "/panel/history", icon: History },
+  { title: "Ingresos", url: "/panel/income", icon: DollarSign },
 ];
 
 const adminItems = [
-  { title: "Empleados", url: "/employees", icon: Users },
-  { title: "Configuración", url: "/settings", icon: Cog },
+  { title: "Empleados", url: "/panel/employees", icon: Users },
+  { title: "Configuración", url: "/panel/settings", icon: Cog },
 ];
 
 const employeeItems = [
-  { title: "Mis Ganancias", url: "/my-earnings", icon: TrendingUp },
+  { title: "Mis Ganancias", url: "/panel/my-earnings", icon: TrendingUp },
 ];
 
 export function AppSidebar() {

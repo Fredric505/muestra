@@ -22,6 +22,7 @@ export type Database = {
           logo_url: string | null
           tagline: string | null
           updated_at: string
+          workshop_id: string | null
         }
         Insert: {
           business_name?: string
@@ -30,6 +31,7 @@ export type Database = {
           logo_url?: string | null
           tagline?: string | null
           updated_at?: string
+          workshop_id?: string | null
         }
         Update: {
           business_name?: string
@@ -38,8 +40,17 @@ export type Database = {
           logo_url?: string | null
           tagline?: string | null
           updated_at?: string
+          workshop_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "brand_settings_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       daily_earnings: {
         Row: {
@@ -53,6 +64,7 @@ export type Database = {
           net_profit: number
           parts_cost: number
           repair_id: string
+          workshop_id: string | null
         }
         Insert: {
           commission_earned?: number
@@ -65,6 +77,7 @@ export type Database = {
           net_profit?: number
           parts_cost?: number
           repair_id: string
+          workshop_id?: string | null
         }
         Update: {
           commission_earned?: number
@@ -77,6 +90,7 @@ export type Database = {
           net_profit?: number
           parts_cost?: number
           repair_id?: string
+          workshop_id?: string | null
         }
         Relationships: [
           {
@@ -93,6 +107,13 @@ export type Database = {
             referencedRelation: "repairs"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "daily_earnings_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
         ]
       }
       employee_loans: {
@@ -106,6 +127,7 @@ export type Database = {
           is_paid: boolean | null
           loan_date: string
           paid_at: string | null
+          workshop_id: string | null
         }
         Insert: {
           amount: number
@@ -117,6 +139,7 @@ export type Database = {
           is_paid?: boolean | null
           loan_date?: string
           paid_at?: string | null
+          workshop_id?: string | null
         }
         Update: {
           amount?: number
@@ -128,6 +151,7 @@ export type Database = {
           is_paid?: boolean | null
           loan_date?: string
           paid_at?: string | null
+          workshop_id?: string | null
         }
         Relationships: [
           {
@@ -135,6 +159,13 @@ export type Database = {
             columns: ["employee_id"]
             isOneToOne: false
             referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_loans_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
             referencedColumns: ["id"]
           },
         ]
@@ -150,6 +181,7 @@ export type Database = {
           profile_id: string | null
           updated_at: string
           user_id: string
+          workshop_id: string | null
         }
         Insert: {
           base_salary?: number | null
@@ -161,6 +193,7 @@ export type Database = {
           profile_id?: string | null
           updated_at?: string
           user_id: string
+          workshop_id?: string | null
         }
         Update: {
           base_salary?: number | null
@@ -172,6 +205,7 @@ export type Database = {
           profile_id?: string | null
           updated_at?: string
           user_id?: string
+          workshop_id?: string | null
         }
         Relationships: [
           {
@@ -181,7 +215,174 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "employees_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
         ]
+      }
+      payment_methods: {
+        Row: {
+          account_holder: string | null
+          account_number: string | null
+          bank_name: string | null
+          binance_id: string | null
+          created_at: string
+          display_order: number | null
+          id: string
+          instructions: string | null
+          is_active: boolean | null
+          label: string
+          type: string
+        }
+        Insert: {
+          account_holder?: string | null
+          account_number?: string | null
+          bank_name?: string | null
+          binance_id?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          instructions?: string | null
+          is_active?: boolean | null
+          label: string
+          type: string
+        }
+        Update: {
+          account_holder?: string | null
+          account_number?: string | null
+          bank_name?: string | null
+          binance_id?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          instructions?: string | null
+          is_active?: boolean | null
+          label?: string
+          type?: string
+        }
+        Relationships: []
+      }
+      payment_requests: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          billing_period: string | null
+          created_at: string
+          currency: string
+          id: string
+          notes: string | null
+          payment_method_id: string | null
+          plan_id: string
+          receipt_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          workshop_id: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          billing_period?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          payment_method_id?: string | null
+          plan_id: string
+          receipt_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          workshop_id: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          billing_period?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          notes?: string | null
+          payment_method_id?: string | null
+          plan_id?: string
+          receipt_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          workshop_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_requests_payment_method_id_fkey"
+            columns: ["payment_method_id"]
+            isOneToOne: false
+            referencedRelation: "payment_methods"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_requests_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_requests_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      plans: {
+        Row: {
+          annual_price: number
+          created_at: string
+          description: string | null
+          display_order: number | null
+          features: Json | null
+          has_free_trial: boolean | null
+          id: string
+          is_active: boolean | null
+          monthly_price: number
+          name: string
+          trial_days: number | null
+          updated_at: string
+        }
+        Insert: {
+          annual_price?: number
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          features?: Json | null
+          has_free_trial?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          monthly_price?: number
+          name: string
+          trial_days?: number | null
+          updated_at?: string
+        }
+        Update: {
+          annual_price?: number
+          created_at?: string
+          description?: string | null
+          display_order?: number | null
+          features?: Json | null
+          has_free_trial?: boolean | null
+          id?: string
+          is_active?: boolean | null
+          monthly_price?: number
+          name?: string
+          trial_days?: number | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -191,6 +392,7 @@ export type Database = {
           id: string
           updated_at: string
           user_id: string
+          workshop_id: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -199,6 +401,7 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id: string
+          workshop_id?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -207,8 +410,17 @@ export type Database = {
           id?: string
           updated_at?: string
           user_id?: string
+          workshop_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       repair_types: {
         Row: {
@@ -217,6 +429,7 @@ export type Database = {
           estimated_price: number | null
           id: string
           name: string
+          workshop_id: string | null
         }
         Insert: {
           created_at?: string
@@ -224,6 +437,7 @@ export type Database = {
           estimated_price?: number | null
           id?: string
           name: string
+          workshop_id?: string | null
         }
         Update: {
           created_at?: string
@@ -231,8 +445,17 @@ export type Database = {
           estimated_price?: number | null
           id?: string
           name?: string
+          workshop_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "repair_types_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       repairs: {
         Row: {
@@ -260,6 +483,7 @@ export type Database = {
           technician_id: string | null
           updated_at: string
           warranty_days: number | null
+          workshop_id: string | null
         }
         Insert: {
           completed_at?: string | null
@@ -286,6 +510,7 @@ export type Database = {
           technician_id?: string | null
           updated_at?: string
           warranty_days?: number | null
+          workshop_id?: string | null
         }
         Update: {
           completed_at?: string | null
@@ -312,6 +537,7 @@ export type Database = {
           technician_id?: string | null
           updated_at?: string
           warranty_days?: number | null
+          workshop_id?: string | null
         }
         Relationships: [
           {
@@ -319,6 +545,13 @@ export type Database = {
             columns: ["repair_type_id"]
             isOneToOne: false
             referencedRelation: "repair_types"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "repairs_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
             referencedColumns: ["id"]
           },
         ]
@@ -343,6 +576,68 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      workshops: {
+        Row: {
+          address: string | null
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean | null
+          logo_url: string | null
+          name: string
+          owner_id: string
+          phone: string | null
+          plan_id: string | null
+          subscription_ends_at: string | null
+          subscription_status: string
+          trial_ends_at: string | null
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          phone?: string | null
+          plan_id?: string | null
+          subscription_ends_at?: string | null
+          subscription_status?: string
+          trial_ends_at?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          phone?: string | null
+          plan_id?: string | null
+          subscription_ends_at?: string | null
+          subscription_status?: string
+          trial_ends_at?: string | null
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "workshops_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
