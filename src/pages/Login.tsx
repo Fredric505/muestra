@@ -2,22 +2,18 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { useBrand } from "@/contexts/BrandContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Mail, Lock, Smartphone } from "lucide-react";
+import { Mail, Lock, Smartphone, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { signIn } = useAuth();
-  const { brand, defaultLogoUrl } = useBrand();
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  const logoUrl = brand.logo_url || defaultLogoUrl;
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,7 +36,6 @@ const Login = () => {
         title: "Bienvenido",
         description: "Has iniciado sesión correctamente",
       });
-      // Check role after login to redirect appropriately
       const { data: userData } = await supabase.auth.getUser();
       if (userData.user) {
         const { data: roles } = await supabase
@@ -63,63 +58,59 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[hsl(222,47%,7%)] p-4">
       <div className="w-full max-w-md">
-        <div className="flex flex-col items-center justify-center mb-8 gap-3">
-          <img 
-            src={logoUrl} 
-            alt={brand.business_name} 
-            className="h-24 w-24 rounded-xl object-cover shadow-lg"
-          />
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-foreground">{brand.business_name}</h1>
-            <p className="text-sm text-muted-foreground">Panel de Control</p>
-          </div>
+        <div className="flex items-center gap-2 mb-8">
+          <Link to="/" className="text-gray-400 hover:text-white transition-colors">
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <Smartphone className="h-6 w-6 text-cyan-400" />
+          <span className="text-lg font-bold text-white">RepairControl</span>
         </div>
 
-        <Card className="glass-card">
+        <Card className="bg-white/[0.03] border-white/10">
           <CardHeader className="text-center">
-            <CardTitle className="text-xl">Iniciar Sesión</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-xl text-white">Iniciar Sesión</CardTitle>
+            <CardDescription className="text-gray-400">
               Ingresa tus credenciales para acceder al sistema
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="login-email">Correo electrónico</Label>
+                <Label htmlFor="login-email" className="text-gray-300">Correo electrónico</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                   <Input
                     id="login-email"
                     name="email"
                     type="email"
                     placeholder="tu@email.com"
-                    className="pl-10"
+                    className="pl-10 bg-white/5 border-white/10 text-white"
                     required
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="login-password">Contraseña</Label>
+                <Label htmlFor="login-password" className="text-gray-300">Contraseña</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                   <Input
                     id="login-password"
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    className="pl-10"
+                    className="pl-10 bg-white/5 border-white/10 text-white"
                     required
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full" disabled={isLoading}>
+              <Button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-full" disabled={isLoading}>
                 {isLoading ? "Ingresando..." : "Ingresar"}
               </Button>
-              <p className="text-center text-sm text-muted-foreground">
+              <p className="text-center text-sm text-gray-400">
                 ¿No tienes cuenta?{" "}
-                <Link to="/register" className="text-primary hover:underline">
+                <Link to="/register" className="text-cyan-400 hover:underline">
                   Registra tu taller
                 </Link>
               </p>
