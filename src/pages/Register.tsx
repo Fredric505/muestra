@@ -77,11 +77,7 @@ const Register = () => {
 
       if (wsError) throw wsError;
 
-      // 3. Give them admin role (workshop admin)
-      await supabase.from("user_roles").insert({
-        user_id: userId,
-        role: "admin",
-      });
+      // 3. Role & profile are auto-created by database triggers
 
       // 4. Notify via Telegram
       try {
