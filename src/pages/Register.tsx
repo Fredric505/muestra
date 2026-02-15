@@ -77,11 +77,28 @@ const Register = () => {
 
       if (wsError) throw wsError;
 
-      // 3. Give them technician role (workshop admin)
+      // 3. Give them admin role (workshop admin)
       await supabase.from("user_roles").insert({
         user_id: userId,
         role: "admin",
       });
+
+      // 4. Notify via Telegram
+      try {
+        await supabase.functions.invoke("telegram-notify", {
+          body: {
+            event: "workshop_registered",
+            data: {
+              name: workshopName,
+              email,
+              whatsapp,
+              plan_name: selectedPlan?.name || "Sin plan",
+            },
+          },
+        });
+      } catch (e) {
+        console.error("Telegram notify error:", e);
+      }
 
       toast({
         title: "¡Registro exitoso!",
