@@ -343,6 +343,7 @@ export type Database = {
         Row: {
           annual_price: number
           created_at: string
+          currency: string
           description: string | null
           display_order: number | null
           features: Json | null
@@ -357,6 +358,7 @@ export type Database = {
         Insert: {
           annual_price?: number
           created_at?: string
+          currency?: string
           description?: string | null
           display_order?: number | null
           features?: Json | null
@@ -371,6 +373,7 @@ export type Database = {
         Update: {
           annual_price?: number
           created_at?: string
+          currency?: string
           description?: string | null
           display_order?: number | null
           features?: Json | null
@@ -665,6 +668,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cleanup_employee: { Args: { p_employee_id: string }; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

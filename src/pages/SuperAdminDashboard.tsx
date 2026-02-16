@@ -466,6 +466,7 @@ function PlansTab({ plans }: { plans: any[] }) {
         has_free_trial: plan.has_free_trial,
         trial_days: plan.trial_days,
         features: plan.features,
+        currency: plan.currency || "NIO",
       }).eq("id", plan.id);
       if (error) throw error;
     },
@@ -505,8 +506,8 @@ function PlansTab({ plans }: { plans: any[] }) {
                 <Badge className="bg-green-500/20 text-green-400">Activo</Badge>
               </div>
               <div>
-                <span className="text-3xl font-extrabold">${plan.monthly_price}</span>
-                <span className="text-sm text-muted-foreground ml-1">USD/mes</span>
+                <span className="text-3xl font-extrabold">{plan.currency === "USD" ? "$" : "C$"}{plan.monthly_price}</span>
+                <span className="text-sm text-muted-foreground ml-1">{plan.currency || "NIO"}/mes</span>
               </div>
               <p className="text-sm text-muted-foreground">{plan.description}</p>
               {plan.has_free_trial && (
@@ -548,13 +549,23 @@ function PlansTab({ plans }: { plans: any[] }) {
                 <Label>Descripción</Label>
                 <Textarea value={editingPlan.description || ""} onChange={(e) => setEditingPlan({ ...editingPlan, description: e.target.value })} />
               </div>
+              <div className="space-y-2">
+                <Label>Moneda</Label>
+                <Select value={editingPlan.currency || "NIO"} onValueChange={(v) => setEditingPlan({ ...editingPlan, currency: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NIO">Córdobas (C$)</SelectItem>
+                    <SelectItem value="USD">Dólares ($)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label>Precio mensual ($)</Label>
+                  <Label>Precio mensual ({editingPlan.currency === "USD" ? "$" : "C$"})</Label>
                   <Input type="number" value={editingPlan.monthly_price} onChange={(e) => setEditingPlan({ ...editingPlan, monthly_price: parseFloat(e.target.value) || 0 })} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Precio anual ($)</Label>
+                  <Label>Precio anual ({editingPlan.currency === "USD" ? "$" : "C$"})</Label>
                   <Input type="number" value={editingPlan.annual_price} onChange={(e) => setEditingPlan({ ...editingPlan, annual_price: parseFloat(e.target.value) || 0 })} />
                 </div>
               </div>

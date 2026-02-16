@@ -220,18 +220,17 @@ export const useEmployees = () => {
 
   const deleteEmployee = useMutation({
     mutationFn: async (employeeId: string) => {
-      const { error } = await supabase
-        .from("employees")
-        .update({ is_active: false })
-        .eq("id", employeeId);
+      const { error } = await supabase.rpc("cleanup_employee", {
+        p_employee_id: employeeId,
+      });
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
       toast({
-        title: "Empleado desactivado",
-        description: "El empleado ha sido desactivado correctamente",
+        title: "Empleado eliminado",
+        description: "El empleado ha sido eliminado completamente del sistema",
       });
     },
     onError: (error: Error) => {
