@@ -350,6 +350,7 @@ export type Database = {
           has_free_trial: boolean | null
           id: string
           is_active: boolean | null
+          max_employees: number | null
           monthly_price: number
           name: string
           trial_days: number | null
@@ -365,6 +366,7 @@ export type Database = {
           has_free_trial?: boolean | null
           id?: string
           is_active?: boolean | null
+          max_employees?: number | null
           monthly_price?: number
           name: string
           trial_days?: number | null
@@ -380,6 +382,7 @@ export type Database = {
           has_free_trial?: boolean | null
           id?: string
           is_active?: boolean | null
+          max_employees?: number | null
           monthly_price?: number
           name?: string
           trial_days?: number | null
@@ -495,6 +498,8 @@ export type Database = {
           device_brand: string
           device_imei: string | null
           device_model: string
+          device_photo_delivered: string | null
+          device_photo_received: string | null
           estimated_price: number
           failure_reason: string | null
           final_price: number | null
@@ -522,6 +527,8 @@ export type Database = {
           device_brand: string
           device_imei?: string | null
           device_model: string
+          device_photo_delivered?: string | null
+          device_photo_received?: string | null
           estimated_price?: number
           failure_reason?: string | null
           final_price?: number | null
@@ -549,6 +556,8 @@ export type Database = {
           device_brand?: string
           device_imei?: string | null
           device_model?: string
+          device_photo_delivered?: string | null
+          device_photo_received?: string | null
           estimated_price?: number
           failure_reason?: string | null
           final_price?: number | null

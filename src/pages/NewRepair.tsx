@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useRepairs, Currency } from "@/hooks/useRepairs";
 import { useBrand } from "@/contexts/BrandContext";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +38,8 @@ import {
   Shield,
   Printer,
   Tag,
+  Camera,
+  ImageIcon,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { RepairLabel } from "@/components/RepairLabel";
@@ -49,6 +53,7 @@ const NewRepair = () => {
   const navigate = useNavigate();
   const { repairTypes, createRepair } = useRepairs();
   const { brand, defaultLogoUrl } = useBrand();
+  const { workshop } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [estimatedPrice, setEstimatedPrice] = useState(0);
@@ -58,9 +63,36 @@ const NewRepair = () => {
   const [showPrintDialog, setShowPrintDialog] = useState(false);
   const [savedRepair, setSavedRepair] = useState<any>(null);
   const ticketRef = useRef<HTMLDivElement>(null);
+  const [devicePhotoReceived, setDevicePhotoReceived] = useState<File | null>(null);
+  const [devicePhotoPreview, setDevicePhotoPreview] = useState<string | null>(null);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const netProfit = estimatedPrice - partsCost;
   const symbol = currencySymbols[currency];
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ title: "Error", description: "La foto debe ser menor a 5MB", variant: "destructive" });
+        return;
+      }
+      setDevicePhotoReceived(file);
+      const reader = new FileReader();
+      reader.onload = (ev) => setDevicePhotoPreview(ev.target?.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadDevicePhoto = async (repairId: string): Promise<string | null> => {
+    if (!devicePhotoReceived) return null;
+    const ext = devicePhotoReceived.name.split(".").pop();
+    const path = `received/${repairId}.${ext}`;
+    const { error } = await supabase.storage.from("device-photos").upload(path, devicePhotoReceived, { upsert: true });
+    if (error) { console.error("Photo upload error:", error); return null; }
+    const { data } = supabase.storage.from("device-photos").getPublicUrl(path);
+    return data.publicUrl;
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -89,6 +121,13 @@ const NewRepair = () => {
 
     try {
       const result = await createRepair.mutateAsync(repair);
+      
+      // Upload device photo if provided
+      const photoUrl = await uploadDevicePhoto(result.id);
+      if (photoUrl) {
+        await supabase.from("repairs").update({ device_photo_received: photoUrl }).eq("id", result.id);
+      }
+
       // Store repair data for printing
       setSavedRepair({
         ...repair,
@@ -146,6 +185,62 @@ const NewRepair = () => {
           printWindow.close();
         }, 250);
       }
+    }
+  };
+
+  const handlePrintInvoice = () => {
+    if (!savedRepair) return;
+    const repairSymbol = currencySymbols[savedRepair.currency as Currency] || "C$";
+    const price = savedRepair.estimated_price || 0;
+    const deposit = savedRepair.deposit || 0;
+    const remaining = price - deposit;
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    if (printWindow) {
+      printWindow.document.write(`<!DOCTYPE html><html><head><title>Factura - ${brand.business_name}</title>
+        <style>
+          @media print { body { margin: 0; } }
+          body { font-family: Arial, sans-serif; padding: 30px; color: #333; max-width: 700px; margin: 0 auto; }
+          .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
+          .header h1 { margin: 0; font-size: 22px; }
+          .header p { margin: 4px 0; color: #666; font-size: 13px; }
+          .header img { max-height: 60px; margin: 0 auto 10px; display: block; }
+          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+          .info-box { background: #f9f9f9; padding: 12px; border-radius: 6px; }
+          .info-box h3 { margin: 0 0 8px 0; font-size: 13px; color: #666; text-transform: uppercase; }
+          .info-box p { margin: 3px 0; font-size: 14px; }
+          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+          th { background: #f0f0f0; font-size: 13px; }
+          .totals { text-align: right; margin-top: 20px; }
+          .totals p { margin: 5px 0; font-size: 14px; }
+          .totals .total { font-size: 18px; font-weight: bold; border-top: 2px solid #333; padding-top: 8px; }
+          .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 15px; }
+        </style></head><body>
+        <div class="header">
+          ${workshop?.logo_url ? `<img src="${workshop.logo_url}" alt="${brand.business_name}" />` : ''}
+          <h1>${brand.business_name}</h1>
+          ${brand.tagline ? `<p>${brand.tagline}</p>` : ''}
+          ${workshop?.address ? `<p>📍 ${workshop.address}</p>` : ''}
+          ${workshop?.phone ? `<p>📞 ${workshop.phone}</p>` : ''}
+          ${workshop?.whatsapp ? `<p>WhatsApp: ${workshop.whatsapp}</p>` : ''}
+          <p>Factura de Reparación</p>
+        </div>
+        <div class="info-grid">
+          <div class="info-box"><h3>Cliente</h3><p><strong>${savedRepair.customer_name}</strong></p><p>${savedRepair.customer_phone}</p></div>
+          <div class="info-box"><h3>Detalles</h3><p>Fecha: ${new Date(savedRepair.created_at).toLocaleDateString('es-NI')}</p><p>ID: ${savedRepair.id.slice(0, 8).toUpperCase()}</p>${savedRepair.warranty_days ? `<p>Garantía: ${savedRepair.warranty_days} días</p>` : ''}</div>
+        </div>
+        <table><thead><tr><th>Descripción</th><th>Dispositivo</th><th style="text-align:right">Precio</th></tr></thead>
+        <tbody><tr><td>${savedRepair.repair_description || 'Reparación'}</td><td>${savedRepair.device_brand} ${savedRepair.device_model}</td><td style="text-align:right">${repairSymbol}${price.toFixed(2)}</td></tr></tbody></table>
+        <div class="totals">
+          ${deposit > 0 ? `<p>Anticipo: ${repairSymbol}${deposit.toFixed(2)}</p>` : ''}
+          ${deposit > 0 ? `<p>Restante: ${repairSymbol}${remaining.toFixed(2)}</p>` : ''}
+          <p class="total">Total: ${repairSymbol}${price.toFixed(2)}</p>
+        </div>
+        <div class="footer"><p>Gracias por su confianza · ${brand.business_name}</p><p>Conserve esta factura como garantía de su reparación</p></div>
+        </body></html>`);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
     }
   };
 
@@ -246,7 +341,50 @@ const NewRepair = () => {
           </CardContent>
         </Card>
 
-        {/* Repair Info */}
+        {/* Device Photo */}
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Camera className="h-5 w-5 text-primary" />
+              Foto del Dispositivo (Recepción)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-3">
+              Toma una foto del estado actual del dispositivo al recibirlo
+            </p>
+            <div className="flex items-start gap-4">
+              <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-muted-foreground/30 rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
+                {devicePhotoPreview ? (
+                  <img src={devicePhotoPreview} alt="Preview" className="w-full h-full object-cover rounded-lg" />
+                ) : (
+                  <>
+                    <ImageIcon className="h-8 w-8 text-muted-foreground mb-1" />
+                    <span className="text-xs text-muted-foreground">Subir foto</span>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="hidden"
+                  onChange={handlePhotoChange}
+                />
+              </label>
+              {devicePhotoPreview && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setDevicePhotoReceived(null); setDevicePhotoPreview(null); }}
+                >
+                  Quitar foto
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
@@ -446,7 +584,7 @@ const NewRepair = () => {
           </DialogHeader>
           <div className="py-4">
             <p className="text-muted-foreground text-sm mb-4">
-              ¿Deseas imprimir la etiqueta para pegar en el dispositivo?
+              ¿Qué deseas imprimir?
             </p>
             {savedRepair && (
               <div className="border rounded-lg overflow-hidden bg-white p-2 flex justify-center">
@@ -460,13 +598,17 @@ const NewRepair = () => {
               </div>
             )}
           </div>
-          <div className="flex gap-2 justify-end">
-            <Button variant="outline" onClick={handleCloseAndNavigate}>
-              No imprimir
+          <div className="flex flex-col gap-2">
+            <Button onClick={handlePrintInvoice} variant="outline" className="w-full">
+              <FileText className="h-4 w-4 mr-2" />
+              Imprimir Factura (Cliente)
             </Button>
-            <Button onClick={handlePrint}>
+            <Button onClick={handlePrint} className="w-full">
               <Printer className="h-4 w-4 mr-2" />
-              Imprimir Etiqueta
+              Imprimir Etiqueta (Dispositivo)
+            </Button>
+            <Button variant="ghost" onClick={handleCloseAndNavigate} className="w-full">
+              No imprimir
             </Button>
           </div>
         </DialogContent>

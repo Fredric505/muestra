@@ -10,6 +10,11 @@ interface WorkshopInfo {
   trial_ends_at: string | null;
   subscription_ends_at: string | null;
   plan_id: string | null;
+  phone: string | null;
+  address: string | null;
+  whatsapp: string | null;
+  email: string | null;
+  logo_url: string | null;
 }
 
 interface AuthContextType {
@@ -70,7 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (profileData?.workshop_id) {
         const { data: wsData } = await supabase
           .from("workshops")
-          .select("id, name, subscription_status, is_active, trial_ends_at, subscription_ends_at, plan_id")
+          .select("id, name, subscription_status, is_active, trial_ends_at, subscription_ends_at, plan_id, phone, address, whatsapp, email, logo_url")
           .eq("id", profileData.workshop_id)
           .maybeSingle();
         if (wsData) {
