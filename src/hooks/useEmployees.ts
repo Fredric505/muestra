@@ -45,7 +45,7 @@ export interface DailyEarning {
 }
 
 export const useEmployees = () => {
-  const { user } = useAuth();
+  const { user, workshopId } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -104,7 +104,10 @@ export const useEmployees = () => {
     }) => {
       const { data, error } = await supabase
         .from("employees")
-        .insert(employee)
+        .insert({
+          ...employee,
+          workshop_id: workshopId,
+        })
         .select(`*, profiles (id, full_name, avatar_url)`)
         .single();
 
@@ -167,6 +170,7 @@ export const useEmployees = () => {
         .insert({
           ...loan,
           created_by: user!.id,
+          workshop_id: workshopId,
         })
         .select()
         .single();
@@ -253,7 +257,10 @@ export const useEmployees = () => {
     }) => {
       const { data, error } = await supabase
         .from("daily_earnings")
-        .insert(earning)
+        .insert({
+          ...earning,
+          workshop_id: workshopId,
+        })
         .select()
         .single();
 

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface BrandSettings {
   id: string;
@@ -39,9 +40,10 @@ import defaultLogo from "@/assets/wentech-logo.jpg";
 
 export const BrandProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
+  const { workshopId } = useAuth();
   
   const { data: brand, isLoading } = useQuery({
-    queryKey: ["brand-settings"],
+    queryKey: ["brand-settings", workshopId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("brand_settings")

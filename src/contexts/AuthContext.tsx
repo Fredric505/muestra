@@ -2,6 +2,16 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
+interface WorkshopInfo {
+  id: string;
+  name: string;
+  subscription_status: string;
+  is_active: boolean;
+  trial_ends_at: string | null;
+  subscription_ends_at: string | null;
+  plan_id: string | null;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -9,6 +19,8 @@ interface AuthContextType {
   isAdmin: boolean;
   isSuperAdmin: boolean;
   profile: { id: string; full_name: string; avatar_url: string | null } | null;
+  workshop: WorkshopInfo | null;
+  workshopId: string | null;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
   signOut: () => Promise<void>;
@@ -31,12 +43,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [profile, setProfile] = useState<{ id: string; full_name: string; avatar_url: string | null } | null>(null);
+  const [workshop, setWorkshop] = useState<WorkshopInfo | null>(null);
 
   const fetchUserData = async (userId: string) => {
     try {
       const { data: profileData } = await supabase
         .from("profiles")
-        .select("id, full_name, avatar_url")
+        .select("id, full_name, avatar_url, workshop_id")
         .eq("user_id", userId)
         .maybeSingle();
 
@@ -52,6 +65,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const roles = roleData?.map((r) => r.role) || [];
       setIsAdmin(roles.includes("admin"));
       setIsSuperAdmin(roles.includes("super_admin"));
+
+      // Fetch workshop info
+      if (profileData?.workshop_id) {
+        const { data: wsData } = await supabase
+          .from("workshops")
+          .select("id, name, subscription_status, is_active, trial_ends_at, subscription_ends_at, plan_id")
+          .eq("id", profileData.workshop_id)
+          .maybeSingle();
+        if (wsData) {
+          setWorkshop(wsData);
+        }
+      }
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
@@ -110,13 +135,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setSession(null);
     setProfile(null);
+    setWorkshop(null);
     setIsAdmin(false);
     setIsSuperAdmin(false);
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, session, isLoading, isAdmin, isSuperAdmin, profile, signIn, signUp, signOut }}
+      value={{ user, session, isLoading, isAdmin, isSuperAdmin, profile, workshop, workshopId: workshop?.id || null, signIn, signUp, signOut }}
     >
       {children}
     </AuthContext.Provider>
