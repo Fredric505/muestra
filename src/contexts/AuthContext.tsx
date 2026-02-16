@@ -71,7 +71,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAdmin(roles.includes("admin"));
       setIsSuperAdmin(roles.includes("super_admin"));
 
-      // Fetch workshop info
       if (profileData?.workshop_id) {
         const { data: wsData } = await supabase
           .from("workshops")
@@ -88,34 +87,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
+    let isMounted = true;
 
-        if (session?.user) {
-          await fetchUserData(session.user.id);
+    // Listener for ONGOING auth changes — do NOT await inside, do NOT control isLoading
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, currentSession) => {
+        if (!isMounted) return;
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+
+        if (currentSession?.user) {
+          // Use setTimeout to avoid deadlock inside onAuthStateChange callback
+          setTimeout(() => {
+            if (isMounted) fetchUserData(currentSession.user.id);
+          }, 0);
         } else {
           setProfile(null);
           setIsAdmin(false);
           setIsSuperAdmin(false);
           setWorkshop(null);
         }
-        setIsLoading(false);
       }
     );
 
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    // INITIAL load — this controls isLoading
+    const initializeAuth = async () => {
+      try {
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        if (!isMounted) return;
 
-      if (session?.user) {
-        await fetchUserData(session.user.id);
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+
+        if (currentSession?.user) {
+          await fetchUserData(currentSession.user.id);
+        }
+      } catch (error) {
+        console.error("Error initializing auth:", error);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
-      setIsLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     return () => {
+      isMounted = false;
       subscription.unsubscribe();
     };
   }, []);
