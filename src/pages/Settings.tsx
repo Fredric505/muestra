@@ -1,15 +1,22 @@
 import { useState, useRef, useEffect } from "react";
 import { useBrand } from "@/contexts/BrandContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Settings as SettingsIcon, Upload, Save, Building2, Image } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Settings as SettingsIcon, Upload, Save, Building2, Image, CreditCard, CalendarClock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 
 const Settings = () => {
   const { brand, updateBrand, uploadLogo, defaultLogoUrl, isLoading } = useBrand();
+  const { workshop } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -19,7 +26,21 @@ const Settings = () => {
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Sync state when brand data loads or changes
+  const { data: plan } = useQuery({
+    queryKey: ["workshop-plan", workshop?.plan_id],
+    queryFn: async () => {
+      if (!workshop?.plan_id) return null;
+      const { data, error } = await supabase
+        .from("plans")
+        .select("name, monthly_price, annual_price, currency, max_employees")
+        .eq("id", workshop.plan_id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!workshop?.plan_id,
+  });
+
   useEffect(() => {
     if (brand) {
       setBusinessName(brand.business_name);
@@ -93,6 +114,19 @@ const Settings = () => {
 
   const currentLogo = logoPreview || brand.logo_url || defaultLogoUrl;
 
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "active":
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Activo</Badge>;
+      case "trial":
+        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Prueba</Badge>;
+      case "expired":
+        return <Badge variant="destructive">Expirado</Badge>;
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -112,6 +146,50 @@ const Settings = () => {
           Personaliza el nombre y logo de tu negocio
         </p>
       </div>
+
+      {/* Subscription Info */}
+      {workshop && (
+        <Card className="glass-card border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-primary" />
+              Tu Plan
+            </CardTitle>
+            <CardDescription>
+              Información de tu suscripción actual
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Plan</p>
+                <p className="font-semibold text-foreground">{plan?.name || "—"}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Estado</p>
+                {getStatusBadge(workshop.subscription_status)}
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground">Máx. Empleados</p>
+                <p className="font-semibold text-foreground">{plan?.max_employees ?? "Ilimitado"}</p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <CalendarClock className="h-3.5 w-3.5" />
+                  {workshop.trial_ends_at ? "Prueba expira" : "Suscripción expira"}
+                </p>
+                <p className="font-semibold text-foreground">
+                  {workshop.trial_ends_at
+                    ? format(new Date(workshop.trial_ends_at), "dd MMM yyyy", { locale: es })
+                    : workshop.subscription_ends_at
+                    ? format(new Date(workshop.subscription_ends_at), "dd MMM yyyy", { locale: es })
+                    : "Sin fecha de expiración"}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Brand Identity */}
