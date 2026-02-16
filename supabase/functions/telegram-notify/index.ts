@@ -56,8 +56,11 @@ Deno.serve(async (req) => {
       case "payment_received":
         message = `💰 <b>Nuevo pago recibido</b>\n\n` +
           `🏪 Taller: <b>${data.workshop_name}</b>\n` +
+          `📧 Email: ${data.workshop_email || "N/A"}\n` +
+          `📱 WhatsApp: ${data.workshop_whatsapp || "N/A"}\n` +
           `💵 Monto: ${data.currency} ${data.amount}\n` +
           `📦 Plan: ${data.plan_name || "N/A"}\n` +
+          `📅 Periodo: ${data.billing_period || "N/A"}\n` +
           `🧾 Comprobante: ${data.has_receipt ? "✅ Adjunto" : "❌ Sin comprobante"}\n` +
           `📅 Fecha: ${new Date().toLocaleDateString("es-NI")}`;
         break;
