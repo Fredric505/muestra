@@ -105,10 +105,8 @@ const Payment = () => {
           .upload(fileName, receiptFile);
         if (uploadError) throw uploadError;
 
-        const { data: urlData } = supabase.storage
-          .from("payment-receipts")
-          .getPublicUrl(fileName);
-        receiptUrl = urlData.publicUrl;
+        // Store the storage path, not a public URL (bucket is private)
+        receiptUrl = fileName;
       }
 
       const { error } = await supabase.from("payment_requests").insert({

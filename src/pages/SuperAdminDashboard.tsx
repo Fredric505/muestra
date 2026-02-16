@@ -623,6 +623,19 @@ function PaymentsTab({ requests }: { requests: any[] }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { user } = useAuth();
+  const [viewingReceiptUrl, setViewingReceiptUrl] = useState<string | null>(null);
+
+  const handleViewReceipt = async (receiptPath: string) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from("payment-receipts")
+        .createSignedUrl(receiptPath, 3600);
+      if (error) throw error;
+      setViewingReceiptUrl(data.signedUrl);
+    } catch (err: any) {
+      toast({ title: "Error", description: "No se pudo cargar el comprobante: " + err.message, variant: "destructive" });
+    }
+  };
 
   const reviewPayment = useMutation({
     mutationFn: async ({ id, status, workshopId }: { id: string; status: "approved" | "rejected"; workshopId: string }) => {
@@ -692,9 +705,9 @@ function PaymentsTab({ requests }: { requests: any[] }) {
                   </TableCell>
                   <TableCell>
                     {req.receipt_url && (
-                      <a href={req.receipt_url} target="_blank" rel="noopener">
-                        <Button variant="ghost" size="sm"><Eye className="h-4 w-4" /></Button>
-                      </a>
+                      <Button variant="ghost" size="sm" onClick={() => handleViewReceipt(req.receipt_url)}>
+                        <Eye className="h-4 w-4" />
+                      </Button>
                     )}
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">
@@ -723,6 +736,28 @@ function PaymentsTab({ requests }: { requests: any[] }) {
           </Table>
         </CardContent>
       </Card>
+
+      {/* Receipt Viewer Dialog */}
+      <Dialog open={!!viewingReceiptUrl} onOpenChange={(open) => !open && setViewingReceiptUrl(null)}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Comprobante de Pago</DialogTitle>
+          </DialogHeader>
+          {viewingReceiptUrl && (
+            <div className="flex justify-center">
+              <img src={viewingReceiptUrl} alt="Comprobante" className="max-w-full max-h-[60vh] rounded-lg object-contain" />
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setViewingReceiptUrl(null)}>Cerrar</Button>
+            {viewingReceiptUrl && (
+              <a href={viewingReceiptUrl} target="_blank" rel="noopener">
+                <Button><ExternalLink className="h-4 w-4 mr-1.5" />Abrir en nueva pestaña</Button>
+              </a>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
