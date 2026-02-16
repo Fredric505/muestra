@@ -99,10 +99,12 @@ const Register = () => {
         title: "¡Registro exitoso!",
         description: hasTrial
           ? "Tu prueba gratis ha comenzado. Ya puedes iniciar sesión."
-          : "Tu cuenta ha sido creada. Realiza el pago para activar tu taller.",
+          : "Tu cuenta ha sido creada. Inicia sesión y realiza el pago para activar tu taller.",
       });
 
-      navigate("/login");
+      // Auto sign-in the user so they land on the payment page
+      await supabase.auth.signInWithPassword({ email, password });
+      navigate(hasTrial ? "/panel/dashboard" : "/payment");
     } catch (error: any) {
       toast({
         title: "Error",

@@ -43,7 +43,7 @@ export interface RepairType {
 }
 
 export const useRepairs = (filterByTechnician = false) => {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, workshopId } = useAuth();
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -92,6 +92,7 @@ export const useRepairs = (filterByTechnician = false) => {
         .insert({
           ...repair,
           created_by: user!.id,
+          workshop_id: workshopId,
         })
         .select()
         .single();

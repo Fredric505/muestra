@@ -6,12 +6,14 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { BrandProvider } from "@/contexts/BrandContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { SubscriptionGate } from "@/components/SubscriptionGate";
 import { SuperAdminRoute } from "@/components/SuperAdminRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SuperAdminLayout } from "@/components/layout/SuperAdminLayout";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Payment from "./pages/Payment";
 import Dashboard from "./pages/Dashboard";
 import NewRepair from "./pages/NewRepair";
 import Repairs from "./pages/Repairs";
@@ -38,13 +40,23 @@ const App = () => (
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              <Route
+                path="/payment"
+                element={
+                  <ProtectedRoute>
+                    <Payment />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Workshop panel */}
               <Route
                 path="/panel"
                 element={
                   <ProtectedRoute>
-                    <AppLayout />
+                    <SubscriptionGate>
+                      <AppLayout />
+                    </SubscriptionGate>
                   </ProtectedRoute>
                 }
               >
