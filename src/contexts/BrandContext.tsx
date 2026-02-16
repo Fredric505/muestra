@@ -65,27 +65,42 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
   });
 
   const updateBrand = async (updates: Partial<BrandSettings>) => {
-    if (!brand?.id) return;
-    
-    // Optimistic update: immediately set the new brand data in the cache
-    queryClient.setQueryData(["brand-settings"], (old: BrandSettings | undefined) => {
-      if (!old) return old;
+    if (!workshopId) return;
+
+    // Optimistic update
+    queryClient.setQueryData(["brand-settings", workshopId], (old: BrandSettings | undefined) => {
+      if (!old) return { ...defaultBrand, ...updates };
       return { ...old, ...updates };
     });
 
-    const { error } = await supabase
-      .from("brand_settings")
-      .update(updates)
-      .eq("id", brand.id);
-    
-    if (error) {
+    try {
+      if (brand?.id) {
+        // Update existing record
+        const { error } = await supabase
+          .from("brand_settings")
+          .update(updates)
+          .eq("id", brand.id);
+        if (error) throw error;
+      } else {
+        // Create new record for this workshop
+        const { error } = await supabase
+          .from("brand_settings")
+          .insert({
+            workshop_id: workshopId,
+            business_name: updates.business_name || "Mi Taller",
+            tagline: updates.tagline || "",
+            logo_url: updates.logo_url || null,
+          });
+        if (error) throw error;
+      }
+    } catch (error) {
       // Revert on error
-      queryClient.invalidateQueries({ queryKey: ["brand-settings"] });
+      queryClient.invalidateQueries({ queryKey: ["brand-settings", workshopId] });
       throw error;
     }
-    
+
     // Refetch to confirm the server state
-    await queryClient.invalidateQueries({ queryKey: ["brand-settings"] });
+    await queryClient.invalidateQueries({ queryKey: ["brand-settings", workshopId] });
   };
 
   const uploadLogo = async (file: File): Promise<string> => {
