@@ -205,10 +205,10 @@ export function PricingSection() {
               <h3 className="text-xl font-bold mb-1">{plan.name}</h3>
               <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
               <div className="mb-6">
-                <span className="text-4xl font-extrabold">C${perMonth}</span>
+                <span className="text-4xl font-extrabold">{plan.currency === "USD" ? "$" : "C$"}{perMonth}</span>
                 <span className="text-gray-400 text-sm">/mes</span>
                 {billingPeriod === "annual" && (
-                  <p className="text-xs text-gray-500 mt-1">C${price} facturado anualmente</p>
+                  <p className="text-xs text-gray-500 mt-1">{plan.currency === "USD" ? "$" : "C$"}{price} facturado anualmente</p>
                 )}
               </div>
               <Link to="/register">

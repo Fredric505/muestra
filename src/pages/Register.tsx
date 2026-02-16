@@ -202,7 +202,7 @@ const Register = () => {
                   <SelectContent>
                     {plans?.map((plan) => (
                       <SelectItem key={plan.id} value={plan.id}>
-                        {plan.name} - C${plan.monthly_price}/mes
+                        {plan.name} - {(plan as any).currency === "USD" ? "$" : "C$"}{plan.monthly_price}/mes
                         {plan.has_free_trial && ` (${plan.trial_days} días gratis)`}
                       </SelectItem>
                     ))}
