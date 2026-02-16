@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { useRepairs, RepairStatus, Currency } from "@/hooks/useRepairs";
 import { useEmployees } from "@/hooks/useEmployees";
@@ -64,6 +65,8 @@ import {
   List,
   XCircle,
   FileText,
+  Camera,
+  ImageIcon,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { format, parseISO } from "date-fns";
@@ -116,6 +119,21 @@ const Repairs = () => {
   const [failedDialogOpen, setFailedDialogOpen] = useState(false);
   const [repairToFail, setRepairToFail] = useState<string | null>(null);
   const [failureReason, setFailureReason] = useState("");
+  
+  // Delivery photo state
+  const [deliveryPhoto, setDeliveryPhoto] = useState<File | null>(null);
+  const [deliveryPhotoPreview, setDeliveryPhotoPreview] = useState<string | null>(null);
+
+  const handleDeliveryPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) return;
+      setDeliveryPhoto(file);
+      const reader = new FileReader();
+      reader.onload = (ev) => setDeliveryPhotoPreview(ev.target?.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
 
   const filteredRepairs = useMemo(() => {
     return repairs.filter((repair) => {
@@ -173,15 +191,28 @@ const Repairs = () => {
     const netProfit = finalPriceNum - partsCostNum;
 
     try {
+      // Upload delivery photo if provided
+      let deliveryPhotoUrl: string | undefined;
+      if (deliveryPhoto) {
+        const ext = deliveryPhoto.name.split(".").pop();
+        const path = `delivered/${selectedRepair}.${ext}`;
+        const { error: uploadErr } = await supabase.storage.from("device-photos").upload(path, deliveryPhoto, { upsert: true });
+        if (!uploadErr) {
+          const { data } = supabase.storage.from("device-photos").getPublicUrl(path);
+          deliveryPhotoUrl = data.publicUrl;
+        }
+      }
+
       // If admin did the repair themselves, don't assign technician or create earning
       if (selectedTechnician === "admin") {
         await updateRepair.mutateAsync({
           id: selectedRepair,
           final_price: finalPriceNum,
           parts_cost: partsCostNum,
-          technician_id: user?.id, // Admin's own user_id
+          technician_id: user?.id,
           status: "delivered",
           completed_at: new Date().toISOString(),
+          ...(deliveryPhotoUrl && { device_photo_delivered: deliveryPhotoUrl }),
         });
       } else {
         const employee = employees.find(e => e.id === selectedTechnician);
@@ -189,7 +220,6 @@ const Repairs = () => {
 
         const commissionEarned = netProfit * (employee.monthly_commission_rate / 100);
 
-        // Update repair with final price, parts cost, and technician
         await updateRepair.mutateAsync({
           id: selectedRepair,
           final_price: finalPriceNum,
@@ -197,9 +227,9 @@ const Repairs = () => {
           technician_id: employee.user_id,
           status: "delivered",
           completed_at: new Date().toISOString(),
+          ...(deliveryPhotoUrl && { device_photo_delivered: deliveryPhotoUrl }),
         });
 
-        // Create earning record for the technician
         await createEarning.mutateAsync({
           employee_id: employee.id,
           repair_id: selectedRepair,
@@ -215,6 +245,8 @@ const Repairs = () => {
       setFinalPrice("");
       setPartsCost("");
       setSelectedTechnician("");
+      setDeliveryPhoto(null);
+      setDeliveryPhotoPreview(null);
     } catch (error) {
       console.error("Error completing repair:", error);
     }
@@ -809,6 +841,24 @@ const Repairs = () => {
                 </p>
               </div>
             )}
+            {/* Delivery Photo */}
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Camera className="h-4 w-4" />
+                Foto de entrega (opcional)
+              </Label>
+              <label className="flex flex-col items-center justify-center w-24 h-24 border-2 border-dashed border-muted-foreground/30 rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
+                {deliveryPhotoPreview ? (
+                  <img src={deliveryPhotoPreview} alt="Preview" className="w-full h-full object-cover rounded-lg" />
+                ) : (
+                  <>
+                    <ImageIcon className="h-6 w-6 text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground">Subir</span>
+                  </>
+                )}
+                <input type="file" accept="image/*" capture="environment" className="hidden" onChange={handleDeliveryPhotoChange} />
+              </label>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setCompleteDialogOpen(false)}>
