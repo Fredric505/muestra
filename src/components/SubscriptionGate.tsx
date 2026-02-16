@@ -20,7 +20,10 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
   // Super admins bypass subscription check
   if (isSuperAdmin) return <>{children}</>;
 
-  // Still loading workshop data — don't redirect yet
+  // Employees (non-admin) bypass payment gate — only owners pay
+  if (!isAdmin) return <>{children}</>;
+
+  // Admin: wait for workshop data before deciding
   if (!workshop) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -28,9 +31,6 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
       </div>
     );
   }
-
-  // Employees (non-admin with a workshop) bypass payment gate — only owners pay
-  if (!isAdmin) return <>{children}</>;
 
   // Check if workshop subscription is active or in trial
   if (workshop.is_active) return <>{children}</>;
