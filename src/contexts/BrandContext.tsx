@@ -45,9 +45,11 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
   const { data: brand, isLoading } = useQuery({
     queryKey: ["brand-settings", workshopId],
     queryFn: async () => {
+      if (!workshopId) return defaultBrand;
       const { data, error } = await supabase
         .from("brand_settings")
         .select("*")
+        .eq("workshop_id", workshopId)
         .limit(1)
         .maybeSingle();
       
@@ -56,9 +58,10 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
         return defaultBrand;
       }
       
-      return data as BrandSettings;
+      return (data as BrandSettings) || defaultBrand;
     },
-    staleTime: 0, // Always fetch fresh brand data
+    staleTime: 0,
+    enabled: !!workshopId,
   });
 
   const updateBrand = async (updates: Partial<BrandSettings>) => {
@@ -109,14 +112,7 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [brand?.business_name]);
 
-  // Don't render children until brand data is loaded to prevent flash of default values
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-pulse text-muted-foreground">Cargando...</div>
-      </div>
-    );
-  }
+  // Don't block rendering – allow children to render while brand loads
 
   return (
     <BrandContext.Provider
