@@ -324,7 +324,7 @@ const History = () => {
                                     <p className="text-sm font-medium text-muted-foreground">📥 Recibido</p>
                                     {repair.device_photo_received ? (
                                       <img
-                                        src={supabase.storage.from("device-photos").getPublicUrl(repair.device_photo_received).data.publicUrl}
+                                        src={repair.device_photo_received.startsWith("http") ? repair.device_photo_received : supabase.storage.from("device-photos").getPublicUrl(repair.device_photo_received).data.publicUrl}
                                         alt="Foto al recibir"
                                         className="rounded-lg border w-full object-cover max-h-80"
                                       />
@@ -339,7 +339,7 @@ const History = () => {
                                     <p className="text-sm font-medium text-muted-foreground">📤 Entregado</p>
                                     {repair.device_photo_delivered ? (
                                       <img
-                                        src={supabase.storage.from("device-photos").getPublicUrl(repair.device_photo_delivered).data.publicUrl}
+                                        src={repair.device_photo_delivered.startsWith("http") ? repair.device_photo_delivered : supabase.storage.from("device-photos").getPublicUrl(repair.device_photo_delivered).data.publicUrl}
                                         alt="Foto al entregar"
                                         className="rounded-lg border w-full object-cover max-h-80"
                                       />
