@@ -32,6 +32,8 @@ export interface Repair {
   currency: Currency;
   warranty_days?: number;
   failure_reason?: string;
+  device_photo_received?: string;
+  device_photo_delivered?: string;
   repair_types?: { name: string };
 }
 

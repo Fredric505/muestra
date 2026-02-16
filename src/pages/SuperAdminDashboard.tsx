@@ -467,6 +467,7 @@ function PlansTab({ plans }: { plans: any[] }) {
         trial_days: plan.trial_days,
         features: plan.features,
         currency: plan.currency || "NIO",
+        max_employees: plan.max_employees || 5,
       }).eq("id", plan.id);
       if (error) throw error;
     },
@@ -510,6 +511,7 @@ function PlansTab({ plans }: { plans: any[] }) {
                 <span className="text-sm text-muted-foreground ml-1">{plan.currency || "NIO"}/mes</span>
               </div>
               <p className="text-sm text-muted-foreground">{plan.description}</p>
+              <p className="text-xs text-muted-foreground">👥 Máx. empleados: {plan.max_employees || 5}</p>
               {plan.has_free_trial && (
                 <p className="text-xs text-cyan-400">Prueba gratis: {plan.trial_days} días</p>
               )}
@@ -568,6 +570,10 @@ function PlansTab({ plans }: { plans: any[] }) {
                   <Label>Precio anual ({editingPlan.currency === "USD" ? "$" : "C$"})</Label>
                   <Input type="number" value={editingPlan.annual_price} onChange={(e) => setEditingPlan({ ...editingPlan, annual_price: parseFloat(e.target.value) || 0 })} />
                 </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Máximo de empleados</Label>
+                <Input type="number" min="1" value={editingPlan.max_employees || 5} onChange={(e) => setEditingPlan({ ...editingPlan, max_employees: parseInt(e.target.value) || 5 })} />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="flex items-center gap-2">
