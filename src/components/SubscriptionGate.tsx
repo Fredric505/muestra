@@ -20,20 +20,27 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
   // Super admins bypass subscription check
   if (isSuperAdmin) return <>{children}</>;
 
+  // Still loading workshop data — don't redirect yet
+  if (!workshop) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   // Employees (non-admin with a workshop) bypass payment gate — only owners pay
-  if (!isAdmin && workshop) return <>{children}</>;
+  if (!isAdmin) return <>{children}</>;
 
   // Check if workshop subscription is active or in trial
-  if (workshop) {
-    if (workshop.is_active) return <>{children}</>;
-    
-    const status = workshop.subscription_status;
-    if (status === "active") return <>{children}</>;
-    
-    if (status === "trial") {
-      const trialEnd = workshop.trial_ends_at ? new Date(workshop.trial_ends_at) : null;
-      if (trialEnd && trialEnd > new Date()) return <>{children}</>;
-    }
+  if (workshop.is_active) return <>{children}</>;
+  
+  const status = workshop.subscription_status;
+  if (status === "active") return <>{children}</>;
+  
+  if (status === "trial") {
+    const trialEnd = workshop.trial_ends_at ? new Date(workshop.trial_ends_at) : null;
+    if (trialEnd && trialEnd > new Date()) return <>{children}</>;
   }
 
   // Redirect to payment page
