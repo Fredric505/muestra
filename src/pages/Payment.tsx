@@ -122,6 +122,27 @@ const Payment = () => {
 
       if (error) throw error;
 
+      // Send Telegram notification to super admin
+      try {
+        await supabase.functions.invoke("telegram-notify", {
+          body: {
+            event: "payment_received",
+            data: {
+              workshop_name: workshop.name,
+              currency: currency,
+              amount: amount,
+              plan_name: plan?.name || "N/A",
+              has_receipt: !!receiptFile,
+              billing_period: billingPeriod === "monthly" ? "Mensual" : "Anual",
+              workshop_email: workshop.email || "N/A",
+              workshop_whatsapp: workshop.whatsapp || "N/A",
+            },
+          },
+        });
+      } catch (telegramError) {
+        console.error("Telegram notification error:", telegramError);
+      }
+
       toast({
         title: "¡Solicitud enviada!",
         description: "Tu comprobante está siendo revisado. Recibirás una notificación pronto.",

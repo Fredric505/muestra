@@ -51,7 +51,7 @@ const employeeItems = [
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
-  const { signOut, profile, isAdmin } = useAuth();
+  const { signOut, profile, isAdmin, isSuperAdmin } = useAuth();
   const { brand, defaultLogoUrl } = useBrand();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
 
@@ -106,7 +106,7 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {isAdmin && (
+        {(isAdmin || isSuperAdmin) && (
           <SidebarGroup>
             <SidebarGroupLabel>Administración</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -136,7 +136,7 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
 
-        {!isAdmin && (
+        {!isAdmin && !isSuperAdmin && (
           <SidebarGroup>
             <SidebarGroupLabel>Mi Cuenta</SidebarGroupLabel>
             <SidebarGroupContent>
@@ -188,7 +188,7 @@ export function AppSidebar() {
                   {profile?.full_name || "Usuario"}
                 </p>
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  {isAdmin ? "Administrador" : "Técnico"}
+                  {isSuperAdmin ? "Super Admin" : isAdmin ? "Administrador" : "Técnico"}
                   <Settings className="h-3 w-3" />
                 </p>
               </button>
