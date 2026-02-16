@@ -49,7 +49,6 @@ const Register = () => {
         password,
         options: {
           data: { full_name: fullName },
-          emailRedirectTo: window.location.origin,
         },
       });
 
@@ -99,8 +98,8 @@ const Register = () => {
       toast({
         title: "¡Registro exitoso!",
         description: hasTrial
-          ? "Tu prueba gratis ha comenzado. Revisa tu email para confirmar tu cuenta."
-          : "Tu cuenta ha sido creada. Revisa tu email y realiza el pago para activar tu taller.",
+          ? "Tu prueba gratis ha comenzado. Ya puedes iniciar sesión."
+          : "Tu cuenta ha sido creada. Realiza el pago para activar tu taller.",
       });
 
       navigate("/login");
