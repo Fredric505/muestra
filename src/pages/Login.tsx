@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,9 +11,21 @@ import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn } = useAuth();
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const { signIn, user, isSuperAdmin, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Wait for AuthContext to fully resolve after login, then redirect
+  useEffect(() => {
+    if (loginSuccess && user && !authLoading) {
+      if (isSuperAdmin) {
+        navigate("/super-admin", { replace: true });
+      } else {
+        navigate("/panel/dashboard", { replace: true });
+      }
+    }
+  }, [loginSuccess, user, isSuperAdmin, authLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -31,30 +43,15 @@ const Login = () => {
         description: error.message,
         variant: "destructive",
       });
+      setIsLoading(false);
     } else {
       toast({
         title: "Bienvenido",
         description: "Has iniciado sesión correctamente",
       });
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData.user) {
-        const { data: roles } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", userData.user.id);
-        
-        const userRoles = roles?.map(r => r.role) || [];
-        if (userRoles.includes("super_admin")) {
-          navigate("/super-admin");
-        } else {
-          navigate("/panel/dashboard");
-        }
-      } else {
-        navigate("/panel/dashboard");
-      }
+      setLoginSuccess(true);
+      // isLoading stays true until the useEffect redirects
     }
-
-    setIsLoading(false);
   };
 
   return (
