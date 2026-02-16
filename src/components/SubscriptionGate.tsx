@@ -7,7 +7,7 @@ interface SubscriptionGateProps {
 }
 
 export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
-  const { workshop, isSuperAdmin, isLoading } = useAuth();
+  const { workshop, isSuperAdmin, isAdmin, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -20,10 +20,14 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
   // Super admins bypass subscription check
   if (isSuperAdmin) return <>{children}</>;
 
+  // Employees (non-admin with a workshop) bypass payment gate — only owners pay
+  if (!isAdmin && workshop) return <>{children}</>;
+
   // Check if workshop subscription is active or in trial
   if (workshop) {
-    const status = workshop.subscription_status;
+    if (workshop.is_active) return <>{children}</>;
     
+    const status = workshop.subscription_status;
     if (status === "active") return <>{children}</>;
     
     if (status === "trial") {
