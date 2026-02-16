@@ -669,6 +669,7 @@ export type Database = {
     }
     Functions: {
       cleanup_employee: { Args: { p_employee_id: string }; Returns: undefined }
+      get_user_workshop_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
