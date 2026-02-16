@@ -92,7 +92,7 @@ const currencySymbols: Record<Currency, string> = {
 };
 
 const Repairs = () => {
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, workshop } = useAuth();
   const { brand } = useBrand();
   // Filter repairs by technician for non-admins
   const { repairs, isLoading, updateStatus, updateRepair, deleteRepair } = useRepairs(true);
@@ -291,10 +291,14 @@ const Repairs = () => {
               .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 15px; }
             </style>
           </head>
-          <body>
+           <body>
             <div class="header">
+              ${workshop?.logo_url ? `<img src="${workshop.logo_url}" alt="${brand.business_name}" style="max-height:60px;margin:0 auto 10px;display:block;" />` : ''}
               <h1>${brand.business_name}</h1>
               ${brand.tagline ? `<p>${brand.tagline}</p>` : ''}
+              ${workshop?.address ? `<p>📍 ${workshop.address}</p>` : ''}
+              ${workshop?.phone ? `<p>📞 ${workshop.phone}</p>` : ''}
+              ${workshop?.whatsapp ? `<p>WhatsApp: ${workshop.whatsapp}</p>` : ''}
               <p>Factura de Reparación</p>
             </div>
             <div class="info-grid">

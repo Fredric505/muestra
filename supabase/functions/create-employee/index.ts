@@ -52,6 +52,52 @@ serve(async (req) => {
       );
     }
 
+    // Get caller's workshop_id
+    const { data: callerProfile } = await supabaseAdmin
+      .from("profiles")
+      .select("workshop_id")
+      .eq("user_id", callerUser.id)
+      .maybeSingle();
+
+    const callerWorkshopId = callerProfile?.workshop_id;
+
+    if (!callerWorkshopId) {
+      return new Response(
+        JSON.stringify({ error: "No se encontró el taller del administrador" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check employee limit based on plan
+    const { data: workshopData } = await supabaseAdmin
+      .from("workshops")
+      .select("plan_id")
+      .eq("id", callerWorkshopId)
+      .maybeSingle();
+
+    if (workshopData?.plan_id) {
+      const { data: planData } = await supabaseAdmin
+        .from("plans")
+        .select("max_employees")
+        .eq("id", workshopData.plan_id)
+        .maybeSingle();
+
+      if (planData?.max_employees) {
+        const { count } = await supabaseAdmin
+          .from("employees")
+          .select("id", { count: "exact", head: true })
+          .eq("workshop_id", callerWorkshopId)
+          .eq("is_active", true);
+
+        if (count !== null && count >= planData.max_employees) {
+          return new Response(
+            JSON.stringify({ error: `Has alcanzado el límite de ${planData.max_employees} empleados para tu plan. Actualiza tu plan para agregar más.` }),
+            { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+          );
+        }
+      }
+    }
+
     // Get request body
     const { email, password, fullName, commissionRate, baseSalary } = await req.json();
 
@@ -76,17 +122,26 @@ serve(async (req) => {
       
       if (existingEmployee) {
         if (!existingEmployee.is_active) {
-          // Reactivate the employee
+          // Reactivate the employee and assign workshop
           const { data: reactivatedEmployee, error: reactivateError } = await supabaseAdmin
             .from("employees")
             .update({
               is_active: true,
               monthly_commission_rate: commissionRate,
               base_salary: baseSalary || 0,
+              workshop_id: callerWorkshopId,
             })
             .eq("id", existingEmployee.id)
             .select()
             .single();
+
+          // Link profile to workshop
+          if (!reactivateError) {
+            await supabaseAdmin
+              .from("profiles")
+              .update({ workshop_id: callerWorkshopId })
+              .eq("user_id", existingUser.id);
+          }
           
           if (reactivateError) {
             return new Response(
@@ -139,12 +194,18 @@ serve(async (req) => {
     // 2. Wait a bit for the trigger to create the profile
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // 3. Get the profile
+    // 3. Get the profile and link to workshop
     const { data: profileData } = await supabaseAdmin
       .from("profiles")
       .select("id")
       .eq("user_id", newUserId)
       .maybeSingle();
+
+    // Link profile to workshop
+    await supabaseAdmin
+      .from("profiles")
+      .update({ workshop_id: callerWorkshopId })
+      .eq("user_id", newUserId);
 
     // 4. Add technician role
     const { error: roleError } = await supabaseAdmin
@@ -155,7 +216,7 @@ serve(async (req) => {
       console.error("Error creating role:", roleError);
     }
 
-    // 5. Create employee record
+    // 5. Create employee record with workshop_id
     const { data: employeeData, error: employeeError } = await supabaseAdmin
       .from("employees")
       .insert({
@@ -163,6 +224,7 @@ serve(async (req) => {
         profile_id: profileData?.id,
         monthly_commission_rate: commissionRate,
         base_salary: baseSalary || 0,
+        workshop_id: callerWorkshopId,
       })
       .select()
       .single();
