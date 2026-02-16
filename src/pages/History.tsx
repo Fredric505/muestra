@@ -31,7 +31,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Search, History as HistoryIcon, Calendar, MessageCircle, Trash2, Shield, XCircle } from "lucide-react";
+import { Search, History as HistoryIcon, Calendar, MessageCircle, Trash2, Shield, XCircle, Camera, ImageIcon } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval, addDays, isBefore } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -221,6 +229,7 @@ const History = () => {
                     <TableHead>Precio Final</TableHead>
                     <TableHead>Ganancia</TableHead>
                     <TableHead>Garantía</TableHead>
+                    <TableHead>Fotos</TableHead>
                     <TableHead>Fecha</TableHead>
                     {isAdmin && <TableHead className="text-right">Acciones</TableHead>}
                   </TableRow>
@@ -295,6 +304,57 @@ const History = () => {
                             </Badge>
                           ) : (
                             <span className="text-muted-foreground text-sm">Sin garantía</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {(repair.device_photo_received || repair.device_photo_delivered) ? (
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant="outline" size="sm" className="gap-1">
+                                  <Camera className="h-3.5 w-3.5" />
+                                  Ver
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl">
+                                <DialogHeader>
+                                  <DialogTitle>Fotos del dispositivo - {repair.device_brand} {repair.device_model}</DialogTitle>
+                                </DialogHeader>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
+                                  <div className="space-y-2">
+                                    <p className="text-sm font-medium text-muted-foreground">📥 Recibido</p>
+                                    {repair.device_photo_received ? (
+                                      <img
+                                        src={supabase.storage.from("device-photos").getPublicUrl(repair.device_photo_received).data.publicUrl}
+                                        alt="Foto al recibir"
+                                        className="rounded-lg border w-full object-cover max-h-80"
+                                      />
+                                    ) : (
+                                      <div className="rounded-lg border border-dashed flex items-center justify-center h-48 text-muted-foreground text-sm">
+                                        <ImageIcon className="h-5 w-5 mr-2 opacity-50" />
+                                        Sin foto
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="space-y-2">
+                                    <p className="text-sm font-medium text-muted-foreground">📤 Entregado</p>
+                                    {repair.device_photo_delivered ? (
+                                      <img
+                                        src={supabase.storage.from("device-photos").getPublicUrl(repair.device_photo_delivered).data.publicUrl}
+                                        alt="Foto al entregar"
+                                        className="rounded-lg border w-full object-cover max-h-80"
+                                      />
+                                    ) : (
+                                      <div className="rounded-lg border border-dashed flex items-center justify-center h-48 text-muted-foreground text-sm">
+                                        <ImageIcon className="h-5 w-5 mr-2 opacity-50" />
+                                        Sin foto
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
+                          ) : (
+                            <span className="text-muted-foreground text-sm">Sin fotos</span>
                           )}
                         </TableCell>
                         <TableCell>
