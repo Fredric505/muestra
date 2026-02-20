@@ -18,14 +18,20 @@ const Login = () => {
 
   // Wait for AuthContext to fully resolve after login, then redirect
   useEffect(() => {
-    if (loginSuccess && user && !authLoading) {
-      if (isSuperAdmin) {
-        navigate("/super-admin", { replace: true });
-      } else {
-        navigate("/panel/dashboard", { replace: true });
-      }
+  if (!loginSuccess) return;
+  if (!user) return;
+  if (authLoading) return;
+
+  // Pequeña espera para asegurar que el rol esté cargado
+  setTimeout(() => {
+    if (isSuperAdmin) {
+      navigate("/super-admin", { replace: true });
+    } else {
+      navigate("/panel/dashboard", { replace: true });
     }
-  }, [loginSuccess, user, isSuperAdmin, authLoading, navigate]);
+  }, 100);
+
+}, [loginSuccess, user, isSuperAdmin, authLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
