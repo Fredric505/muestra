@@ -7,9 +7,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { BrandProvider } from "@/contexts/BrandContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { SubscriptionGate } from "@/components/SubscriptionGate";
+import { SuperAdminRoute } from "@/components/SuperAdminRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SuperAdminLayout } from "@/components/layout/SuperAdminLayout";
-
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
@@ -36,11 +36,10 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              {/* Public Routes */}
+              {/* Public */}
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-
               <Route
                 path="/payment"
                 element={
@@ -50,7 +49,7 @@ const App = () => (
                 }
               />
 
-              {/* Workshop Panel */}
+              {/* Workshop panel */}
               <Route
                 path="/panel"
                 element={
@@ -61,7 +60,7 @@ const App = () => (
                   </ProtectedRoute>
                 }
               >
-                <Route index element={<Navigate to="dashboard" replace />} />
+                <Route index element={<Navigate to="/panel/dashboard" replace />} />
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="repairs/new" element={<NewRepair />} />
                 <Route path="repairs" element={<Repairs />} />
@@ -72,19 +71,19 @@ const App = () => (
                 <Route path="settings" element={<Settings />} />
               </Route>
 
-              {/* Super Admin Panel */}
+              {/* Super Admin */}
               <Route
                 path="/super-admin"
                 element={
-                  <ProtectedRoute requireSuperAdmin>
+                  <SuperAdminRoute>
                     <SuperAdminLayout />
-                  </ProtectedRoute>
+                  </SuperAdminRoute>
                 }
               >
                 <Route index element={<SuperAdminDashboard />} />
               </Route>
 
-              {/* Legacy Redirects */}
+              {/* Legacy redirects */}
               <Route path="/dashboard" element={<Navigate to="/panel/dashboard" replace />} />
               <Route path="/repairs" element={<Navigate to="/panel/repairs" replace />} />
               <Route path="/repairs/new" element={<Navigate to="/panel/repairs/new" replace />} />
