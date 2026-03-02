@@ -7,7 +7,7 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, isSuperAdmin } = useAuth();
 
   if (isLoading) {
     return (
@@ -19,6 +19,11 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Super admins should always go to their dedicated panel
+  if (isSuperAdmin) {
+    return <Navigate to="/super-admin" replace />;
   }
 
   return <>{children}</>;

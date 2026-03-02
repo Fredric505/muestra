@@ -252,6 +252,7 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [editingWs, setEditingWs] = useState<any>(null);
+  const [deletingWsId, setDeletingWsId] = useState<string | null>(null);
 
   const statusColors: Record<string, string> = {
     active: "bg-green-500/20 text-green-400",
@@ -304,6 +305,35 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sa_workshops"] });
       toast({ title: "Estado del taller actualizado" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const deleteWorkshop = useMutation({
+    mutationFn: async (id: string) => {
+      // Delete related data first
+      await supabase.from("brand_settings").delete().eq("workshop_id", id);
+      await supabase.from("daily_earnings").delete().eq("workshop_id", id);
+      await supabase.from("employee_loans").delete().eq("workshop_id", id);
+      await supabase.from("repairs").delete().eq("workshop_id", id);
+      await supabase.from("repair_types").delete().eq("workshop_id", id);
+      await supabase.from("employees").delete().eq("workshop_id", id);
+      await supabase.from("payment_requests").delete().eq("workshop_id", id);
+      // Unlink profiles
+      await supabase.from("profiles").update({ workshop_id: null }).eq("workshop_id", id);
+      // Finally delete workshop
+      const { error } = await supabase.from("workshops").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sa_workshops"] });
+      setDeletingWsId(null);
+      toast({ title: "Taller eliminado correctamente" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Error al eliminar", description: err.message, variant: "destructive" });
     },
   });
 
@@ -358,6 +388,14 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
                       >
                         {ws.subscription_status === "paused" ? <Play className="h-4 w-4 text-green-400" /> : <Pause className="h-4 w-4 text-orange-400" />}
                       </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setDeletingWsId(ws.id)}
+                        title="Eliminar taller"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-400" />
+                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -371,6 +409,25 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
           </Table>
         </CardContent>
       </Card>
+
+      {/* Delete Workshop Confirmation Dialog */}
+      <Dialog open={!!deletingWsId} onOpenChange={(open) => !open && setDeletingWsId(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-400">⚠️ Eliminar Taller</DialogTitle>
+            <DialogDescription>
+              Esta acción es irreversible. Se eliminarán todas las reparaciones, empleados, ganancias y configuraciones asociadas a este taller.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setDeletingWsId(null)}>Cancelar</Button>
+            <Button variant="destructive" onClick={() => deletingWsId && deleteWorkshop.mutate(deletingWsId)}>
+              <Trash2 className="h-4 w-4 mr-1.5" />
+              Eliminar definitivamente
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Workshop Dialog */}
       <Dialog open={!!editingWs} onOpenChange={(open) => !open && setEditingWs(null)}>
