@@ -32,12 +32,16 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
     );
   }
 
-  // Check if workshop subscription is active or in trial
-  if (workshop.is_active) return <>{children}</>;
-  
   const status = workshop.subscription_status;
-  if (status === "active") return <>{children}</>;
+
+  // Active paid subscription
+  if (status === "active") {
+    const subEnd = workshop.subscription_ends_at ? new Date(workshop.subscription_ends_at) : null;
+    // If no end date set, or end date is in the future, allow access
+    if (!subEnd || subEnd > new Date()) return <>{children}</>;
+  }
   
+  // Trial subscription — only allow if trial hasn't expired
   if (status === "trial") {
     const trialEnd = workshop.trial_ends_at ? new Date(workshop.trial_ends_at) : null;
     if (trialEnd && trialEnd > new Date()) return <>{children}</>;
