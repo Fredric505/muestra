@@ -22,6 +22,10 @@ import Income from "./pages/Income";
 import Employees from "./pages/Employees";
 import MyEarnings from "./pages/MyEarnings";
 import Settings from "./pages/Settings";
+import Products from "./pages/Products";
+import Sales from "./pages/Sales";
+import NewSale from "./pages/NewSale";
+import ExportData from "./pages/ExportData";
 import SuperAdminDashboard from "./pages/SuperAdminDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -64,11 +68,15 @@ const App = () => (
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="repairs/new" element={<NewRepair />} />
                 <Route path="repairs" element={<Repairs />} />
+                <Route path="sales" element={<Sales />} />
+                <Route path="sales/new" element={<NewSale />} />
+                <Route path="products" element={<Products />} />
                 <Route path="history" element={<History />} />
                 <Route path="income" element={<Income />} />
                 <Route path="employees" element={<Employees />} />
                 <Route path="my-earnings" element={<MyEarnings />} />
                 <Route path="settings" element={<Settings />} />
+                <Route path="export" element={<ExportData />} />
               </Route>
 
               {/* Super Admin */}

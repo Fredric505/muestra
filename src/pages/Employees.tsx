@@ -82,6 +82,8 @@ const Employees = () => {
   const [employeePassword, setEmployeePassword] = useState("");
   const [commissionRate, setCommissionRate] = useState("");
   const [baseSalary, setBaseSalary] = useState("");
+  const [employeeType, setEmployeeType] = useState<"technician" | "seller">("technician");
+  const [compensationType, setCompensationType] = useState("commission");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isCreatingEmployee, setIsCreatingEmployee] = useState(false);
   
@@ -134,6 +136,8 @@ const Employees = () => {
           fullName: employeeName,
           commissionRate: parseFloat(commissionRate),
           baseSalary: parseFloat(baseSalary) || 0,
+          employeeType,
+          compensationType,
         },
       });
 
@@ -157,6 +161,8 @@ const Employees = () => {
       setEmployeePassword("");
       setCommissionRate("");
       setBaseSalary("");
+      setEmployeeType("technician");
+      setCompensationType("commission");
     } catch (error: unknown) {
       console.error("Error adding employee:", error);
       const errorMessage = error instanceof Error ? error.message : "No se pudo crear el empleado";
@@ -458,6 +464,33 @@ const Employees = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
+                    <Label>Tipo de empleado *</Label>
+                    <Select value={employeeType} onValueChange={(v: "technician" | "seller") => setEmployeeType(v)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="technician">🔧 Técnico</SelectItem>
+                        <SelectItem value="seller">🛒 Vendedor</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Compensación</Label>
+                    <Select value={compensationType} onValueChange={setCompensationType}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="commission">Solo comisión</SelectItem>
+                        <SelectItem value="fixed">Solo salario fijo</SelectItem>
+                        <SelectItem value="both">Salario + comisión</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
                     <Label>Comisión (%) *</Label>
                     <Input
                       type="number"
@@ -524,11 +557,12 @@ const Employees = () => {
               ) : (
                 <Table>
                   <TableHeader>
-                    <TableRow>
+                     <TableRow>
                       <TableHead>Nombre</TableHead>
+                      <TableHead>Tipo</TableHead>
                       <TableHead>Comisión</TableHead>
                       <TableHead>Salario Base</TableHead>
-                      <TableHead>Rentabilidad</TableHead>
+                      <TableHead>Compensación</TableHead>
                       <TableHead>Fecha Ingreso</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead className="text-right">Acciones</TableHead>
@@ -536,11 +570,17 @@ const Employees = () => {
                   </TableHeader>
                   <TableBody>
                     {employees.filter(e => e.is_active).map((employee) => {
-                      const profitability = calculateProfitability(employee);
+                      const empType = (employee as any).employee_type;
+                      const compType = (employee as any).compensation_type;
                       return (
                         <TableRow key={employee.id}>
                           <TableCell className="font-medium">
                             {employee.profiles?.full_name || "Sin nombre"}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant={empType === "seller" ? "outline" : "secondary"}>
+                              {empType === "seller" ? "🛒 Vendedor" : "🔧 Técnico"}
+                            </Badge>
                           </TableCell>
                           <TableCell>
                             <Badge variant="secondary" className="bg-primary/20 text-primary">
@@ -551,26 +591,9 @@ const Employees = () => {
                             ${employee.base_salary?.toFixed(2) || "0.00"}
                           </TableCell>
                           <TableCell>
-                            {profitability.monthlyBase > 0 ? (
-                              <div className="flex items-center gap-2">
-                                {profitability.coversBase ? (
-                                  <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                                    <TrendingUp className="h-3 w-3 mr-1" />
-                                    Rentable
-                                  </Badge>
-                                ) : (
-                                  <Badge className="bg-red-500/20 text-red-400 border-red-500/30">
-                                    <TrendingDown className="h-3 w-3 mr-1" />
-                                    Déficit
-                                  </Badge>
-                                )}
-                                <span className="text-xs text-muted-foreground">
-                                  ${profitability.monthlyCommission.toFixed(0)} / ${(profitability.monthlyBase / 2).toFixed(0)}
-                                </span>
-                              </div>
-                            ) : (
-                              <span className="text-muted-foreground text-sm">Solo comisión</span>
-                            )}
+                            <Badge variant="outline" className="text-xs">
+                              {compType === "both" ? "Salario + Comisión" : compType === "fixed" ? "Solo Salario" : "Solo Comisión"}
+                            </Badge>
                           </TableCell>
                           <TableCell>
                             {format(parseISO(employee.hired_at), "dd MMM yyyy", {

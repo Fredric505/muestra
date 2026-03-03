@@ -99,7 +99,7 @@ serve(async (req) => {
     }
 
     // Get request body
-    const { email, password, fullName, commissionRate, baseSalary } = await req.json();
+    const { email, password, fullName, commissionRate, baseSalary, employeeType, compensationType } = await req.json();
 
     if (!email || !password || !fullName || commissionRate === undefined) {
       return new Response(
@@ -207,16 +207,17 @@ serve(async (req) => {
       .update({ workshop_id: callerWorkshopId })
       .eq("user_id", newUserId);
 
-    // 4. Add technician role
+    // 4. Add role based on employee type
+    const roleToAssign = employeeType === "seller" ? "technician" : "technician"; // Both use technician role for RLS
     const { error: roleError } = await supabaseAdmin
       .from("user_roles")
-      .insert({ user_id: newUserId, role: "technician" });
+      .insert({ user_id: newUserId, role: roleToAssign });
 
     if (roleError) {
       console.error("Error creating role:", roleError);
     }
 
-    // 5. Create employee record with workshop_id
+    // 5. Create employee record with workshop_id and type
     const { data: employeeData, error: employeeError } = await supabaseAdmin
       .from("employees")
       .insert({
@@ -225,6 +226,8 @@ serve(async (req) => {
         monthly_commission_rate: commissionRate,
         base_salary: baseSalary || 0,
         workshop_id: callerWorkshopId,
+        employee_type: employeeType || "technician",
+        compensation_type: compensationType || "commission",
       })
       .select()
       .single();

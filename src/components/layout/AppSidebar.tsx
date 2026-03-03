@@ -10,6 +10,9 @@ import {
   TrendingUp,
   Settings,
   Cog,
+  ShoppingBag,
+  Package,
+  FileDown,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import {
@@ -35,12 +38,15 @@ const menuItems = [
   { title: "Dashboard", url: "/panel/dashboard", icon: LayoutDashboard },
   { title: "Nueva Reparación", url: "/panel/repairs/new", icon: PlusCircle },
   { title: "Reparaciones", url: "/panel/repairs", icon: Wrench },
+  { title: "Ventas", url: "/panel/sales", icon: ShoppingBag },
   { title: "Historial", url: "/panel/history", icon: History },
   { title: "Ingresos", url: "/panel/income", icon: DollarSign },
 ];
 
 const adminItems = [
+  { title: "Inventario", url: "/panel/products", icon: Package },
   { title: "Empleados", url: "/panel/employees", icon: Users },
+  { title: "Exportar Datos", url: "/panel/export", icon: FileDown },
   { title: "Configuración", url: "/panel/settings", icon: Cog },
 ];
 
