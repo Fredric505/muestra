@@ -173,7 +173,9 @@ export type Database = {
       employees: {
         Row: {
           base_salary: number | null
+          compensation_type: string
           created_at: string
+          employee_type: Database["public"]["Enums"]["employee_type"]
           hired_at: string | null
           id: string
           is_active: boolean | null
@@ -185,7 +187,9 @@ export type Database = {
         }
         Insert: {
           base_salary?: number | null
+          compensation_type?: string
           created_at?: string
+          employee_type?: Database["public"]["Enums"]["employee_type"]
           hired_at?: string | null
           id?: string
           is_active?: boolean | null
@@ -197,7 +201,9 @@ export type Database = {
         }
         Update: {
           base_salary?: number | null
+          compensation_type?: string
           created_at?: string
+          employee_type?: Database["public"]["Enums"]["employee_type"]
           hired_at?: string | null
           id?: string
           is_active?: boolean | null
@@ -411,6 +417,71 @@ export type Database = {
         }
         Relationships: []
       }
+      products: {
+        Row: {
+          category: string
+          condition: string
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          notes: string | null
+          photo_url: string | null
+          purchase_price: number | null
+          selling_price: number
+          stock: number
+          updated_at: string
+          warranty_days: number | null
+          workshop_id: string | null
+        }
+        Insert: {
+          category?: string
+          condition?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          notes?: string | null
+          photo_url?: string | null
+          purchase_price?: number | null
+          selling_price?: number
+          stock?: number
+          updated_at?: string
+          warranty_days?: number | null
+          workshop_id?: string | null
+        }
+        Update: {
+          category?: string
+          condition?: string
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          notes?: string | null
+          photo_url?: string | null
+          purchase_price?: number | null
+          selling_price?: number
+          stock?: number
+          updated_at?: string
+          warranty_days?: number | null
+          workshop_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -589,6 +660,202 @@ export type Database = {
           },
         ]
       }
+      sale_earnings: {
+        Row: {
+          commission_earned: number
+          created_at: string
+          currency: string
+          earnings_date: string
+          employee_id: string
+          id: string
+          net_profit: number
+          product_cost: number
+          sale_amount: number
+          sale_id: string
+          workshop_id: string | null
+        }
+        Insert: {
+          commission_earned?: number
+          created_at?: string
+          currency?: string
+          earnings_date?: string
+          employee_id: string
+          id?: string
+          net_profit?: number
+          product_cost?: number
+          sale_amount?: number
+          sale_id: string
+          workshop_id?: string | null
+        }
+        Update: {
+          commission_earned?: number
+          created_at?: string
+          currency?: string
+          earnings_date?: string
+          employee_id?: string
+          id?: string
+          net_profit?: number
+          product_cost?: number
+          sale_amount?: number
+          sale_id?: string
+          workshop_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_earnings_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sale_earnings_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: true
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sale_earnings_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sale_items: {
+        Row: {
+          condition: string | null
+          condition_notes: string | null
+          created_at: string
+          device_photo_url: string | null
+          id: string
+          product_id: string | null
+          product_name: string
+          quantity: number
+          sale_id: string
+          unit_price: number
+          warranty_days: number | null
+        }
+        Insert: {
+          condition?: string | null
+          condition_notes?: string | null
+          created_at?: string
+          device_photo_url?: string | null
+          id?: string
+          product_id?: string | null
+          product_name: string
+          quantity?: number
+          sale_id: string
+          unit_price?: number
+          warranty_days?: number | null
+        }
+        Update: {
+          condition?: string | null
+          condition_notes?: string | null
+          created_at?: string
+          device_photo_url?: string | null
+          id?: string
+          product_id?: string | null
+          product_name?: string
+          quantity?: number
+          sale_id?: string
+          unit_price?: number
+          warranty_days?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sale_items_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sale_items_sale_id_fkey"
+            columns: ["sale_id"]
+            isOneToOne: false
+            referencedRelation: "sales"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sales: {
+        Row: {
+          admin_notes: string | null
+          cost_registered_at: string | null
+          cost_registered_by: string | null
+          created_at: string
+          created_by: string
+          currency: string
+          customer_name: string
+          customer_phone: string | null
+          id: string
+          notes: string | null
+          product_cost: number | null
+          sale_date: string
+          seller_id: string | null
+          status: string
+          total_amount: number
+          updated_at: string
+          workshop_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          cost_registered_at?: string | null
+          cost_registered_by?: string | null
+          created_at?: string
+          created_by: string
+          currency?: string
+          customer_name: string
+          customer_phone?: string | null
+          id?: string
+          notes?: string | null
+          product_cost?: number | null
+          sale_date?: string
+          seller_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          workshop_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          cost_registered_at?: string | null
+          cost_registered_by?: string | null
+          created_at?: string
+          created_by?: string
+          currency?: string
+          customer_name?: string
+          customer_phone?: string | null
+          id?: string
+          notes?: string | null
+          product_cost?: number | null
+          sale_date?: string
+          seller_id?: string | null
+          status?: string
+          total_amount?: number
+          updated_at?: string
+          workshop_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_seller_id_fkey"
+            columns: ["seller_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -689,6 +956,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "technician" | "super_admin"
+      employee_type: "technician" | "seller"
       repair_status:
         | "received"
         | "in_progress"
@@ -823,6 +1091,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "technician", "super_admin"],
+      employee_type: ["technician", "seller"],
       repair_status: [
         "received",
         "in_progress",
