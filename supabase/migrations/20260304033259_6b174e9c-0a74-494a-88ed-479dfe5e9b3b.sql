@@ -1,0 +1,1 @@
+ALTER TABLE public.workshops ADD COLUMN currency text NOT NULL DEFAULT 'USD';
