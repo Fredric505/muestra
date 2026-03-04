@@ -13,6 +13,8 @@ export interface Employee {
   hired_at: string;
   created_at: string;
   updated_at: string;
+  employee_type: "technician" | "seller";
+  compensation_type: string;
   profiles?: {
     id: string;
     full_name: string;
