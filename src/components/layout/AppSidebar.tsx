@@ -34,13 +34,17 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ProfileEditDialog } from "@/components/ProfileEditDialog";
 
-const menuItems = [
-  { title: "Dashboard", url: "/panel/dashboard", icon: LayoutDashboard },
+// Items visible to admins and technicians (repair-related)
+const repairMenuItems = [
   { title: "Nueva Reparación", url: "/panel/repairs/new", icon: PlusCircle },
   { title: "Reparaciones", url: "/panel/repairs", icon: Wrench },
-  { title: "Ventas", url: "/panel/sales", icon: ShoppingBag },
   { title: "Historial", url: "/panel/history", icon: History },
   { title: "Ingresos", url: "/panel/income", icon: DollarSign },
+];
+
+// Items visible to admins and sellers (sales-related)
+const salesMenuItems = [
+  { title: "Ventas", url: "/panel/sales", icon: ShoppingBag },
 ];
 
 const adminItems = [
@@ -57,9 +61,18 @@ const employeeItems = [
 export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
-  const { signOut, profile, isAdmin, isSuperAdmin } = useAuth();
+  const { signOut, profile, isAdmin, isSuperAdmin, employeeType } = useAuth();
   const { brand, defaultLogoUrl } = useBrand();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+
+  // Build menu items based on role
+  const isAdminOrSuper = isAdmin || isSuperAdmin;
+  const menuItems = [
+    { title: "Dashboard", url: "/panel/dashboard", icon: LayoutDashboard },
+    // Admins see everything; technicians see repairs; sellers see sales
+    ...(isAdminOrSuper || employeeType === "technician" ? repairMenuItems : []),
+    ...(isAdminOrSuper || employeeType === "seller" ? salesMenuItems : []),
+  ];
 
   const logoUrl = brand.logo_url || defaultLogoUrl;
 
@@ -194,7 +207,7 @@ export function AppSidebar() {
                   {profile?.full_name || "Usuario"}
                 </p>
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
-                  {isSuperAdmin ? "Super Admin" : isAdmin ? "Administrador" : "Técnico"}
+                  {isSuperAdmin ? "Super Admin" : isAdmin ? "Administrador" : employeeType === "seller" ? "Vendedor" : "Técnico"}
                   <Settings className="h-3 w-3" />
                 </p>
               </button>

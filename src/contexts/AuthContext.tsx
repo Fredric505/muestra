@@ -15,6 +15,7 @@ interface WorkshopInfo {
   whatsapp: string | null;
   email: string | null;
   logo_url: string | null;
+  currency: string;
 }
 
 interface AuthContextType {
@@ -23,6 +24,7 @@ interface AuthContextType {
   isLoading: boolean;
   isAdmin: boolean;
   isSuperAdmin: boolean;
+  employeeType: "technician" | "seller" | null;
   profile: { id: string; full_name: string; avatar_url: string | null } | null;
   workshop: WorkshopInfo | null;
   workshopId: string | null;
@@ -49,6 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [profile, setProfile] = useState<{ id: string; full_name: string; avatar_url: string | null } | null>(null);
   const [workshop, setWorkshop] = useState<WorkshopInfo | null>(null);
+  const [employeeType, setEmployeeType] = useState<"technician" | "seller" | null>(null);
 
   const fetchUserData = async (userId: string) => {
     try {
@@ -71,6 +74,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsAdmin(roles.includes("admin"));
       setIsSuperAdmin(roles.includes("super_admin"));
 
+      // Fetch employee type if not admin
+      if (!roles.includes("admin") && !roles.includes("super_admin")) {
+        const { data: empData } = await supabase
+          .from("employees")
+          .select("employee_type")
+          .eq("user_id", userId)
+          .maybeSingle();
+        setEmployeeType(empData?.employee_type as "technician" | "seller" | null);
+      } else {
+        setEmployeeType(null);
+      }
+
       if (profileData?.workshop_id) {
         const { data: wsData } = await supabase
           .from("workshops")
@@ -78,7 +93,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .eq("id", profileData.workshop_id)
           .maybeSingle();
         if (wsData) {
-          setWorkshop(wsData);
+          setWorkshop({ ...wsData, currency: (wsData as any).currency || "USD" });
         }
       }
     } catch (error) {
@@ -106,6 +121,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsAdmin(false);
           setIsSuperAdmin(false);
           setWorkshop(null);
+          setEmployeeType(null);
         }
       }
     );
@@ -161,11 +177,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setWorkshop(null);
     setIsAdmin(false);
     setIsSuperAdmin(false);
+    setEmployeeType(null);
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, session, isLoading, isAdmin, isSuperAdmin, profile, workshop, workshopId: workshop?.id || null, signIn, signUp, signOut }}
+      value={{ user, session, isLoading, isAdmin, isSuperAdmin, employeeType, profile, workshop, workshopId: workshop?.id || null, signIn, signUp, signOut }}
     >
       {children}
     </AuthContext.Provider>

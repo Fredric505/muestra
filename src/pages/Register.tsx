@@ -15,6 +15,7 @@ const Register = () => {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState("");
+  const [selectedCurrency, setSelectedCurrency] = useState("");
 
   const { data: plans } = useQuery({
     queryKey: ["public_plans"],
@@ -61,6 +62,8 @@ const Register = () => {
       const selectedPlan = plans?.find((p) => p.id === selectedPlanId);
       const hasTrial = selectedPlan?.has_free_trial;
 
+      const workshopCurrency = selectedCurrency || "USD";
+      
       const { error: wsError } = await supabase.from("workshops").insert({
         owner_id: userId,
         name: workshopName,
@@ -68,11 +71,12 @@ const Register = () => {
         whatsapp,
         email,
         address,
+        currency: workshopCurrency,
         plan_id: selectedPlanId || null,
         subscription_status: hasTrial ? "trial" : "pending",
         trial_ends_at: hasTrial ? new Date(Date.now() + (selectedPlan?.trial_days || 7) * 86400000).toISOString() : null,
         is_active: hasTrial ? true : false,
-      });
+      } as any);
 
       if (wsError) throw wsError;
 
@@ -194,21 +198,47 @@ const Register = () => {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Plan</Label>
-                <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
-                  <SelectTrigger className="bg-white/5 border-white/10">
-                    <SelectValue placeholder="Selecciona un plan" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {plans?.map((plan) => (
-                      <SelectItem key={plan.id} value={plan.id}>
-                        {plan.name} - {(plan as any).currency === "USD" ? "$" : "C$"}{plan.monthly_price}/mes
-                        {plan.has_free_trial && ` (${plan.trial_days} días gratis)`}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Moneda del taller</Label>
+                  <Select value={selectedCurrency} onValueChange={setSelectedCurrency} required>
+                    <SelectTrigger className="bg-white/5 border-white/10">
+                      <SelectValue placeholder="Selecciona tu moneda" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="USD">🇺🇸 USD - Dólar estadounidense</SelectItem>
+                      <SelectItem value="NIO">🇳🇮 NIO - Córdoba nicaragüense</SelectItem>
+                      <SelectItem value="HNL">🇭🇳 HNL - Lempira hondureño</SelectItem>
+                      <SelectItem value="GTQ">🇬🇹 GTQ - Quetzal guatemalteco</SelectItem>
+                      <SelectItem value="CRC">🇨🇷 CRC - Colón costarricense</SelectItem>
+                      <SelectItem value="PAB">🇵🇦 PAB - Balboa panameño</SelectItem>
+                      <SelectItem value="MXN">🇲🇽 MXN - Peso mexicano</SelectItem>
+                      <SelectItem value="COP">🇨🇴 COP - Peso colombiano</SelectItem>
+                      <SelectItem value="PEN">🇵🇪 PEN - Sol peruano</SelectItem>
+                      <SelectItem value="ARS">🇦🇷 ARS - Peso argentino</SelectItem>
+                      <SelectItem value="CLP">🇨🇱 CLP - Peso chileno</SelectItem>
+                      <SelectItem value="BRL">🇧🇷 BRL - Real brasileño</SelectItem>
+                      <SelectItem value="EUR">🇪🇺 EUR - Euro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Plan</Label>
+                  <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
+                    <SelectTrigger className="bg-white/5 border-white/10">
+                      <SelectValue placeholder="Selecciona un plan" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {plans?.map((plan) => (
+                        <SelectItem key={plan.id} value={plan.id}>
+                          {plan.name} - {(plan as any).currency === "USD" ? "$" : "C$"}{plan.monthly_price}/mes
+                          {plan.has_free_trial && ` (${plan.trial_days} días gratis)`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <Button type="submit" disabled={isSubmitting} className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-full">
