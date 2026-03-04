@@ -89,11 +89,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (profileData?.workshop_id) {
         const { data: wsData } = await supabase
           .from("workshops")
-          .select("id, name, subscription_status, is_active, trial_ends_at, subscription_ends_at, plan_id, phone, address, whatsapp, email, logo_url")
+          .select("id, name, subscription_status, is_active, trial_ends_at, subscription_ends_at, plan_id, phone, address, whatsapp, email, logo_url, currency")
           .eq("id", profileData.workshop_id)
           .maybeSingle();
         if (wsData) {
-          setWorkshop({ ...wsData, currency: (wsData as any).currency || "USD" });
+          setWorkshop({ ...wsData, currency: wsData.currency || "USD" });
         }
       }
     } catch (error) {

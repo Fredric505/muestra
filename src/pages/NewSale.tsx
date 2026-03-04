@@ -187,49 +187,30 @@ const NewSale = () => {
 
   const handlePrintInvoice = () => {
     if (!savedSale) return;
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    if (!printWindow) return;
-    printWindow.document.write(`<!DOCTYPE html><html><head><title>Factura - ${brand.business_name}</title>
-      <style>
-        @media print { body { margin: 0; } }
-        body { font-family: Arial, sans-serif; padding: 30px; color: #333; max-width: 700px; margin: 0 auto; }
-        .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
-        .header h1 { margin: 0; font-size: 22px; }
-        .header p { margin: 4px 0; color: #666; font-size: 13px; }
-        .header img { max-height: 60px; margin: 0 auto 10px; display: block; }
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-        .info-box { background: #f9f9f9; padding: 12px; border-radius: 6px; }
-        .info-box h3 { margin: 0 0 8px 0; font-size: 13px; color: #666; text-transform: uppercase; }
-        .info-box p { margin: 3px 0; font-size: 14px; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background: #f0f0f0; font-size: 13px; }
-        .totals { text-align: right; margin-top: 20px; }
-        .totals .total { font-size: 18px; font-weight: bold; border-top: 2px solid #333; padding-top: 8px; }
-        .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 15px; }
-      </style></head><body>
-      <div class="header">
-        ${workshop?.logo_url ? `<img src="${workshop.logo_url}" alt="${brand.business_name}" />` : ''}
-        <h1>${brand.business_name}</h1>
-        ${brand.tagline ? `<p>${brand.tagline}</p>` : ''}
-        ${workshop?.address ? `<p>📍 ${workshop.address}</p>` : ''}
-        ${workshop?.phone ? `<p>📞 ${workshop.phone}</p>` : ''}
-        <p>Factura de Venta</p>
-      </div>
-      <div class="info-grid">
-        <div class="info-box"><h3>Cliente</h3><p><strong>${savedSale.customerName}</strong></p>${savedSale.customerPhone ? `<p>${savedSale.customerPhone}</p>` : ''}</div>
-        <div class="info-box"><h3>Detalles</h3><p>Fecha: ${new Date().toLocaleDateString('es-NI')}</p><p>ID: ${savedSale.id.slice(0, 8).toUpperCase()}</p></div>
-      </div>
-      <table>
-        <thead><tr><th>Producto</th><th>Condición</th><th>Garantía</th><th>Cant.</th><th style="text-align:right">Precio</th></tr></thead>
-        <tbody>${savedSale.items.map((i: SaleItemForm) => `<tr><td>${i.product_name}${i.condition_notes ? `<br><small>${i.condition_notes}</small>` : ''}</td><td>${i.condition}</td><td>${i.warranty_days} días</td><td>${i.quantity}</td><td style="text-align:right">${symbol}${(i.unit_price * i.quantity).toFixed(2)}</td></tr>`).join('')}</tbody>
-      </table>
-      <div class="totals"><p class="total">Total: ${symbol}${savedSale.total.toFixed(2)}</p></div>
-      <div class="footer"><p>Gracias por su compra · ${brand.business_name}</p><p>Conserve esta factura como garantía</p></div>
-      </body></html>`);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
+    const { printLetterInvoice, printTicketInvoice } = require("@/lib/invoiceUtils");
+    const saleForPrint = {
+      id: savedSale.id,
+      customer_name: savedSale.customerName,
+      customer_phone: savedSale.customerPhone,
+      sale_date: new Date().toISOString(),
+      total_amount: savedSale.total,
+      currency,
+      sale_items: savedSale.items.map((i: SaleItemForm) => ({
+        product_name: i.product_name,
+        quantity: i.quantity,
+        unit_price: i.unit_price,
+        condition: i.condition,
+        warranty_days: i.warranty_days,
+        condition_notes: i.condition_notes,
+        device_photo_url: i.photo_preview,
+      })),
+    };
+    const hasDevices = savedSale.items.some((i: SaleItemForm) => i.condition === "usado" || i.warranty_days > 30);
+    if (hasDevices) {
+      printLetterInvoice(saleForPrint, brand, workshop);
+    } else {
+      printTicketInvoice(saleForPrint, brand, workshop);
+    }
   };
 
   const availableProducts = products.filter(p => p.is_active && p.stock > 0);

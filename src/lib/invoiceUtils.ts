@@ -1,0 +1,360 @@
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+
+interface SaleForInvoice {
+  id: string;
+  customer_name: string;
+  customer_phone?: string | null;
+  sale_date: string;
+  total_amount: number;
+  currency: string;
+  sale_items?: {
+    product_name: string;
+    quantity: number;
+    unit_price: number;
+    condition?: string | null;
+    warranty_days?: number | null;
+    condition_notes?: string | null;
+    device_photo_url?: string | null;
+  }[];
+}
+
+interface BrandInfo {
+  business_name: string;
+  tagline?: string | null;
+  logo_url?: string | null;
+}
+
+interface WorkshopInfo {
+  phone?: string | null;
+  address?: string | null;
+  whatsapp?: string | null;
+  email?: string | null;
+  logo_url?: string | null;
+  currency?: string;
+}
+
+const getCurrencySymbol = (currency: string) => {
+  const map: Record<string, string> = {
+    USD: "$", NIO: "C$", MXN: "$", COP: "$", ARS: "$", PEN: "S/", CRC: "₡",
+    GTQ: "Q", HNL: "L", PAB: "B/.", DOP: "RD$", BOB: "Bs", EUR: "€",
+  };
+  return map[currency] || currency;
+};
+
+/** Letter-size invoice for phones/repairs — with seal/signature spaces */
+export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null) => {
+  const symbol = getCurrencySymbol(sale.currency);
+  const items = sale.sale_items || [];
+  const w = window.open('', '_blank', 'width=900,height=700');
+  if (!w) return;
+
+  w.document.write(`<!DOCTYPE html><html><head><title>Factura ${sale.id.slice(0, 8).toUpperCase()}</title>
+<style>
+  @page { size: letter; margin: 15mm; }
+  @media print { body { margin: 0; } .no-print { display: none; } }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; padding: 30px; max-width: 800px; margin: 0 auto; font-size: 13px; }
+  .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #222; padding-bottom: 16px; margin-bottom: 20px; }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .header-left img { max-height: 65px; border-radius: 8px; }
+  .header-left h1 { font-size: 22px; margin: 0; }
+  .header-left p { color: #666; font-size: 12px; margin: 2px 0; }
+  .header-right { text-align: right; font-size: 12px; color: #555; }
+  .header-right .inv-num { font-size: 18px; font-weight: bold; color: #222; }
+  .section { margin-bottom: 18px; }
+  .section-title { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .info-box { background: #f7f7f7; padding: 14px; border-radius: 8px; }
+  .info-box p { margin: 3px 0; font-size: 13px; }
+  .info-box strong { font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  thead th { background: #333; color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  thead th:last-child { text-align: right; }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; font-size: 13px; }
+  tbody td:last-child { text-align: right; font-weight: 600; }
+  tbody tr:nth-child(even) { background: #fafafa; }
+  .totals { display: flex; justify-content: flex-end; margin: 10px 0 30px; }
+  .totals-box { min-width: 250px; }
+  .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+  .totals-row.total { border-top: 3px solid #222; padding-top: 10px; margin-top: 6px; font-size: 18px; font-weight: bold; }
+  .photos { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+  .photos img { max-width: 180px; max-height: 180px; border-radius: 8px; border: 1px solid #ddd; object-fit: cover; }
+  .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 50px; }
+  .sig-box { text-align: center; }
+  .sig-line { border-top: 2px solid #222; margin-top: 60px; padding-top: 8px; }
+  .sig-label { font-size: 12px; color: #666; }
+  .warranty-box { background: #f0f9f0; border: 1px solid #c3e6c3; border-radius: 8px; padding: 14px; margin: 20px 0; text-align: center; }
+  .warranty-box strong { color: #2d7a2d; }
+  .footer { text-align: center; margin-top: 30px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 11px; color: #999; }
+  .stamp-area { display: flex; justify-content: center; margin-top: 20px; }
+  .stamp-box { width: 140px; height: 140px; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 11px; }
+</style></head><body>
+
+<div class="header">
+  <div class="header-left">
+    ${(workshop?.logo_url || brand.logo_url) ? `<img src="${workshop?.logo_url || brand.logo_url}" alt="${brand.business_name}" />` : ''}
+    <div>
+      <h1>${brand.business_name}</h1>
+      ${brand.tagline ? `<p>${brand.tagline}</p>` : ''}
+      ${workshop?.address ? `<p>📍 ${workshop.address}</p>` : ''}
+      ${workshop?.phone ? `<p>📞 ${workshop.phone}</p>` : ''}
+      ${workshop?.email ? `<p>✉ ${workshop.email}</p>` : ''}
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="inv-num">FACTURA</div>
+    <div style="font-size:16px; font-weight:bold; margin:4px 0;">#${sale.id.slice(0, 8).toUpperCase()}</div>
+    <div>Fecha: ${format(new Date(sale.sale_date), "dd/MM/yyyy", { locale: es })}</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="info-grid">
+    <div class="info-box">
+      <div class="section-title">Datos del Cliente</div>
+      <p><strong>${sale.customer_name}</strong></p>
+      ${sale.customer_phone ? `<p>📞 ${sale.customer_phone}</p>` : ''}
+    </div>
+    <div class="info-box">
+      <div class="section-title">Información de Venta</div>
+      <p>Fecha: ${format(new Date(sale.sale_date), "dd 'de' MMMM 'de' yyyy", { locale: es })}</p>
+      <p>Factura: #${sale.id.slice(0, 8).toUpperCase()}</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">Detalle de Productos</div>
+  <table>
+    <thead><tr><th>#</th><th>Descripción</th><th>Condición</th><th>Garantía</th><th>Cant.</th><th>Precio Unit.</th><th>Subtotal</th></tr></thead>
+    <tbody>
+      ${items.map((item, i) => `<tr>
+        <td>${i + 1}</td>
+        <td>${item.product_name}${item.condition_notes ? `<br><small style="color:#888">${item.condition_notes}</small>` : ''}</td>
+        <td>${item.condition || 'N/A'}</td>
+        <td>${item.warranty_days || 0} días</td>
+        <td>${item.quantity}</td>
+        <td>${symbol}${item.unit_price.toFixed(2)}</td>
+        <td>${symbol}${(item.unit_price * item.quantity).toFixed(2)}</td>
+      </tr>`).join('')}
+    </tbody>
+  </table>
+</div>
+
+${items.some(i => i.device_photo_url) ? `<div class="section"><div class="section-title">Fotos del Equipo</div><div class="photos">${items.filter(i => i.device_photo_url).map(i => `<img src="${i.device_photo_url}" alt="${i.product_name}" />`).join('')}</div></div>` : ''}
+
+<div class="totals">
+  <div class="totals-box">
+    <div class="totals-row"><span>Subtotal:</span><span>${symbol}${sale.total_amount.toFixed(2)}</span></div>
+    <div class="totals-row total"><span>TOTAL:</span><span>${symbol}${sale.total_amount.toFixed(2)}</span></div>
+  </div>
+</div>
+
+${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warranty-box"><strong>GARANTÍA</strong><br>Los productos adquiridos cuentan con garantía según lo especificado en cada artículo. Conserve esta factura como comprobante.</div>` : ''}
+
+<div class="signatures">
+  <div class="sig-box"><div class="sig-line"><div class="sig-label">Firma del Cliente</div><div class="sig-label">${sale.customer_name}</div></div></div>
+  <div class="sig-box"><div class="sig-line"><div class="sig-label">Firma Autorizada</div><div class="sig-label">${brand.business_name}</div></div></div>
+</div>
+
+<div class="stamp-area"><div class="stamp-box">Sello del<br>Establecimiento</div></div>
+
+<div class="footer">
+  <p>${brand.business_name} · Gracias por su compra</p>
+  <p>Esta factura es un documento legal. Consérvela como garantía de su compra.</p>
+</div>
+
+</body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(() => { w.print(); }, 500);
+};
+
+/** Small ticket/receipt for accessories — supermarket style */
+export const printTicketInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null) => {
+  const symbol = getCurrencySymbol(sale.currency);
+  const items = sale.sale_items || [];
+  const w = window.open('', '_blank', 'width=400,height=600');
+  if (!w) return;
+
+  w.document.write(`<!DOCTYPE html><html><head><title>Ticket ${sale.id.slice(0, 8).toUpperCase()}</title>
+<style>
+  @page { size: 80mm auto; margin: 2mm; }
+  @media print { body { margin: 0; } }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Courier New', monospace; color: #000; padding: 8px; width: 76mm; font-size: 11px; }
+  .center { text-align: center; }
+  .bold { font-weight: bold; }
+  .divider { border-top: 1px dashed #000; margin: 6px 0; }
+  .header { text-align: center; margin-bottom: 8px; }
+  .header h1 { font-size: 14px; margin: 0; }
+  .header p { font-size: 10px; color: #444; margin: 1px 0; }
+  .row { display: flex; justify-content: space-between; padding: 2px 0; }
+  .item { padding: 3px 0; border-bottom: 1px dotted #ccc; }
+  .item-name { font-size: 11px; }
+  .item-detail { font-size: 10px; color: #555; }
+  .total-section { margin-top: 8px; padding-top: 6px; border-top: 2px solid #000; }
+  .total { font-size: 16px; font-weight: bold; text-align: right; }
+  .footer { text-align: center; margin-top: 10px; font-size: 9px; color: #888; }
+</style></head><body>
+
+<div class="header">
+  <h1>${brand.business_name}</h1>
+  ${brand.tagline ? `<p>${brand.tagline}</p>` : ''}
+  ${workshop?.address ? `<p>${workshop.address}</p>` : ''}
+  ${workshop?.phone ? `<p>Tel: ${workshop.phone}</p>` : ''}
+</div>
+
+<div class="divider"></div>
+
+<div class="center" style="margin-bottom:6px;">
+  <div class="bold">TICKET #${sale.id.slice(0, 8).toUpperCase()}</div>
+  <div style="font-size:10px;">${format(new Date(sale.sale_date), "dd/MM/yyyy HH:mm", { locale: es })}</div>
+</div>
+
+<div class="row"><span>Cliente:</span><span class="bold">${sale.customer_name}</span></div>
+${sale.customer_phone ? `<div class="row"><span>Tel:</span><span>${sale.customer_phone}</span></div>` : ''}
+
+<div class="divider"></div>
+
+${items.map(item => `<div class="item">
+  <div class="item-name">${item.product_name}</div>
+  <div class="row">
+    <span class="item-detail">${item.quantity} x ${symbol}${item.unit_price.toFixed(2)}</span>
+    <span class="bold">${symbol}${(item.unit_price * item.quantity).toFixed(2)}</span>
+  </div>
+  ${item.warranty_days && item.warranty_days > 0 ? `<div class="item-detail">Garantía: ${item.warranty_days} días</div>` : ''}
+</div>`).join('')}
+
+<div class="total-section">
+  <div class="row total"><span>TOTAL:</span><span>${symbol}${sale.total_amount.toFixed(2)}</span></div>
+</div>
+
+<div class="divider"></div>
+
+<div class="footer">
+  <p>Conserve este ticket como comprobante</p>
+  <p>Gracias por su compra</p>
+  <p>${brand.business_name}</p>
+  <p>- - - - - - - - - - - - - - - -</p>
+</div>
+
+</body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(() => { w.print(); }, 500);
+};
+
+/** Letter-size invoice for repairs */
+export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null) => {
+  const symbol = getCurrencySymbol(repair.currency || workshop?.currency || "USD");
+  const w = window.open('', '_blank', 'width=900,height=700');
+  if (!w) return;
+
+  w.document.write(`<!DOCTYPE html><html><head><title>Factura Reparación ${repair.id.slice(0, 8).toUpperCase()}</title>
+<style>
+  @page { size: letter; margin: 15mm; }
+  @media print { body { margin: 0; } }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; padding: 30px; max-width: 800px; margin: 0 auto; font-size: 13px; }
+  .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #222; padding-bottom: 16px; margin-bottom: 20px; }
+  .header-left { display: flex; align-items: center; gap: 16px; }
+  .header-left img { max-height: 65px; border-radius: 8px; }
+  .header-left h1 { font-size: 22px; }
+  .header-left p { color: #666; font-size: 12px; margin: 2px 0; }
+  .header-right { text-align: right; }
+  .header-right .inv-num { font-size: 18px; font-weight: bold; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .info-box { background: #f7f7f7; padding: 14px; border-radius: 8px; }
+  .info-box p { margin: 3px 0; font-size: 13px; }
+  .section-title { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+  thead th { background: #333; color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; }
+  thead th:last-child { text-align: right; }
+  tbody td { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; }
+  tbody td:last-child { text-align: right; font-weight: 600; }
+  .totals { display: flex; justify-content: flex-end; margin: 10px 0 30px; }
+  .totals-box { min-width: 250px; }
+  .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
+  .totals-row.total { border-top: 3px solid #222; padding-top: 10px; font-size: 18px; font-weight: bold; }
+  .warranty-box { background: #f0f9f0; border: 1px solid #c3e6c3; border-radius: 8px; padding: 14px; margin: 20px 0; text-align: center; }
+  .warranty-box strong { color: #2d7a2d; }
+  .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 50px; }
+  .sig-box { text-align: center; }
+  .sig-line { border-top: 2px solid #222; margin-top: 60px; padding-top: 8px; }
+  .sig-label { font-size: 12px; color: #666; }
+  .stamp-area { display: flex; justify-content: center; margin-top: 20px; }
+  .stamp-box { width: 140px; height: 140px; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 11px; }
+  .footer { text-align: center; margin-top: 30px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 11px; color: #999; }
+</style></head><body>
+
+<div class="header">
+  <div class="header-left">
+    ${(workshop?.logo_url || brand.logo_url) ? `<img src="${workshop?.logo_url || brand.logo_url}" alt="${brand.business_name}" />` : ''}
+    <div>
+      <h1>${brand.business_name}</h1>
+      ${brand.tagline ? `<p>${brand.tagline}</p>` : ''}
+      ${workshop?.address ? `<p>📍 ${workshop.address}</p>` : ''}
+      ${workshop?.phone ? `<p>📞 ${workshop.phone}</p>` : ''}
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="inv-num">ORDEN DE SERVICIO</div>
+    <div style="font-size:16px; font-weight:bold; margin:4px 0;">#${repair.id.slice(0, 8).toUpperCase()}</div>
+    <div style="font-size:12px; color:#555;">Fecha: ${format(new Date(repair.created_at), "dd/MM/yyyy", { locale: es })}</div>
+  </div>
+</div>
+
+<div class="info-grid">
+  <div class="info-box">
+    <div class="section-title">Datos del Cliente</div>
+    <p><strong>${repair.customer_name}</strong></p>
+    <p>📞 ${repair.customer_phone}</p>
+  </div>
+  <div class="info-box">
+    <div class="section-title">Dispositivo</div>
+    <p><strong>${repair.device_brand} ${repair.device_model}</strong></p>
+    ${repair.device_imei ? `<p>IMEI: ${repair.device_imei}</p>` : ''}
+  </div>
+</div>
+
+${repair.repair_description ? `<div class="info-box" style="margin-bottom:16px;"><div class="section-title">Descripción del Problema</div><p>${repair.repair_description}</p></div>` : ''}
+
+<table>
+  <thead><tr><th>Concepto</th><th>Detalle</th><th>Monto</th></tr></thead>
+  <tbody>
+    <tr><td>Servicio de Reparación</td><td>${repair.repair_types?.name || 'Reparación general'}</td><td>${symbol}${(repair.final_price || repair.estimated_price).toFixed(2)}</td></tr>
+    ${repair.deposit && repair.deposit > 0 ? `<tr><td>Anticipo recibido</td><td>—</td><td>-${symbol}${repair.deposit.toFixed(2)}</td></tr>` : ''}
+  </tbody>
+</table>
+
+<div class="totals">
+  <div class="totals-box">
+    <div class="totals-row"><span>Precio:</span><span>${symbol}${(repair.final_price || repair.estimated_price).toFixed(2)}</span></div>
+    ${repair.deposit && repair.deposit > 0 ? `<div class="totals-row"><span>Anticipo:</span><span>-${symbol}${repair.deposit.toFixed(2)}</span></div>` : ''}
+    <div class="totals-row total"><span>A PAGAR:</span><span>${symbol}${((repair.final_price || repair.estimated_price) - (repair.deposit || 0)).toFixed(2)}</span></div>
+  </div>
+</div>
+
+${repair.delivery_date ? `<div class="info-box" style="margin-bottom:16px;"><div class="section-title">Fecha de Entrega Estimada</div><p>${format(new Date(repair.delivery_date), "dd 'de' MMMM 'de' yyyy", { locale: es })}${repair.delivery_time ? ` a las ${repair.delivery_time}` : ''}</p></div>` : ''}
+
+<div class="warranty-box"><strong>GARANTÍA: ${repair.warranty_days || 0} DÍAS</strong><br>La garantía cubre defectos de la reparación realizada. No cubre daños físicos, líquidos o manipulación por terceros.</div>
+
+<div class="signatures">
+  <div class="sig-box"><div class="sig-line"><div class="sig-label">Firma del Cliente</div><div class="sig-label">${repair.customer_name}</div></div></div>
+  <div class="sig-box"><div class="sig-line"><div class="sig-label">Técnico Responsable</div><div class="sig-label">${brand.business_name}</div></div></div>
+</div>
+
+<div class="stamp-area"><div class="stamp-box">Sello del<br>Establecimiento</div></div>
+
+<div class="footer">
+  <p>${brand.business_name} · Servicio Técnico Profesional</p>
+  <p>Conserve este documento como comprobante de garantía</p>
+</div>
+
+</body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(() => { w.print(); }, 500);
+};
