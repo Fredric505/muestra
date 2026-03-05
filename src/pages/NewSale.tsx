@@ -121,8 +121,8 @@ const NewSale = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!customerName || items.some(i => !i.product_name || i.unit_price <= 0)) {
-      toast({ title: "Error", description: "Completa todos los campos requeridos", variant: "destructive" });
+    if (items.some(i => !i.product_name || i.unit_price <= 0)) {
+      toast({ title: "Error", description: "Completa los campos requeridos de cada producto", variant: "destructive" });
       return;
     }
     setIsSubmitting(true);
@@ -139,7 +139,7 @@ const NewSale = () => {
       }));
 
       const result = await createSale.mutateAsync({
-        customer_name: customerName,
+        customer_name: customerName || "Cliente General",
         customer_phone: customerPhone || undefined,
         total_amount: total,
         currency,
@@ -231,8 +231,8 @@ const NewSale = () => {
           <CardHeader><CardTitle className="text-lg flex items-center gap-2"><User className="h-5 w-5 text-primary" />Cliente</CardTitle></CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label>Nombre *</Label>
-              <Input placeholder="Juan Pérez" value={customerName} onChange={e => setCustomerName(e.target.value)} required />
+              <Label>Nombre (opcional para accesorios)</Label>
+              <Input placeholder="Juan Pérez" value={customerName} onChange={e => setCustomerName(e.target.value)} />
             </div>
             <div className="space-y-2">
               <Label>Teléfono</Label>

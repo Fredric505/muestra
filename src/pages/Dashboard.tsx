@@ -1,15 +1,18 @@
 import { useRepairs } from "@/hooks/useRepairs";
 import { useSales } from "@/hooks/useSales";
-import { useProducts } from "@/hooks/useProducts";
+import { useProducts, Product } from "@/hooks/useProducts";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Wrench, DollarSign, Clock, CheckCircle, TrendingUp, Package,
-  AlertCircle, Search, ShoppingBag, Image as ImageIcon,
+  AlertCircle, Search, ShoppingBag, Image as ImageIcon, Plus,
 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import QuickSaleDialog from "@/components/QuickSaleDialog";
 import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, startOfDay, endOfDay } from "date-fns";
 import { es } from "date-fns/locale";
 import {
@@ -31,6 +34,20 @@ const Dashboard = () => {
   const { sales, isLoading: salesLoading } = useSales();
   const { products } = useProducts();
   const [productSearch, setProductSearch] = useState("");
+  const [quickSaleOpen, setQuickSaleOpen] = useState(false);
+  const [quickSaleProduct, setQuickSaleProduct] = useState<Product | null>(null);
+  const navigate = useNavigate();
+
+  const handleProductClick = (product: Product) => {
+    // Accessories (not phones) → quick sale dialog
+    const isPhone = product.category === "celular" || product.category === "telefono" || product.category === "dispositivo";
+    if (isPhone) {
+      navigate("/panel/sales/new", { state: { preselectedProduct: product } });
+    } else {
+      setQuickSaleProduct(product);
+      setQuickSaleOpen(true);
+    }
+  };
 
   const currencySymbol = workshop?.currency === "USD" ? "$" : (workshop?.currency || "C$");
   const isAdminOrSuper = isAdmin;
@@ -235,9 +252,13 @@ const Dashboard = () => {
                 <p className="text-sm">No se encontraron productos</p>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {filteredProducts.map(product => (
-                  <div key={product.id} className="border border-border rounded-lg p-3 hover:border-primary/50 transition-colors">
+                  <div
+                    key={product.id}
+                    className="border border-border rounded-lg p-3 hover:border-primary/50 transition-colors cursor-pointer active:scale-95"
+                    onClick={() => handleProductClick(product)}
+                  >
                     <div className="aspect-square mb-2 rounded-md bg-muted/50 overflow-hidden flex items-center justify-center">
                       {product.photo_url ? (
                         <img src={product.photo_url} alt={product.name} className="w-full h-full object-cover" />
@@ -253,6 +274,9 @@ const Dashboard = () => {
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1 capitalize">{product.category} · {product.condition}</p>
+                    <Button size="sm" variant="outline" className="w-full mt-2 text-xs">
+                      <Plus className="h-3 w-3 mr-1" />Vender
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -366,6 +390,12 @@ const Dashboard = () => {
           </CardContent>
         </Card>
       )}
+
+      <QuickSaleDialog
+        open={quickSaleOpen}
+        onOpenChange={setQuickSaleOpen}
+        initialProduct={quickSaleProduct}
+      />
     </div>
   );
 };
