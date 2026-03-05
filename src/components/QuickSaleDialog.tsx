@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBrand } from "@/contexts/BrandContext";
 import { useSales } from "@/hooks/useSales";
@@ -32,10 +32,17 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
   const { updateProduct, products } = useProducts();
   const { toast } = useToast();
 
-  const [cart, setCart] = useState<CartItem[]>(
-    initialProduct ? [{ product: initialProduct, quantity: 1 }] : []
-  );
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Sync cart when initialProduct or open changes
+  useEffect(() => {
+    if (open && initialProduct) {
+      setCart([{ product: initialProduct, quantity: 1 }]);
+    } else if (!open) {
+      setCart([]);
+    }
+  }, [open, initialProduct]);
 
   const currencySymbol = workshop?.currency === "USD" ? "$" : (workshop?.currency || "C$");
 
@@ -134,14 +141,7 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
     }
   };
 
-  // Reset cart when dialog opens with a new product
   const handleOpenChange = (newOpen: boolean) => {
-    if (newOpen && initialProduct) {
-      setCart([{ product: initialProduct, quantity: 1 }]);
-    }
-    if (!newOpen) {
-      setCart([]);
-    }
     onOpenChange(newOpen);
   };
 

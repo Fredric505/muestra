@@ -248,17 +248,19 @@ const NewSale = () => {
         <Card className="glass-card">
           <CardHeader><CardTitle className="text-lg flex items-center gap-2"><ShoppingBag className="h-5 w-5 text-primary" />Detalles de Venta</CardTitle></CardHeader>
           <CardContent className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label>Vendedor</Label>
-              <Select value={sellerId} onValueChange={setSellerId}>
-                <SelectTrigger><SelectValue placeholder="Selecciona vendedor" /></SelectTrigger>
-                <SelectContent>
-                  {sellers.map(emp => (
-                    <SelectItem key={emp.id} value={emp.id}>{emp.profiles?.full_name || "Sin nombre"}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            {isAdmin && (
+              <div className="space-y-2">
+                <Label>Vendedor</Label>
+                <Select value={sellerId} onValueChange={setSellerId}>
+                  <SelectTrigger><SelectValue placeholder="Selecciona vendedor" /></SelectTrigger>
+                  <SelectContent>
+                    {sellers.map(emp => (
+                      <SelectItem key={emp.id} value={emp.id}>{emp.profiles?.full_name || "Sin nombre"}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label>Moneda</Label>
               <Select value={currency} onValueChange={v => setCurrency(v as Currency)}>
