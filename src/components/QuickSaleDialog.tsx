@@ -95,7 +95,7 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
       }));
 
       const result = await createSale.mutateAsync({
-        customer_name: "Venta Rápida",
+        customer_name: "Cliente General",
         total_amount: total,
         currency: workshop?.currency || "NIO",
         items,
@@ -115,7 +115,7 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
       // Print ticket
       const saleForPrint = {
         id: result.id,
-        customer_name: "Venta Rápida",
+        customer_name: "Cliente General",
         customer_phone: null,
         sale_date: new Date().toISOString(),
         total_amount: total,

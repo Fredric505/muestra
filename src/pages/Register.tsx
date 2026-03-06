@@ -44,6 +44,21 @@ const Register = () => {
     const address = formData.get("address") as string;
 
     try {
+      // 0. Check IP restrictions before registration
+      try {
+        const { data: ipCheck } = await supabase.functions.invoke("check-ip", {
+          body: { action: "register_ip" },
+        });
+        if (ipCheck && !ipCheck.allowed) {
+          toast({ title: "Registro no permitido", description: ipCheck.reason, variant: "destructive" });
+          setIsSubmitting(false);
+          return;
+        }
+      } catch (ipErr) {
+        console.error("IP check error:", ipErr);
+        // Don't block registration if IP check fails
+      }
+
       // 1. Sign up user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
