@@ -54,6 +54,10 @@ import {
   Pause,
   Play,
   X,
+  Shield,
+  ShieldOff,
+  ShieldCheck,
+  Globe,
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -138,6 +142,10 @@ const SuperAdminDashboard = () => {
             <Banknote className="h-4 w-4" />
             Config Pagos
           </TabsTrigger>
+          <TabsTrigger value="ip-control" className="gap-1.5">
+            <Shield className="h-4 w-4" />
+            Control IP
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="stats">
@@ -154,6 +162,9 @@ const SuperAdminDashboard = () => {
         </TabsContent>
         <TabsContent value="payment-methods">
           <PaymentMethodsTab methods={paymentMethods || []} />
+        </TabsContent>
+        <TabsContent value="ip-control">
+          <IpControlTab />
         </TabsContent>
       </Tabs>
     </div>
@@ -967,4 +978,159 @@ function PaymentMethodsTab({ methods }: { methods: any[] }) {
   );
 }
 
+// --- IP Control Tab ---
+function IpControlTab() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: ipRecords, isLoading } = useQuery({
+    queryKey: ["sa_registration_ips"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("registration_ips")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  // Group by IP
+  const groupedByIp = (ipRecords || []).reduce((acc: Record<string, any[]>, r: any) => {
+    if (!acc[r.ip_address]) acc[r.ip_address] = [];
+    acc[r.ip_address].push(r);
+    return acc;
+  }, {});
+
+  const blockIp = useMutation({
+    mutationFn: async (ip: string) => {
+      const { data, error } = await supabase.functions.invoke("check-ip", {
+        body: { action: "block_all_by_ip", ip_address: ip, blocked_reason: "Bloqueado manualmente por Super Admin" },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sa_registration_ips"] });
+      toast({ title: "IP bloqueada" });
+    },
+  });
+
+  const unblockIp = useMutation({
+    mutationFn: async (ip: string) => {
+      const { data, error } = await supabase.functions.invoke("check-ip", {
+        body: { action: "unblock_all_by_ip", ip_address: ip },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sa_registration_ips"] });
+      toast({ title: "IP desbloqueada" });
+    },
+  });
+
+  const ipEntries = Object.entries(groupedByIp);
+  const blockedCount = ipEntries.filter(([, records]) => records.some((r: any) => r.is_blocked)).length;
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-foreground">Control de IPs</h2>
+        <div className="flex gap-3">
+          <Badge variant="outline" className="text-sm">
+            <Globe className="h-3.5 w-3.5 mr-1" />
+            {ipEntries.length} IPs únicas
+          </Badge>
+          <Badge variant="outline" className="text-sm text-red-400 border-red-400/30">
+            <ShieldOff className="h-3.5 w-3.5 mr-1" />
+            {blockedCount} bloqueadas
+          </Badge>
+        </div>
+      </div>
+
+      <p className="text-sm text-muted-foreground">
+        Se permite un máximo de 2 registros por IP. Las IPs bloqueadas no pueden crear nuevas cuentas. Puedes desbloquear una IP si el usuario decide pagar.
+      </p>
+
+      <Card className="glass-card">
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Dirección IP</TableHead>
+                <TableHead>Cuentas</TableHead>
+                <TableHead>Primer registro</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead>Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {ipEntries.map(([ip, records]) => {
+                const isBlocked = records.some((r: any) => r.is_blocked);
+                const firstDate = records[records.length - 1]?.created_at;
+                return (
+                  <TableRow key={ip}>
+                    <TableCell className="font-mono text-sm">{ip}</TableCell>
+                    <TableCell>
+                      <Badge variant="outline">{records.length}</Badge>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground">
+                      {firstDate ? format(new Date(firstDate), "dd/MM/yyyy HH:mm", { locale: es }) : "-"}
+                    </TableCell>
+                    <TableCell>
+                      {isBlocked ? (
+                        <Badge className="bg-red-500/20 text-red-400">
+                          <ShieldOff className="h-3 w-3 mr-1" />
+                          Bloqueada
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-green-500/20 text-green-400">
+                          <ShieldCheck className="h-3 w-3 mr-1" />
+                          Permitida
+                        </Badge>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {isBlocked ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => unblockIp.mutate(ip)}
+                          className="text-green-400 border-green-400/30 hover:bg-green-400/10"
+                        >
+                          <ShieldCheck className="h-4 w-4 mr-1" />
+                          Desbloquear
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => blockIp.mutate(ip)}
+                          className="text-red-400 border-red-400/30 hover:bg-red-400/10"
+                        >
+                          <ShieldOff className="h-4 w-4 mr-1" />
+                          Bloquear
+                        </Button>
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {ipEntries.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                    {isLoading ? "Cargando..." : "No hay registros de IP aún"}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default SuperAdminDashboard;
+

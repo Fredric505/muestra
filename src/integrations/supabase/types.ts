@@ -520,6 +520,50 @@ export type Database = {
           },
         ]
       }
+      registration_ips: {
+        Row: {
+          blocked_at: string | null
+          blocked_reason: string | null
+          created_at: string
+          id: string
+          ip_address: string
+          is_blocked: boolean
+          unblocked_at: string | null
+          user_id: string
+          workshop_id: string | null
+        }
+        Insert: {
+          blocked_at?: string | null
+          blocked_reason?: string | null
+          created_at?: string
+          id?: string
+          ip_address: string
+          is_blocked?: boolean
+          unblocked_at?: string | null
+          user_id: string
+          workshop_id?: string | null
+        }
+        Update: {
+          blocked_at?: string | null
+          blocked_reason?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string
+          is_blocked?: boolean
+          unblocked_at?: string | null
+          user_id?: string
+          workshop_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "registration_ips_workshop_id_fkey"
+            columns: ["workshop_id"]
+            isOneToOne: false
+            referencedRelation: "workshops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       repair_types: {
         Row: {
           created_at: string
