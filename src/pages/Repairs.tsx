@@ -813,14 +813,14 @@ const Repairs = () => {
                       Yo (Administrador) - Sin comisión
                     </SelectItem>
                   )}
-                  {employees.filter(e => e.is_active).map((emp) => (
+                  {employees.filter(e => e.is_active && e.employee_type === "technician").map((emp) => (
                     <SelectItem key={emp.id} value={emp.id}>
                       {emp.profiles?.full_name || "Sin nombre"} ({emp.monthly_commission_rate}% comisión)
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              {employees.filter(e => e.is_active).length === 0 && !isAdmin && (
+              {employees.filter(e => e.is_active && e.employee_type === "technician").length === 0 && !isAdmin && (
                 <p className="text-sm text-muted-foreground">
                   No hay técnicos registrados. Agrega empleados primero.
                 </p>
