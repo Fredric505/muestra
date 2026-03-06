@@ -55,7 +55,7 @@ const NewSale = () => {
   const [showPrintDialog, setShowPrintDialog] = useState(false);
   const [savedSale, setSavedSale] = useState<any>(null);
 
-  const sellers = employees.filter(e => e.is_active);
+  const sellers = employees.filter(e => e.is_active && e.employee_type === "seller");
 
   const [items, setItems] = useState<SaleItemForm[]>([{
     product_id: "", product_name: "", quantity: 1, unit_price: 0,
