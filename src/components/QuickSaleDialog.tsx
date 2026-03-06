@@ -83,6 +83,19 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
     if (cart.length === 0) return;
     setIsSubmitting(true);
     try {
+      // 1. Decrease stock FIRST (before creating the sale record)
+      for (const c of cart) {
+        const currentProduct = products.find(p => p.id === c.product.id);
+        if (currentProduct) {
+          const newStock = Math.max(0, currentProduct.stock - c.quantity);
+          await updateProduct.mutateAsync({
+            id: c.product.id,
+            stock: newStock,
+          });
+        }
+      }
+
+      // 2. Create the sale record
       const items = cart.map(c => ({
         product_id: c.product.id,
         product_name: c.product.name,
@@ -101,18 +114,7 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
         items,
       });
 
-      // Decrease stock
-      for (const c of cart) {
-        const currentProduct = products.find(p => p.id === c.product.id);
-        if (currentProduct) {
-          await updateProduct.mutateAsync({
-            id: c.product.id,
-            stock: Math.max(0, currentProduct.stock - c.quantity),
-          });
-        }
-      }
-
-      // Print ticket
+      // 3. Print ticket (user can cancel print — sale & stock are already committed)
       const saleForPrint = {
         id: result.id,
         customer_name: "Cliente General",
@@ -132,10 +134,12 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
       };
       printTicketInvoice(saleForPrint, brand, workshop);
 
+      toast({ title: "Venta registrada", description: "Stock actualizado correctamente" });
       setCart([]);
       onOpenChange(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
+      toast({ title: "Error", description: error.message || "Error al procesar la venta", variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
