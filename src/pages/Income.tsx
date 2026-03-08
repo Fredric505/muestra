@@ -82,7 +82,7 @@ const Income = () => {
     });
 
     const typeBreakdown = monthRepairs.reduce((acc, r) => {
-      const type = r.repair_types?.name || "Otro";
+      const type = t(`repairTypeNames.${r.repair_types?.name}`, r.repair_types?.name || "Otro");
       const currency = r.currency || "NIO";
       const key = `${type}-${currency}`;
       if (!acc[key]) acc[key] = { name: type, currency, count: 0, income: 0, netProfit: 0 };

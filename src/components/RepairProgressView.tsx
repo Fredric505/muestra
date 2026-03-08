@@ -158,7 +158,7 @@ export function RepairProgressView({
 
                         {repair.repair_types?.name && (
                           <Badge variant="outline" className="text-xs">
-                            {repair.repair_types.name}
+                            {t(`repairTypeNames.${repair.repair_types.name}`, repair.repair_types.name)}
                           </Badge>
                         )}
 

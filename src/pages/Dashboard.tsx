@@ -479,7 +479,7 @@ const Dashboard = () => {
                   <div key={repair.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
                     <div>
                       <p className="font-medium text-foreground">{repair.customer_name}</p>
-                      <p className="text-sm text-muted-foreground">{repair.device_brand} {repair.device_model} - {repair.repair_types?.name}</p>
+                      <p className="text-sm text-muted-foreground">{repair.device_brand} {repair.device_model} - {t(`repairTypeNames.${repair.repair_types?.name}`, repair.repair_types?.name)}</p>
                       <p className="text-sm text-success">{t("common.profit")}: {currencySymbol}{netProfit.toFixed(2)}</p>
                     </div>
                     <a href={`https://wa.me/${repair.customer_phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="text-success hover:text-success/80 text-sm font-medium">{t("repairs.contact")}</a>

@@ -337,7 +337,7 @@ const Repairs = () => {
                               </div>
                             </TableCell>
                             <TableCell><p className="font-medium text-sm">{repair.device_brand} {repair.device_model}</p></TableCell>
-                            <TableCell><p className="text-sm">{repair.repair_types?.name || "N/A"}</p></TableCell>
+                            <TableCell><p className="text-sm">{t(`repairTypeNames.${repair.repair_types?.name}`, repair.repair_types?.name || "N/A")}</p></TableCell>
                             <TableCell>
                               <p className="font-medium text-foreground text-sm">{repairSymbol}{price.toFixed(2)}</p>
                               {repair.deposit && repair.deposit > 0 && (<p className="text-xs text-muted-foreground">{t("invoice.deposit")}: {repairSymbol}{repair.deposit.toFixed(2)}</p>)}
