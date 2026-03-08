@@ -51,7 +51,11 @@ export function ThemeSelector({
           </div>
           <Switch
             checked={colorMode === "light"}
-            onCheckedChange={(checked) => onColorModeChange(checked ? "light" : "dark")}
+            onCheckedChange={(checked) => {
+              const newMode = checked ? "light" : "dark";
+              onColorModeChange(newMode);
+              applyThemeToDOM(resolvePreset(themePreset, customPrimaryColor), newMode);
+            }}
           />
         </div>
 
