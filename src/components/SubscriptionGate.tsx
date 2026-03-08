@@ -23,9 +23,9 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
 
   // Employees (non-admin) bypass payment gate — only owners pay
   if (!isAdmin) {
-    // But even employees need a workshop
+    // Employee without workshop = was removed from workshop
     if (!workshop) {
-      return <AccountBlockedScreen type="deleted" />;
+      return <AccountRemovedScreen />;
     }
     if (workshop.subscription_status === "paused") {
       return (
