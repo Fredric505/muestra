@@ -104,8 +104,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
+    } finally {
+      setIsUserDataLoaded(true);
     }
-  };
 
   useEffect(() => {
     let isMounted = true;
