@@ -98,7 +98,10 @@ const Settings = () => {
         business_name: businessName.trim(),
         tagline: tagline.trim(),
         logo_url: logoUrl,
-      });
+        theme_preset: themePreset,
+        custom_primary_color: customPrimaryColor,
+        color_mode: colorMode,
+      } as any);
       
       toast({
         title: "Configuración guardada",
