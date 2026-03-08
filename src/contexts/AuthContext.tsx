@@ -107,11 +107,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setIsUserDataLoaded(true);
     }
+  };
 
   useEffect(() => {
     let isMounted = true;
 
-    // Listener for ONGOING auth changes — do NOT await inside, do NOT control isLoading
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         if (!isMounted) return;
@@ -119,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(currentSession?.user ?? null);
 
         if (currentSession?.user) {
-          // Use setTimeout to avoid deadlock inside onAuthStateChange callback
+          setIsUserDataLoaded(false);
           setTimeout(() => {
             if (isMounted) fetchUserData(currentSession.user.id);
           }, 0);
@@ -129,11 +129,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsSuperAdmin(false);
           setWorkshop(null);
           setEmployeeType(null);
+          setIsUserDataLoaded(false);
         }
       }
     );
 
-    // INITIAL load — this controls isLoading
     const initializeAuth = async () => {
       try {
         const { data: { session: currentSession } } = await supabase.auth.getSession();
@@ -148,7 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (error) {
         console.error("Error initializing auth:", error);
       } finally {
-        if (isMounted) setIsLoading(false);
+        if (isMounted) setInitialLoading(false);
       }
     };
 
