@@ -112,7 +112,7 @@ const Settings = () => {
     }
   };
 
-  const currentLogo = logoPreview || brand.logo_url || defaultLogoUrl;
+  const currentLogo = logoPreview || brand.logo_url || null;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
