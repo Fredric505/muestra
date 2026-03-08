@@ -173,7 +173,7 @@ const History = () => {
                     const price = repair.final_price || repair.estimated_price;
                     const netProfit = price - (repair.parts_cost || 0);
                     const warrantyValid = repair.completed_at && repair.warranty_days ? isWarrantyValid(repair.completed_at, repair.warranty_days) : false;
-                    const whatsappMessage = getHistoryWhatsAppMessage(repair, brand.business_name);
+                    const whatsappMessage = getHistoryWhatsAppMessage(repair, brand.business_name, t);
                     const phone = repair.customer_phone.replace(/\D/g, "");
                     return (
                       <TableRow key={repair.id}>
