@@ -507,7 +507,17 @@
     "settingsSavedDesc": "Changes will be applied throughout the application",
     "errorSaving": "Could not save settings",
     "businessNameRequired": "Business name is required",
-    "fileTooLarge": "Logo must be less than 2MB"
+    "fileTooLarge": "Logo must be less than 2MB",
+    "themeTitle": "Panel Theme",
+    "themeDesc": "Customize your panel colors. All employees will see the same theme.",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "toggleModeDesc": "Toggle between light and dark mode",
+    "colorTheme": "Color Theme",
+    "customColor": "Custom Color",
+    "apply": "Apply",
+    "customColorHint": "Choose any color and a palette will be generated automatically",
+    "livePreview": "Preview"
   },
   "exportPage": {
     "title": "Export Data",
