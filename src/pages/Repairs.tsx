@@ -182,53 +182,8 @@ const Repairs = () => {
   };
 
   const handlePrintInvoice = (repair: any) => {
-    const repairSymbol = currencySymbols[repair.currency as Currency];
-    const price = repair.final_price || repair.estimated_price;
-    const deposit = repair.deposit || 0;
-    const remaining = price - deposit;
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    if (printWindow) {
-      printWindow.document.write(`<!DOCTYPE html><html><head><title>${t("repairs.repairInvoice")} - ${brand.business_name}</title>
-        <style>
-          @media print { body { margin: 0; } }
-          body { font-family: Arial, sans-serif; padding: 30px; color: #333; max-width: 700px; margin: 0 auto; }
-          .header { text-align: center; border-bottom: 2px solid #333; padding-bottom: 15px; margin-bottom: 20px; }
-          .header h1 { margin: 0; font-size: 22px; } .header p { margin: 4px 0; color: #666; font-size: 13px; }
-          .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
-          .info-box { background: #f9f9f9; padding: 12px; border-radius: 6px; }
-          .info-box h3 { margin: 0 0 8px 0; font-size: 13px; color: #666; text-transform: uppercase; }
-          .info-box p { margin: 3px 0; font-size: 14px; }
-          table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-          th, td { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
-          th { background: #f0f0f0; font-size: 13px; }
-          .totals { text-align: right; margin-top: 20px; } .totals p { margin: 5px 0; font-size: 14px; }
-          .totals .total { font-size: 18px; font-weight: bold; border-top: 2px solid #333; padding-top: 8px; }
-          .footer { text-align: center; margin-top: 40px; font-size: 12px; color: #999; border-top: 1px solid #eee; padding-top: 15px; }
-        </style></head><body>
-        <div class="header">
-          ${workshop?.logo_url ? `<img src="${workshop.logo_url}" alt="${brand.business_name}" style="max-height:60px;margin:0 auto 10px;display:block;" />` : ''}
-          <h1>${brand.business_name}</h1>
-          ${brand.tagline ? `<p>${brand.tagline}</p>` : ''}
-          ${workshop?.address ? `<p>📍 ${workshop.address}</p>` : ''}
-          ${workshop?.phone ? `<p>📞 ${workshop.phone}</p>` : ''}
-          <p>${t("repairs.repairInvoice")}</p>
-        </div>
-        <div class="info-grid">
-          <div class="info-box"><h3>${t("invoice.client")}</h3><p><strong>${repair.customer_name}</strong></p><p>${repair.customer_phone}</p></div>
-          <div class="info-box"><h3>${t("invoice.details")}</h3><p>${t("invoice.date")}: ${new Date(repair.created_at).toLocaleDateString()}</p><p>ID: ${repair.id.slice(0, 8).toUpperCase()}</p>${repair.warranty_days ? `<p>${t("invoice.warranty")}: ${repair.warranty_days} ${t("common.days")}</p>` : ''}</div>
-        </div>
-        <table><thead><tr><th>${t("invoice.description")}</th><th>${t("invoice.device")}</th><th style="text-align:right">${t("common.price")}</th></tr></thead>
-        <tbody><tr><td>${repair.repair_types?.name || repair.repair_description || t("nav.repairs")}</td><td>${repair.device_brand} ${repair.device_model}</td><td style="text-align:right">${repairSymbol}${price.toFixed(2)}</td></tr></tbody></table>
-        <div class="totals">
-          ${deposit > 0 ? `<p>${t("invoice.deposit")}: ${repairSymbol}${deposit.toFixed(2)}</p>` : ''}
-          ${deposit > 0 ? `<p>${t("invoice.remaining")}: ${repairSymbol}${remaining.toFixed(2)}</p>` : ''}
-          <p class="total">${t("common.total")}: ${repairSymbol}${price.toFixed(2)}</p>
-        </div>
-        <div class="footer"><p>${t("invoice.thankYou")} · ${brand.business_name}</p></div>
-        </body></html>`);
-      printWindow.document.close(); printWindow.focus();
-      setTimeout(() => { printWindow.print(); printWindow.close(); }, 250);
-    }
+    const { printRepairInvoice } = require("@/lib/invoiceUtils");
+    printRepairInvoice(repair, brand, workshop, t, dateLoc);
   };
 
   if (isLoading) {

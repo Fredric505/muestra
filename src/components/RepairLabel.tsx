@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
+import { getDateLocale } from "@/lib/dateLocale";
 
 interface RepairLabelProps {
   repair: {
@@ -19,8 +20,10 @@ interface RepairLabelProps {
 
 export const RepairLabel = forwardRef<HTMLDivElement, RepairLabelProps>(
   ({ repair, businessName, tagline, logoUrl }, ref) => {
+    const { t, i18n } = useTranslation();
+    const dateLoc = getDateLocale(i18n.language);
     const ticketNumber = repair.id.slice(-4).toUpperCase();
-    const entryDate = format(new Date(repair.created_at), "dd/MM/yy", { locale: es });
+    const entryDate = format(new Date(repair.created_at), "dd/MM/yy", { locale: dateLoc });
 
     return (
       <div
@@ -52,25 +55,25 @@ export const RepairLabel = forwardRef<HTMLDivElement, RepairLabelProps>(
         {/* Content */}
         <div className="space-y-0.5">
           <div className="flex">
-            <span className="font-bold" style={{ width: "12mm" }}>Cliente:</span>
+            <span className="font-bold" style={{ width: "12mm" }}>{t("invoice.client")}:</span>
             <span className="flex-1 truncate">{repair.customer_name}</span>
           </div>
           <div className="flex">
-            <span className="font-bold" style={{ width: "12mm" }}>Tel:</span>
+            <span className="font-bold" style={{ width: "12mm" }}>{t("invoice.tel")}:</span>
             <span className="flex-1">{repair.customer_phone}</span>
           </div>
           <div className="flex">
-            <span className="font-bold" style={{ width: "12mm" }}>Modelo:</span>
+            <span className="font-bold" style={{ width: "12mm" }}>{t("invoice.device")}:</span>
             <span className="flex-1 truncate">{repair.device_brand} {repair.device_model}</span>
           </div>
           {repair.repair_description && (
             <div className="flex">
-              <span className="font-bold" style={{ width: "12mm" }}>Falla:</span>
+              <span className="font-bold" style={{ width: "12mm" }}>{t("invoice.description")}:</span>
               <span className="flex-1 truncate">{repair.repair_description}</span>
             </div>
           )}
           <div className="flex">
-            <span className="font-bold" style={{ width: "12mm" }}>Ingreso:</span>
+            <span className="font-bold" style={{ width: "12mm" }}>{t("repairTicket.entry")}</span>
             <span className="flex-1">{entryDate}</span>
           </div>
         </div>
