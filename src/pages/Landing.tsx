@@ -191,7 +191,10 @@ export function PricingSection() {
         {plans?.map((plan, i) => {
           const price = billingPeriod === "monthly" ? plan.monthly_price : plan.annual_price;
           const perMonth = billingPeriod === "annual" ? Math.round(plan.annual_price / 12) : plan.monthly_price;
-          const features = (plan.features as string[]) || [];
+          const lang = i18n.language?.substring(0, 2);
+          const planName = (lang !== "es" && (plan as any)[`name_${lang}`]) || plan.name;
+          const planDesc = (lang !== "es" && (plan as any)[`description_${lang}`]) || plan.description;
+          const features = ((lang !== "es" && (plan as any)[`features_${lang}`]) || plan.features as string[]) || [];
           const isPopular = i === 1;
           return (
             <div
@@ -207,8 +210,8 @@ export function PricingSection() {
                   {t("landing.mostPopular")}
                 </Badge>
               )}
-              <h3 className="text-xl font-bold mb-1">{plan.name}</h3>
-              <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
+              <h3 className="text-xl font-bold mb-1">{planName}</h3>
+              <p className="text-gray-400 text-sm mb-4">{planDesc}</p>
               <div className="mb-6">
                 <span className="text-4xl font-extrabold">{plan.currency === "USD" ? "$" : "C$"}{perMonth}</span>
                 <span className="text-gray-400 text-sm">{t("landing.perMonth")}</span>
@@ -226,7 +229,7 @@ export function PricingSection() {
                 </Button>
               </Link>
               <ul className="space-y-3">
-                {features.map((feature, fi) => (
+                {(Array.isArray(features) ? features : []).map((feature: string, fi: number) => (
                   <li key={fi} className="flex items-start gap-2 text-sm text-gray-300">
                     <Check className="h-4 w-4 text-cyan-400 mt-0.5 flex-shrink-0" />
                     {feature}
