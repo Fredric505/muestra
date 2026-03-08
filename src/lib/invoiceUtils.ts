@@ -44,8 +44,8 @@ const getCurrencySymbol = (currency: string) => {
   return map[currency] || currency;
 };
 
-/** Letter-size invoice for phones/repairs — with seal/signature spaces */
-export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale) => {
+/** Unified invoice for phones/repairs — supports letter, commercial (22×14.3cm), and ticket sizes */
+export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial') => {
   const symbol = getCurrencySymbol(sale.currency);
   const items = sale.sale_items || [];
   const w = window.open('', '_blank', 'width=900,height=700');
