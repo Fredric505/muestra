@@ -279,7 +279,7 @@ const Repairs = () => {
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">{repair.repair_types?.name || "N/A"}</span>
+                          <span className="text-muted-foreground">{t(`repairTypeNames.${repair.repair_types?.name}`, repair.repair_types?.name || "N/A")}</span>
                           <span className="font-medium">{repairSymbol}{price.toFixed(2)}</span>
                         </div>
                         <div className="flex gap-2 pt-1">
