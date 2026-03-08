@@ -57,6 +57,7 @@ const Settings = () => {
       setThemePreset((brand as any).theme_preset || "green");
       setCustomPrimaryColor((brand as any).custom_primary_color || null);
       setColorMode(((brand as any).color_mode === "light") ? "light" : "dark");
+      setInvoiceSize((brand as any).invoice_size || "commercial");
     }
   }, [brand.business_name, brand.tagline, (brand as any).theme_preset, (brand as any).custom_primary_color, (brand as any).color_mode]);
 
