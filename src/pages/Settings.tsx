@@ -218,6 +218,45 @@ const Settings = () => {
         onColorModeChange={setColorMode}
       />
 
+      {/* Invoice Size Selector */}
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-primary" />
+            {t("settings.invoiceSize")}
+          </CardTitle>
+          <CardDescription>
+            {t("settings.invoiceSizeDesc")}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup value={invoiceSize} onValueChange={setInvoiceSize} className="grid gap-3 sm:grid-cols-3">
+            {[
+              { value: "commercial", label: t("settings.sizeCommercial"), desc: t("settings.sizeCommercialDesc") },
+              { value: "letter", label: t("settings.sizeLetter"), desc: t("settings.sizeLetterDesc") },
+              { value: "ticket", label: t("settings.sizeTicket"), desc: t("settings.sizeTicketDesc") },
+            ].map((opt) => (
+              <Label
+                key={opt.value}
+                htmlFor={`size-${opt.value}`}
+                className={cn(
+                  "flex items-start gap-3 rounded-lg border p-4 cursor-pointer transition-colors",
+                  invoiceSize === opt.value
+                    ? "border-primary bg-primary/10"
+                    : "border-border hover:bg-muted/50"
+                )}
+              >
+                <RadioGroupItem value={opt.value} id={`size-${opt.value}`} className="mt-0.5" />
+                <div>
+                  <div className="font-medium text-foreground">{opt.label}</div>
+                  <div className="text-xs text-muted-foreground">{opt.desc}</div>
+                </div>
+              </Label>
+            ))}
+          </RadioGroup>
+        </CardContent>
+      </Card>
+
       <div className="grid gap-6 md:grid-cols-2">
         {/* Brand Identity */}
         <Card className="glass-card">
