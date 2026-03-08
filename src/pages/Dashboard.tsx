@@ -138,7 +138,7 @@ const Dashboard = () => {
 
   const repairTypeData = useMemo(() => {
     if (!showRepairs) return [];
-    const counts = repairs.reduce((acc, r) => { const tp = r.repair_types?.name || "Otro"; acc[tp] = (acc[tp] || 0) + 1; return acc; }, {} as Record<string, number>);
+    const counts = repairs.reduce((acc, r) => { const tp = t(`repairTypeNames.${r.repair_types?.name}`, r.repair_types?.name || "Otro"); acc[tp] = (acc[tp] || 0) + 1; return acc; }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 5);
   }, [repairs, showRepairs]);
 
