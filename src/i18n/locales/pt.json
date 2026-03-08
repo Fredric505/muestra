@@ -517,7 +517,16 @@
     "customColor": "Cor Personalizada",
     "apply": "Aplicar",
     "customColorHint": "Escolha qualquer cor e uma paleta será gerada automaticamente",
-    "livePreview": "Pré-visualização"
+    "livePreview": "Pré-visualização",
+    "colorGreen": "Verde",
+    "colorBlue": "Azul",
+    "colorRed": "Vermelho",
+    "colorPurple": "Roxo",
+    "colorOrange": "Laranja",
+    "colorCyan": "Ciano",
+    "colorPink": "Rosa",
+    "colorAmber": "Âmbar",
+    "colorCustom": "Personalizado"
   },
   "exportPage": {
     "title": "Exportar Dados",
