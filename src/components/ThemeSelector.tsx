@@ -117,6 +117,7 @@ export function ThemeSelector({
               onClick={() => {
                 onThemePresetChange("custom");
                 onCustomColorChange(customHex);
+                applyThemeToDOM(customColorToPreset(customHex), colorMode);
               }}
               className={cn(
                 "px-3 py-2 text-sm rounded-lg border transition-all",
