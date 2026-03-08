@@ -260,10 +260,10 @@ export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: Work
   @media print { body { margin: 0; } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; padding: ${invoiceSize === 'commercial' ? '12px' : '30px'}; max-width: ${invoiceSize === 'commercial' ? '210mm' : '800px'}; margin: 0 auto; font-size: ${invoiceSize === 'commercial' ? '10px' : '13px'}; }
-  .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #222; padding-bottom: 16px; margin-bottom: 20px; }
-  .header-left { display: flex; align-items: center; gap: 16px; }
-  .header-left img { max-height: 65px; border-radius: 8px; }
-  .header-left h1 { font-size: 22px; }
+  .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #222; padding-bottom: ${invoiceSize === 'commercial' ? '8px' : '16px'}; margin-bottom: ${invoiceSize === 'commercial' ? '10px' : '20px'}; }
+  .header-left { display: flex; align-items: center; gap: ${invoiceSize === 'commercial' ? '10px' : '16px'}; }
+  .header-left img { max-height: ${invoiceSize === 'commercial' ? '40px' : '65px'}; border-radius: 8px; }
+  .header-left h1 { font-size: ${invoiceSize === 'commercial' ? '15px' : '22px'}; }
   .header-left p { color: #666; font-size: 12px; margin: 2px 0; }
   .header-right { text-align: right; }
   .header-right .inv-num { font-size: 18px; font-weight: bold; }
