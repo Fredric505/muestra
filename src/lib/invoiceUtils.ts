@@ -266,11 +266,11 @@ export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: Work
   .header-left h1 { font-size: ${invoiceSize === 'commercial' ? '15px' : '22px'}; }
   .header-left p { color: #666; font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; margin: 2px 0; }
   .header-right { text-align: right; }
-  .header-right .inv-num { font-size: 18px; font-weight: bold; }
-  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-  .info-box { background: #f7f7f7; padding: 14px; border-radius: 8px; }
-  .info-box p { margin: 3px 0; font-size: 13px; }
-  .section-title { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600; }
+  .header-right .inv-num { font-size: ${invoiceSize === 'commercial' ? '13px' : '18px'}; font-weight: bold; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: ${invoiceSize === 'commercial' ? '8px' : '16px'}; margin-bottom: ${invoiceSize === 'commercial' ? '10px' : '20px'}; }
+  .info-box { background: #f7f7f7; padding: ${invoiceSize === 'commercial' ? '8px' : '14px'}; border-radius: 8px; }
+  .info-box p { margin: 3px 0; font-size: ${invoiceSize === 'commercial' ? '10px' : '13px'}; }
+  .section-title { font-size: ${invoiceSize === 'commercial' ? '9px' : '11px'}; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: ${invoiceSize === 'commercial' ? '3px' : '6px'}; font-weight: 600; }
   table { width: 100%; border-collapse: collapse; margin: 16px 0; }
   thead th { background: #333; color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; }
   thead th:last-child { text-align: right; }
