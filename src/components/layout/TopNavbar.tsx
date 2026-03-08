@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard, PlusCircle, Wrench, History, DollarSign, LogOut,
   Users, TrendingUp, Settings, Cog, ShoppingBag, Package, FileDown, Menu, X,
@@ -15,29 +16,8 @@ import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet";
 
-const repairMenuItems = [
-  { title: "Nueva Reparación", url: "/panel/repairs/new", icon: PlusCircle },
-  { title: "Reparaciones", url: "/panel/repairs", icon: Wrench },
-  { title: "Historial", url: "/panel/history", icon: History },
-  { title: "Ingresos", url: "/panel/income", icon: DollarSign },
-];
-
-const salesMenuItems = [
-  { title: "Ventas", url: "/panel/sales", icon: ShoppingBag },
-];
-
-const adminItems = [
-  { title: "Inventario", url: "/panel/products", icon: Package },
-  { title: "Empleados", url: "/panel/employees", icon: Users },
-  { title: "Exportar", url: "/panel/export", icon: FileDown },
-  { title: "Config", url: "/panel/settings", icon: Cog },
-];
-
-const employeeItems = [
-  { title: "Mis Ganancias", url: "/panel/my-earnings", icon: TrendingUp },
-];
-
 export function TopNavbar() {
+  const { t } = useTranslation();
   const location = useLocation();
   const { signOut, profile, isAdmin, isSuperAdmin, employeeType } = useAuth();
   const { brand } = useBrand();
@@ -45,8 +25,31 @@ export function TopNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isAdminOrSuper = isAdmin || isSuperAdmin;
+
+  const repairMenuItems = [
+    { title: t("nav.newRepair"), url: "/panel/repairs/new", icon: PlusCircle },
+    { title: t("nav.repairs"), url: "/panel/repairs", icon: Wrench },
+    { title: t("nav.history"), url: "/panel/history", icon: History },
+    { title: t("nav.income"), url: "/panel/income", icon: DollarSign },
+  ];
+
+  const salesMenuItems = [
+    { title: t("nav.sales"), url: "/panel/sales", icon: ShoppingBag },
+  ];
+
+  const adminItems = [
+    { title: t("nav.products"), url: "/panel/products", icon: Package },
+    { title: t("nav.employees"), url: "/panel/employees", icon: Users },
+    { title: t("common.export"), url: "/panel/export", icon: FileDown },
+    { title: t("nav.settings"), url: "/panel/settings", icon: Cog },
+  ];
+
+  const employeeItems = [
+    { title: t("nav.myEarnings"), url: "/panel/my-earnings", icon: TrendingUp },
+  ];
+
   const allItems = [
-    { title: "Dashboard", url: "/panel/dashboard", icon: LayoutDashboard },
+    { title: t("nav.dashboard"), url: "/panel/dashboard", icon: LayoutDashboard },
     ...(isAdminOrSuper || employeeType === "technician" ? repairMenuItems : []),
     ...(isAdminOrSuper || employeeType === "seller" ? salesMenuItems : []),
     ...(isAdminOrSuper ? adminItems : employeeItems),
@@ -103,7 +106,7 @@ export function TopNavbar() {
             <button
               onClick={() => setProfileDialogOpen(true)}
               className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30 transition-colors"
-              title="Editar perfil"
+              title={t("nav.editProfile")}
             >
               <span className="text-xs font-medium text-primary">
                 {profile?.full_name?.charAt(0).toUpperCase() || "U"}
@@ -138,8 +141,8 @@ export function TopNavbar() {
                 </nav>
                 <div className="mt-auto p-4 border-t border-border">
                   <p className="text-xs text-muted-foreground">
-                    {isSuperAdmin ? "Super Admin" : isAdmin ? "Administrador" : employeeType === "seller" ? "Vendedor" : "Técnico"}
-                    {" · "}{profile?.full_name || "Usuario"}
+                    {isSuperAdmin ? t("roles.superAdmin") : isAdmin ? t("roles.admin") : employeeType === "seller" ? t("roles.seller") : t("roles.technician")}
+                    {" · "}{profile?.full_name || t("roles.user")}
                   </p>
                 </div>
               </SheetContent>
