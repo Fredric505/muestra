@@ -264,7 +264,7 @@ export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: Work
   .header-left { display: flex; align-items: center; gap: ${invoiceSize === 'commercial' ? '10px' : '16px'}; }
   .header-left img { max-height: ${invoiceSize === 'commercial' ? '40px' : '65px'}; border-radius: 8px; }
   .header-left h1 { font-size: ${invoiceSize === 'commercial' ? '15px' : '22px'}; }
-  .header-left p { color: #666; font-size: 12px; margin: 2px 0; }
+  .header-left p { color: #666; font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; margin: 2px 0; }
   .header-right { text-align: right; }
   .header-right .inv-num { font-size: 18px; font-weight: bold; }
   .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
