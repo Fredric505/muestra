@@ -148,7 +148,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export function PricingSection() {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const { data: plans } = useQuery({
     queryKey: ["public_plans"],
