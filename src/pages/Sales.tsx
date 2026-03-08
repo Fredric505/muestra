@@ -293,7 +293,7 @@ const Sales = () => {
                 {filtered(pendingSales).length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground"><ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-50" /><p>No hay ventas pendientes</p></div>
                 ) : (
-                  <div className="overflow-x-auto">
+                  <div className="hidden md:block overflow-x-auto">
                     <Table>
                       <TableHeader><TableRow>
                         <TableHead>Cliente</TableHead><TableHead>Productos</TableHead>
@@ -302,6 +302,9 @@ const Sales = () => {
                       </TableRow></TableHeader>
                       <TableBody>{filtered(pendingSales).map(s => renderSaleRow(s, true))}</TableBody>
                     </Table>
+                  </div>
+                  <div className="md:hidden space-y-3">
+                    {filtered(pendingSales).map(s => renderSaleCard(s, true))}
                   </div>
                 )}
               </CardContent>
@@ -316,7 +319,7 @@ const Sales = () => {
               {filtered(completedSales).length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground"><ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-50" /><p>No hay ventas completadas</p></div>
               ) : (
-                <div className="overflow-x-auto">
+                <div className="hidden md:block overflow-x-auto">
                   <Table>
                     <TableHeader><TableRow>
                       <TableHead>Cliente</TableHead><TableHead>Productos</TableHead>
@@ -329,6 +332,9 @@ const Sales = () => {
                     </TableRow></TableHeader>
                     <TableBody>{filtered(completedSales).map(s => renderSaleRow(s, false))}</TableBody>
                   </Table>
+                </div>
+                <div className="md:hidden space-y-3">
+                  {filtered(completedSales).map(s => renderSaleCard(s, false))}
                 </div>
               )}
             </CardContent>
