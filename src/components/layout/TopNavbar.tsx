@@ -50,7 +50,7 @@ export function TopNavbar() {
     ...(isAdminOrSuper ? adminItems : employeeItems),
   ];
 
-  const logoUrl = brand.logo_url || defaultLogoUrl;
+  const brandInitial = (brand.business_name || "T").charAt(0).toUpperCase();
 
   const NavItems = ({ onClick }: { onClick?: () => void }) => (
     <>
