@@ -82,15 +82,15 @@ export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
   .totals-row.total { border-top: 3px solid #222; padding-top: ${invoiceSize === 'commercial' ? '6px' : '10px'}; margin-top: ${invoiceSize === 'commercial' ? '3px' : '6px'}; font-size: ${invoiceSize === 'commercial' ? '13px' : '18px'}; font-weight: bold; }
   .photos { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
   .photos img { max-width: 180px; max-height: 180px; border-radius: 8px; border: 1px solid #ddd; object-fit: cover; }
-  .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 50px; }
+  .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: ${invoiceSize === 'commercial' ? '20px' : '40px'}; margin-top: ${invoiceSize === 'commercial' ? '15px' : '50px'}; }
   .sig-box { text-align: center; }
-  .sig-line { border-top: 2px solid #222; margin-top: 60px; padding-top: 8px; }
-  .sig-label { font-size: 12px; color: #666; }
-  .warranty-box { background: #f0f9f0; border: 1px solid #c3e6c3; border-radius: 8px; padding: 14px; margin: 20px 0; text-align: center; }
+  .sig-line { border-top: 2px solid #222; margin-top: ${invoiceSize === 'commercial' ? '25px' : '60px'}; padding-top: 8px; }
+  .sig-label { font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; color: #666; }
+  .warranty-box { background: #f0f9f0; border: 1px solid #c3e6c3; border-radius: 8px; padding: ${invoiceSize === 'commercial' ? '8px' : '14px'}; margin: ${invoiceSize === 'commercial' ? '8px 0' : '20px 0'}; text-align: center; }
   .warranty-box strong { color: #2d7a2d; }
-  .footer { text-align: center; margin-top: 30px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 11px; color: #999; }
-  .stamp-area { display: flex; justify-content: center; margin-top: 20px; }
-  .stamp-box { width: 140px; height: 140px; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 11px; }
+  .footer { text-align: center; margin-top: ${invoiceSize === 'commercial' ? '10px' : '30px'}; padding-top: ${invoiceSize === 'commercial' ? '6px' : '16px'}; border-top: 1px solid #ddd; font-size: ${invoiceSize === 'commercial' ? '8px' : '11px'}; color: #999; }
+  .stamp-area { display: flex; justify-content: center; margin-top: ${invoiceSize === 'commercial' ? '8px' : '20px'}; }
+  .stamp-box { width: ${invoiceSize === 'commercial' ? '80px' : '140px'}; height: ${invoiceSize === 'commercial' ? '80px' : '140px'}; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: ${invoiceSize === 'commercial' ? '9px' : '11px'}; }
 </style></head><body>
 
 <div class="header">
