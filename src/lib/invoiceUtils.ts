@@ -1,5 +1,7 @@
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import type { Locale } from "date-fns";
+
+type TFunction = (key: string, opts?: any) => string;
 
 interface SaleForInvoice {
   id: string;
@@ -43,13 +45,13 @@ const getCurrencySymbol = (currency: string) => {
 };
 
 /** Letter-size invoice for phones/repairs — with seal/signature spaces */
-export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null) => {
+export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale) => {
   const symbol = getCurrencySymbol(sale.currency);
   const items = sale.sale_items || [];
   const w = window.open('', '_blank', 'width=900,height=700');
   if (!w) return;
 
-  w.document.write(`<!DOCTYPE html><html><head><title>Factura ${sale.id.slice(0, 8).toUpperCase()}</title>
+  w.document.write(`<!DOCTYPE html><html><head><title>${t("invoice.invoiceTitle")} ${sale.id.slice(0, 8).toUpperCase()}</title>
 <style>
   @page { size: letter; margin: 15mm; }
   @media print { body { margin: 0; } .no-print { display: none; } }
@@ -103,37 +105,37 @@ export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
     </div>
   </div>
   <div class="header-right">
-    <div class="inv-num">FACTURA</div>
+    <div class="inv-num">${t("invoice.invoiceTitle")}</div>
     <div style="font-size:16px; font-weight:bold; margin:4px 0;">#${sale.id.slice(0, 8).toUpperCase()}</div>
-    <div>Fecha: ${format(new Date(sale.sale_date), "dd/MM/yyyy", { locale: es })}</div>
+    <div>${t("invoice.date")}: ${format(new Date(sale.sale_date), "dd/MM/yyyy", { locale: dateLoc })}</div>
   </div>
 </div>
 
 <div class="section">
   <div class="info-grid">
     <div class="info-box">
-      <div class="section-title">Datos del Cliente</div>
+      <div class="section-title">${t("invoice.clientData")}</div>
       <p><strong>${sale.customer_name}</strong></p>
       ${sale.customer_phone ? `<p>📞 ${sale.customer_phone}</p>` : ''}
     </div>
     <div class="info-box">
-      <div class="section-title">Información de Venta</div>
-      <p>Fecha: ${format(new Date(sale.sale_date), "dd 'de' MMMM 'de' yyyy", { locale: es })}</p>
-      <p>Factura: #${sale.id.slice(0, 8).toUpperCase()}</p>
+      <div class="section-title">${t("invoice.saleInfo")}</div>
+      <p>${t("invoice.date")}: ${format(new Date(sale.sale_date), "PPP", { locale: dateLoc })}</p>
+      <p>${t("invoice.invoiceNum")}: #${sale.id.slice(0, 8).toUpperCase()}</p>
     </div>
   </div>
 </div>
 
 <div class="section">
-  <div class="section-title">Detalle de Productos</div>
+  <div class="section-title">${t("invoice.productDetails")}</div>
   <table>
-    <thead><tr><th>#</th><th>Descripción</th><th>Condición</th><th>Garantía</th><th>Cant.</th><th>Precio Unit.</th><th>Subtotal</th></tr></thead>
+    <thead><tr><th>#</th><th>${t("invoice.description")}</th><th>${t("invoice.condition")}</th><th>${t("invoice.warranty")}</th><th>${t("invoice.qty")}</th><th>${t("invoice.unitPrice")}</th><th>${t("invoice.subtotal")}</th></tr></thead>
     <tbody>
       ${items.map((item, i) => `<tr>
         <td>${i + 1}</td>
         <td>${item.product_name}${item.condition_notes ? `<br><small style="color:#888">${item.condition_notes}</small>` : ''}</td>
-        <td>${item.condition || 'N/A'}</td>
-        <td>${item.warranty_days || 0} días</td>
+        <td>${item.condition || t("invoice.na")}</td>
+        <td>${item.warranty_days || 0} ${t("invoice.days")}</td>
         <td>${item.quantity}</td>
         <td>${symbol}${item.unit_price.toFixed(2)}</td>
         <td>${symbol}${(item.unit_price * item.quantity).toFixed(2)}</td>
@@ -142,27 +144,27 @@ export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
   </table>
 </div>
 
-${items.some(i => i.device_photo_url) ? `<div class="section"><div class="section-title">Fotos del Equipo</div><div class="photos">${items.filter(i => i.device_photo_url).map(i => `<img src="${i.device_photo_url}" alt="${i.product_name}" />`).join('')}</div></div>` : ''}
+${items.some(i => i.device_photo_url) ? `<div class="section"><div class="section-title">${t("invoice.devicePhotos")}</div><div class="photos">${items.filter(i => i.device_photo_url).map(i => `<img src="${i.device_photo_url}" alt="${i.product_name}" />`).join('')}</div></div>` : ''}
 
 <div class="totals">
   <div class="totals-box">
-    <div class="totals-row"><span>Subtotal:</span><span>${symbol}${sale.total_amount.toFixed(2)}</span></div>
-    <div class="totals-row total"><span>TOTAL:</span><span>${symbol}${sale.total_amount.toFixed(2)}</span></div>
+    <div class="totals-row"><span>${t("invoice.subtotal")}:</span><span>${symbol}${sale.total_amount.toFixed(2)}</span></div>
+    <div class="totals-row total"><span>${t("invoice.total")}:</span><span>${symbol}${sale.total_amount.toFixed(2)}</span></div>
   </div>
 </div>
 
-${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warranty-box"><strong>GARANTÍA</strong><br>Los productos adquiridos cuentan con garantía según lo especificado en cada artículo. Conserve esta factura como comprobante.</div>` : ''}
+${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warranty-box"><strong>${t("invoice.warrantyTitle")}</strong><br>${t("invoice.warrantyProductNote")}</div>` : ''}
 
 <div class="signatures">
-  <div class="sig-box"><div class="sig-line"><div class="sig-label">Firma del Cliente</div><div class="sig-label">${sale.customer_name}</div></div></div>
-  <div class="sig-box"><div class="sig-line"><div class="sig-label">Firma Autorizada</div><div class="sig-label">${brand.business_name}</div></div></div>
+  <div class="sig-box"><div class="sig-line"><div class="sig-label">${t("invoice.clientSignature")}</div><div class="sig-label">${sale.customer_name}</div></div></div>
+  <div class="sig-box"><div class="sig-line"><div class="sig-label">${t("invoice.authorizedSignature")}</div><div class="sig-label">${brand.business_name}</div></div></div>
 </div>
 
-<div class="stamp-area"><div class="stamp-box">Sello del<br>Establecimiento</div></div>
+<div class="stamp-area"><div class="stamp-box">${t("invoice.workshopStamp")}</div></div>
 
 <div class="footer">
-  <p>${brand.business_name} · Gracias por su compra</p>
-  <p>Esta factura es un documento legal. Consérvela como garantía de su compra.</p>
+  <p>${brand.business_name} · ${t("invoice.thankPurchase")}</p>
+  <p>${t("invoice.legalNote")}</p>
 </div>
 
 </body></html>`);
@@ -172,13 +174,13 @@ ${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warrant
 };
 
 /** Small ticket/receipt for accessories — supermarket style */
-export const printTicketInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null) => {
+export const printTicketInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale) => {
   const symbol = getCurrencySymbol(sale.currency);
   const items = sale.sale_items || [];
   const w = window.open('', '_blank', 'width=400,height=600');
   if (!w) return;
 
-  w.document.write(`<!DOCTYPE html><html><head><title>Ticket ${sale.id.slice(0, 8).toUpperCase()}</title>
+  w.document.write(`<!DOCTYPE html><html><head><title>${t("invoice.ticket")} ${sale.id.slice(0, 8).toUpperCase()}</title>
 <style>
   @page { size: 80mm auto; margin: 2mm; }
   @media print { body { margin: 0; } }
@@ -203,18 +205,18 @@ export const printTicketInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
   <h1>${brand.business_name}</h1>
   ${brand.tagline ? `<p>${brand.tagline}</p>` : ''}
   ${workshop?.address ? `<p>${workshop.address}</p>` : ''}
-  ${workshop?.phone ? `<p>Tel: ${workshop.phone}</p>` : ''}
+  ${workshop?.phone ? `<p>${t("invoice.tel")}: ${workshop.phone}</p>` : ''}
 </div>
 
 <div class="divider"></div>
 
 <div class="center" style="margin-bottom:6px;">
-  <div class="bold">TICKET #${sale.id.slice(0, 8).toUpperCase()}</div>
-  <div style="font-size:10px;">${format(new Date(sale.sale_date), "dd/MM/yyyy HH:mm", { locale: es })}</div>
+  <div class="bold">${t("invoice.ticket")} #${sale.id.slice(0, 8).toUpperCase()}</div>
+  <div style="font-size:10px;">${format(new Date(sale.sale_date), "dd/MM/yyyy HH:mm", { locale: dateLoc })}</div>
 </div>
 
-<div class="row"><span>Cliente:</span><span class="bold">${sale.customer_name}</span></div>
-${sale.customer_phone ? `<div class="row"><span>Tel:</span><span>${sale.customer_phone}</span></div>` : ''}
+<div class="row"><span>${t("invoice.client")}:</span><span class="bold">${sale.customer_name}</span></div>
+${sale.customer_phone ? `<div class="row"><span>${t("invoice.tel")}:</span><span>${sale.customer_phone}</span></div>` : ''}
 
 <div class="divider"></div>
 
@@ -224,18 +226,18 @@ ${items.map(item => `<div class="item">
     <span class="item-detail">${item.quantity} x ${symbol}${item.unit_price.toFixed(2)}</span>
     <span class="bold">${symbol}${(item.unit_price * item.quantity).toFixed(2)}</span>
   </div>
-  ${item.warranty_days && item.warranty_days > 0 ? `<div class="item-detail">Garantía: ${item.warranty_days} días</div>` : ''}
+  ${item.warranty_days && item.warranty_days > 0 ? `<div class="item-detail">${t("invoice.warranty")}: ${item.warranty_days} ${t("invoice.days")}</div>` : ''}
 </div>`).join('')}
 
 <div class="total-section">
-  <div class="row total"><span>TOTAL:</span><span>${symbol}${sale.total_amount.toFixed(2)}</span></div>
+  <div class="row total"><span>${t("invoice.total")}:</span><span>${symbol}${sale.total_amount.toFixed(2)}</span></div>
 </div>
 
 <div class="divider"></div>
 
 <div class="footer">
-  <p>Conserve este ticket como comprobante</p>
-  <p>Gracias por su compra</p>
+  <p>${t("invoice.keepTicket")}</p>
+  <p>${t("invoice.thankPurchase")}</p>
   <p>${brand.business_name}</p>
   <p>- - - - - - - - - - - - - - - -</p>
 </div>
@@ -247,12 +249,12 @@ ${items.map(item => `<div class="item">
 };
 
 /** Letter-size invoice for repairs */
-export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null) => {
+export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale) => {
   const symbol = getCurrencySymbol(repair.currency || workshop?.currency || "USD");
   const w = window.open('', '_blank', 'width=900,height=700');
   if (!w) return;
 
-  w.document.write(`<!DOCTYPE html><html><head><title>Factura Reparación ${repair.id.slice(0, 8).toUpperCase()}</title>
+  w.document.write(`<!DOCTYPE html><html><head><title>${t("invoice.serviceOrder")} ${repair.id.slice(0, 8).toUpperCase()}</title>
 <style>
   @page { size: letter; margin: 15mm; }
   @media print { body { margin: 0; } }
@@ -300,57 +302,57 @@ export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: Work
     </div>
   </div>
   <div class="header-right">
-    <div class="inv-num">ORDEN DE SERVICIO</div>
+    <div class="inv-num">${t("invoice.serviceOrder")}</div>
     <div style="font-size:16px; font-weight:bold; margin:4px 0;">#${repair.id.slice(0, 8).toUpperCase()}</div>
-    <div style="font-size:12px; color:#555;">Fecha: ${format(new Date(repair.created_at), "dd/MM/yyyy", { locale: es })}</div>
+    <div style="font-size:12px; color:#555;">${t("invoice.date")}: ${format(new Date(repair.created_at), "dd/MM/yyyy", { locale: dateLoc })}</div>
   </div>
 </div>
 
 <div class="info-grid">
   <div class="info-box">
-    <div class="section-title">Datos del Cliente</div>
+    <div class="section-title">${t("invoice.clientData")}</div>
     <p><strong>${repair.customer_name}</strong></p>
     <p>📞 ${repair.customer_phone}</p>
   </div>
   <div class="info-box">
-    <div class="section-title">Dispositivo</div>
+    <div class="section-title">${t("invoice.device")}</div>
     <p><strong>${repair.device_brand} ${repair.device_model}</strong></p>
     ${repair.device_imei ? `<p>IMEI: ${repair.device_imei}</p>` : ''}
   </div>
 </div>
 
-${repair.repair_description ? `<div class="info-box" style="margin-bottom:16px;"><div class="section-title">Descripción del Problema</div><p>${repair.repair_description}</p></div>` : ''}
+${repair.repair_description ? `<div class="info-box" style="margin-bottom:16px;"><div class="section-title">${t("invoice.description")}</div><p>${repair.repair_description}</p></div>` : ''}
 
 <table>
-  <thead><tr><th>Concepto</th><th>Detalle</th><th>Monto</th></tr></thead>
+  <thead><tr><th>${t("invoice.concept")}</th><th>${t("invoice.detail")}</th><th>${t("invoice.amount")}</th></tr></thead>
   <tbody>
-    <tr><td>Servicio de Reparación</td><td>${repair.repair_types?.name || 'Reparación general'}</td><td>${symbol}${(repair.final_price || repair.estimated_price).toFixed(2)}</td></tr>
-    ${repair.deposit && repair.deposit > 0 ? `<tr><td>Anticipo recibido</td><td>—</td><td>-${symbol}${repair.deposit.toFixed(2)}</td></tr>` : ''}
+    <tr><td>${t("invoice.repairService")}</td><td>${repair.repair_types?.name || t("invoice.generalRepair")}</td><td>${symbol}${(repair.final_price || repair.estimated_price).toFixed(2)}</td></tr>
+    ${repair.deposit && repair.deposit > 0 ? `<tr><td>${t("invoice.depositReceived")}</td><td>—</td><td>-${symbol}${repair.deposit.toFixed(2)}</td></tr>` : ''}
   </tbody>
 </table>
 
 <div class="totals">
   <div class="totals-box">
-    <div class="totals-row"><span>Precio:</span><span>${symbol}${(repair.final_price || repair.estimated_price).toFixed(2)}</span></div>
-    ${repair.deposit && repair.deposit > 0 ? `<div class="totals-row"><span>Anticipo:</span><span>-${symbol}${repair.deposit.toFixed(2)}</span></div>` : ''}
-    <div class="totals-row total"><span>A PAGAR:</span><span>${symbol}${((repair.final_price || repair.estimated_price) - (repair.deposit || 0)).toFixed(2)}</span></div>
+    <div class="totals-row"><span>${t("invoice.price")}:</span><span>${symbol}${(repair.final_price || repair.estimated_price).toFixed(2)}</span></div>
+    ${repair.deposit && repair.deposit > 0 ? `<div class="totals-row"><span>${t("invoice.deposit")}:</span><span>-${symbol}${repair.deposit.toFixed(2)}</span></div>` : ''}
+    <div class="totals-row total"><span>${t("invoice.toPay")}:</span><span>${symbol}${((repair.final_price || repair.estimated_price) - (repair.deposit || 0)).toFixed(2)}</span></div>
   </div>
 </div>
 
-${repair.delivery_date ? `<div class="info-box" style="margin-bottom:16px;"><div class="section-title">Fecha de Entrega Estimada</div><p>${format(new Date(repair.delivery_date), "dd 'de' MMMM 'de' yyyy", { locale: es })}${repair.delivery_time ? ` a las ${repair.delivery_time}` : ''}</p></div>` : ''}
+${repair.delivery_date ? `<div class="info-box" style="margin-bottom:16px;"><div class="section-title">${t("invoice.estimatedDelivery")}</div><p>${format(new Date(repair.delivery_date), "PPP", { locale: dateLoc })}${repair.delivery_time ? ` ${t("invoice.atTime")} ${repair.delivery_time}` : ''}</p></div>` : ''}
 
-<div class="warranty-box"><strong>GARANTÍA: ${repair.warranty_days || 0} DÍAS</strong><br>La garantía cubre defectos de la reparación realizada. No cubre daños físicos, líquidos o manipulación por terceros.</div>
+<div class="warranty-box"><strong>${t("invoice.warrantyTitle")}: ${repair.warranty_days || 0} ${t("invoice.days").toUpperCase()}</strong><br>${t("invoice.warrantyRepairNote")}</div>
 
 <div class="signatures">
-  <div class="sig-box"><div class="sig-line"><div class="sig-label">Firma del Cliente</div><div class="sig-label">${repair.customer_name}</div></div></div>
-  <div class="sig-box"><div class="sig-line"><div class="sig-label">Técnico Responsable</div><div class="sig-label">${brand.business_name}</div></div></div>
+  <div class="sig-box"><div class="sig-line"><div class="sig-label">${t("invoice.clientSignature")}</div><div class="sig-label">${repair.customer_name}</div></div></div>
+  <div class="sig-box"><div class="sig-line"><div class="sig-label">${t("invoice.responsibleTech")}</div><div class="sig-label">${brand.business_name}</div></div></div>
 </div>
 
-<div class="stamp-area"><div class="stamp-box">Sello del<br>Establecimiento</div></div>
+<div class="stamp-area"><div class="stamp-box">${t("invoice.workshopStamp")}</div></div>
 
 <div class="footer">
-  <p>${brand.business_name} · Servicio Técnico Profesional</p>
-  <p>Conserve este documento como comprobante de garantía</p>
+  <p>${brand.business_name} · ${t("invoice.professionalService")}</p>
+  <p>${t("invoice.keepAsWarranty")}</p>
 </div>
 
 </body></html>`);

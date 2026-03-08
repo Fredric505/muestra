@@ -27,7 +27,7 @@ interface SaleItemForm {
 }
 
 const NewSale = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { createSale } = useSales();
   const { products, updateProduct } = useProducts();
@@ -128,6 +128,7 @@ const NewSale = () => {
   const handlePrintInvoice = () => {
     if (!savedSale) return;
     const { printLetterInvoice, printTicketInvoice } = require("@/lib/invoiceUtils");
+    const dateLoc = require("@/lib/dateLocale").getDateLocale(i18n.language);
     const saleForPrint = {
       id: savedSale.id, customer_name: savedSale.customerName, customer_phone: savedSale.customerPhone,
       sale_date: new Date().toISOString(), total_amount: savedSale.total, currency,
@@ -137,7 +138,7 @@ const NewSale = () => {
       })),
     };
     const hasDevices = savedSale.items.some((i: SaleItemForm) => i.condition === "usado" || i.warranty_days > 30);
-    if (hasDevices) { printLetterInvoice(saleForPrint, brand, workshop); } else { printTicketInvoice(saleForPrint, brand, workshop); }
+    if (hasDevices) { printLetterInvoice(saleForPrint, brand, workshop, t, dateLoc); } else { printTicketInvoice(saleForPrint, brand, workshop, t, dateLoc); }
   };
 
   const availableProducts = products.filter(p => p.is_active && p.stock > 0);

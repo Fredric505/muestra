@@ -5,15 +5,13 @@ import { useBrand } from "@/contexts/BrandContext";
 import { useSales } from "@/hooks/useSales";
 import { useProducts, Product } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
 import { Plus, Minus, ShoppingCart, Printer, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { printTicketInvoice } from "@/lib/invoiceUtils";
+import { getDateLocale } from "@/lib/dateLocale";
 
 interface CartItem {
   product: Product;
@@ -27,6 +25,8 @@ interface QuickSaleDialogProps {
 }
 
 const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialogProps) => {
+  const { t, i18n } = useTranslation();
+  const dateLoc = getDateLocale(i18n.language);
   const { user, workshop, workshopId } = useAuth();
   const { brand } = useBrand();
   const { createSale } = useSales();
@@ -36,7 +36,6 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Sync cart when initialProduct or open changes
   useEffect(() => {
     if (open && initialProduct) {
       setCart([{ product: initialProduct, quantity: 1 }]);
@@ -46,7 +45,6 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
   }, [open, initialProduct]);
 
   const currencySymbol = workshop?.currency === "USD" ? "$" : (workshop?.currency || "C$");
-
   const total = cart.reduce((s, item) => s + item.product.selling_price * item.quantity, 0);
 
   const addToCart = (product: Product) => {
@@ -54,7 +52,7 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
       const existing = prev.find(c => c.product.id === product.id);
       if (existing) {
         if (existing.quantity >= product.stock) {
-          toast({ title: "Sin stock", description: "No hay más unidades disponibles", variant: "destructive" });
+          toast({ title: t("quickSale.noStock"), description: t("quickSale.noMoreUnits"), variant: "destructive" });
           return prev;
         }
         return prev.map(c => c.product.id === product.id ? { ...c, quantity: c.quantity + 1 } : c);
@@ -69,7 +67,7 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
       const newQty = c.quantity + delta;
       if (newQty <= 0) return c;
       if (newQty > c.product.stock) {
-        toast({ title: "Sin stock", description: "No hay más unidades", variant: "destructive" });
+        toast({ title: t("quickSale.noStock"), description: t("quickSale.noMoreUnits"), variant: "destructive" });
         return c;
       }
       return { ...c, quantity: newQty };
@@ -84,19 +82,14 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
     if (cart.length === 0) return;
     setIsSubmitting(true);
     try {
-      // 1. Decrease stock FIRST (before creating the sale record)
       for (const c of cart) {
         const currentProduct = products.find(p => p.id === c.product.id);
         if (currentProduct) {
           const newStock = Math.max(0, currentProduct.stock - c.quantity);
-          await updateProduct.mutateAsync({
-            id: c.product.id,
-            stock: newStock,
-          });
+          await updateProduct.mutateAsync({ id: c.product.id, stock: newStock });
         }
       }
 
-      // 2. Create the sale record
       const items = cart.map(c => ({
         product_id: c.product.id,
         product_name: c.product.name,
@@ -108,17 +101,18 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
         device_photo_url: null,
       }));
 
+      const generalCustomer = t("quickSale.generalCustomer");
+
       const result = await createSale.mutateAsync({
-        customer_name: "Cliente General",
+        customer_name: generalCustomer,
         total_amount: total,
         currency: workshop?.currency || "NIO",
         items,
       });
 
-      // 3. Print ticket (user can cancel print — sale & stock are already committed)
       const saleForPrint = {
         id: result.id,
-        customer_name: "Cliente General",
+        customer_name: generalCustomer,
         customer_phone: null,
         sale_date: new Date().toISOString(),
         total_amount: total,
@@ -133,37 +127,33 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
           device_photo_url: null,
         })),
       };
-      printTicketInvoice(saleForPrint, brand, workshop);
+      printTicketInvoice(saleForPrint, brand, workshop, t, dateLoc);
 
-      toast({ title: "Venta registrada", description: "Stock actualizado correctamente" });
+      toast({ title: t("quickSale.saleRegistered"), description: t("quickSale.stockUpdated") });
       setCart([]);
       onOpenChange(false);
     } catch (error: any) {
       console.error(error);
-      toast({ title: "Error", description: error.message || "Error al procesar la venta", variant: "destructive" });
+      toast({ title: t("common.error"), description: error.message || t("quickSale.errorProcessing"), variant: "destructive" });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleOpenChange = (newOpen: boolean) => {
-    onOpenChange(newOpen);
-  };
-
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5 text-primary" />
-            Venta Rápida
+            {t("quickSale.title")}
           </DialogTitle>
         </DialogHeader>
 
         {cart.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <ShoppingCart className="h-10 w-10 mx-auto mb-2 opacity-50" />
-            <p className="text-sm">Carrito vacío</p>
+            <p className="text-sm">{t("quickSale.emptyCart")}</p>
           </div>
         ) : (
           <div className="space-y-3 max-h-[300px] overflow-y-auto">
@@ -192,16 +182,16 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
         )}
 
         <div className="flex items-center justify-between border-t border-border pt-3">
-          <span className="text-lg font-semibold">Total:</span>
+          <span className="text-lg font-semibold">{t("common.total")}:</span>
           <span className="text-xl font-bold text-primary">{currencySymbol}{total.toFixed(2)}</span>
         </div>
 
         <DialogFooter className="flex-col gap-2 sm:flex-col">
           <Button onClick={handleSubmit} disabled={cart.length === 0 || isSubmitting} className="w-full">
             <Printer className="h-4 w-4 mr-2" />
-            {isSubmitting ? "Procesando..." : "Cobrar e Imprimir Ticket"}
+            {isSubmitting ? t("quickSale.processing") : t("quickSale.chargeAndPrint")}
           </Button>
-          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full">Cancelar</Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)} className="w-full">{t("common.cancel")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
