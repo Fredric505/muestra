@@ -15,7 +15,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 const Settings = () => {
-  const { brand, updateBrand, uploadLogo, defaultLogoUrl, isLoading } = useBrand();
+  const { brand, updateBrand, uploadLogo, isLoading } = useBrand();
   const { workshop } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
