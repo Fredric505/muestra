@@ -15,6 +15,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import QuickSaleDialog from "@/components/QuickSaleDialog";
 import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, startOfDay, endOfDay, subMonths } from "date-fns";
+import type { Locale } from "date-fns";
 import { es, enUS, pt, fr } from "date-fns/locale";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
