@@ -11,6 +11,7 @@ interface BrandSettings {
   theme_preset: string;
   custom_primary_color: string | null;
   color_mode: string;
+  invoice_size: string;
 }
 
 interface BrandContextType {
