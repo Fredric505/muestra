@@ -9,6 +9,7 @@ import { useBrand } from "@/contexts/BrandContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ProfileEditDialog } from "@/components/ProfileEditDialog";
+import { GlobalSearch } from "@/components/GlobalSearch";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet";
