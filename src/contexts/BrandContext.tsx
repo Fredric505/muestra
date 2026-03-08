@@ -25,6 +25,9 @@ const defaultBrand: BrandSettings = {
   business_name: "",
   tagline: "",
   logo_url: null,
+  theme_preset: "green",
+  custom_primary_color: null,
+  color_mode: "dark",
 };
 
 const BrandContext = createContext<BrandContextType | undefined>(undefined);
