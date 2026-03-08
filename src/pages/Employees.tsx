@@ -743,6 +743,8 @@ const Employees = () => {
                   <p>No hay préstamos pendientes</p>
                 </div>
               ) : (
+                <>
+                <div className="hidden md:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -754,41 +756,44 @@ const Employees = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {loans
-                      .filter((l) => !l.is_paid)
-                      .map((loan) => {
-                        const employee = employees.find((e) => e.id === loan.employee_id);
-                        return (
-                          <TableRow key={loan.id}>
-                            <TableCell className="font-medium">
-                              {employee?.profiles?.full_name || "Desconocido"}
-                            </TableCell>
-                            <TableCell>
-                              {loan.description || "Sin descripción"}
-                            </TableCell>
-                            <TableCell>
-                              {format(parseISO(loan.loan_date), "dd MMM yyyy", {
-                                locale: es,
-                              })}
-                            </TableCell>
-                            <TableCell className="text-right text-red-400 font-medium">
-                              ${loan.amount.toFixed(2)}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleMarkLoanPaid(loan.id)}
-                              >
-                                <Check className="h-4 w-4 mr-1" />
-                                Marcar Pagado
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
+                    {loans.filter((l) => !l.is_paid).map((loan) => {
+                      const employee = employees.find((e) => e.id === loan.employee_id);
+                      return (
+                        <TableRow key={loan.id}>
+                          <TableCell className="font-medium">{employee?.profiles?.full_name || "Desconocido"}</TableCell>
+                          <TableCell>{loan.description || "Sin descripción"}</TableCell>
+                          <TableCell>{format(parseISO(loan.loan_date), "dd MMM yyyy", { locale: es })}</TableCell>
+                          <TableCell className="text-right text-destructive font-medium">${loan.amount.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="outline" size="sm" onClick={() => handleMarkLoanPaid(loan.id)}><Check className="h-4 w-4 mr-1" />Marcar Pagado</Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
+                </div>
+                <div className="md:hidden space-y-3">
+                  {loans.filter((l) => !l.is_paid).map((loan) => {
+                    const employee = employees.find((e) => e.id === loan.employee_id);
+                    return (
+                      <div key={loan.id} className="border border-border rounded-lg p-3 space-y-2">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="font-medium text-foreground">{employee?.profiles?.full_name || "Desconocido"}</p>
+                            <p className="text-xs text-muted-foreground">{loan.description || "Sin descripción"}</p>
+                          </div>
+                          <p className="font-bold text-destructive">${loan.amount.toFixed(2)}</p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">{format(parseISO(loan.loan_date), "dd/MM/yy", { locale: es })}</span>
+                          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => handleMarkLoanPaid(loan.id)}><Check className="h-3 w-3 mr-1" />Pagado</Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                </>
               )}
             </CardContent>
           </Card>
