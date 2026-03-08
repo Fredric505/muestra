@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Wrench, DollarSign, Clock, CheckCircle, TrendingUp, Package,
-  AlertCircle, Search, ShoppingBag, Image as ImageIcon, Plus, Users, Star, BarChart3,
+  AlertCircle, Search, ShoppingBag, Image as ImageIcon, Plus, Users, Star, BarChart3, PlusCircle,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
