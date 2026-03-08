@@ -691,6 +691,47 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Pause All Dialog */}
+      <Dialog open={showPauseAll} onOpenChange={(open) => { if (!open) { setShowPauseAll(false); setPauseAllReason(""); setPauseAllEstimatedResume(""); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-orange-400"><Pause className="h-5 w-5" /> Mantenimiento Global</DialogTitle>
+            <DialogDescription>Esto pausará TODOS los talleres activos. Los usuarios verán una pantalla de mantenimiento.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Motivo (visible para los usuarios)</Label>
+              <Textarea
+                placeholder="Ej: Actualización del sistema, mejoras de rendimiento..."
+                value={pauseAllReason}
+                onChange={(e) => setPauseAllReason(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Hora estimada de vuelta</Label>
+              <Input
+                type="datetime-local"
+                value={pauseAllEstimatedResume}
+                onChange={(e) => setPauseAllEstimatedResume(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowPauseAll(false)}>Cancelar</Button>
+            <Button
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={() => pauseAllWorkshops.mutate({
+                reason: pauseAllReason,
+                estimatedResume: pauseAllEstimatedResume,
+              })}
+            >
+              <Pause className="h-4 w-4 mr-1.5" />
+              Pausar Todos
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
