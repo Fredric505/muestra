@@ -59,7 +59,7 @@ const Settings = () => {
       setColorMode(((brand as any).color_mode === "light") ? "light" : "dark");
       setInvoiceSize((brand as any).invoice_size || "commercial");
     }
-  }, [brand.business_name, brand.tagline, (brand as any).theme_preset, (brand as any).custom_primary_color, (brand as any).color_mode]);
+  }, [brand.business_name, brand.tagline, (brand as any).theme_preset, (brand as any).custom_primary_color, (brand as any).color_mode, (brand as any).invoice_size]);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
