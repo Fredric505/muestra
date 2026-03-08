@@ -26,6 +26,9 @@ const Settings = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [themePreset, setThemePreset] = useState((brand as any).theme_preset || "green");
+  const [customPrimaryColor, setCustomPrimaryColor] = useState<string | null>((brand as any).custom_primary_color || null);
+  const [colorMode, setColorMode] = useState<"dark" | "light">(((brand as any).color_mode === "light") ? "light" : "dark");
 
   const { data: plan } = useQuery({
     queryKey: ["workshop-plan", workshop?.plan_id],
