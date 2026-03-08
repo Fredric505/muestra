@@ -268,6 +268,9 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
   const [pauseType, setPauseType] = useState<string>("suspension");
   const [pauseReason, setPauseReason] = useState("");
   const [pauseEstimatedResume, setPauseEstimatedResume] = useState("");
+  const [showPauseAll, setShowPauseAll] = useState(false);
+  const [pauseAllReason, setPauseAllReason] = useState("");
+  const [pauseAllEstimatedResume, setPauseAllEstimatedResume] = useState("");
 
   const statusColors: Record<string, string> = {
     active: "bg-green-500/20 text-green-400",
