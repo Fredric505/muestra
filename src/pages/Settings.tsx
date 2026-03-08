@@ -201,6 +201,16 @@ const Settings = () => {
         </Card>
       )}
 
+      {/* Theme Selector */}
+      <ThemeSelector
+        themePreset={themePreset}
+        customPrimaryColor={customPrimaryColor}
+        colorMode={colorMode}
+        onThemePresetChange={setThemePreset}
+        onCustomColorChange={setCustomPrimaryColor}
+        onColorModeChange={setColorMode}
+      />
+
       <div className="grid gap-6 md:grid-cols-2">
         {/* Brand Identity */}
         <Card className="glass-card">
