@@ -271,10 +271,10 @@ export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: Work
   .info-box { background: #f7f7f7; padding: ${invoiceSize === 'commercial' ? '8px' : '14px'}; border-radius: 8px; }
   .info-box p { margin: 3px 0; font-size: ${invoiceSize === 'commercial' ? '10px' : '13px'}; }
   .section-title { font-size: ${invoiceSize === 'commercial' ? '9px' : '11px'}; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: ${invoiceSize === 'commercial' ? '3px' : '6px'}; font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-  thead th { background: #333; color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; }
+  table { width: 100%; border-collapse: collapse; margin: ${invoiceSize === 'commercial' ? '6px 0' : '16px 0'}; }
+  thead th { background: #333; color: #fff; padding: ${invoiceSize === 'commercial' ? '5px 8px' : '10px 12px'}; text-align: left; font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; }
   thead th:last-child { text-align: right; }
-  tbody td { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; }
+  tbody td { padding: ${invoiceSize === 'commercial' ? '5px 8px' : '10px 12px'}; border-bottom: 1px solid #e0e0e0; }
   tbody td:last-child { text-align: right; font-weight: 600; }
   .totals { display: flex; justify-content: flex-end; margin: 10px 0 30px; }
   .totals-box { min-width: 250px; }
