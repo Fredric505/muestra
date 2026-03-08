@@ -248,8 +248,8 @@ ${items.map(item => `<div class="item">
   setTimeout(() => { w.print(); }, 500);
 };
 
-/** Letter-size invoice for repairs */
-export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale) => {
+/** Invoice for repairs — supports letter, commercial (22×14.3cm) sizes */
+export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial') => {
   const symbol = getCurrencySymbol(repair.currency || workshop?.currency || "USD");
   const w = window.open('', '_blank', 'width=900,height=700');
   if (!w) return;
