@@ -2,6 +2,7 @@ import { useRepairs } from "@/hooks/useRepairs";
 import { useSales } from "@/hooks/useSales";
 import { useProducts, Product } from "@/hooks/useProducts";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -14,21 +15,26 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import QuickSaleDialog from "@/components/QuickSaleDialog";
 import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, startOfDay, endOfDay, subMonths } from "date-fns";
-import { es } from "date-fns/locale";
+import { es, enUS, pt, fr } from "date-fns/locale";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, BarChart, Bar,
 } from "recharts";
 
-const statusLabels: Record<string, string> = {
-  received: "Recibido", in_progress: "En Progreso", ready: "Listo", delivered: "Entregado",
-};
-const statusColors: Record<string, string> = {
-  received: "hsl(38, 92%, 50%)", in_progress: "hsl(199, 89%, 48%)",
-  ready: "hsl(142, 71%, 45%)", delivered: "hsl(262, 83%, 58%)",
-};
+const dateFnsLocales: Record<string, Locale> = { es, en: enUS, pt, fr };
 
 const Dashboard = () => {
+  const { t, i18n } = useTranslation();
+  const dateLoc = dateFnsLocales[i18n.language?.substring(0, 2)] || es;
+
+  const statusLabels: Record<string, string> = {
+    received: t("repairStatus.received"), in_progress: t("repairStatus.in_progress"), ready: t("repairStatus.ready"), delivered: t("repairStatus.delivered"),
+  };
+  const statusColors: Record<string, string> = {
+    received: "hsl(38, 92%, 50%)", in_progress: "hsl(199, 89%, 48%)",
+    ready: "hsl(142, 71%, 45%)", delivered: "hsl(262, 83%, 58%)",
+  };
+
   const { isAdmin, employeeType, workshop } = useAuth();
   const { repairs, isLoading: repairsLoading } = useRepairs(true);
   const { sales, isLoading: salesLoading } = useSales();
@@ -39,7 +45,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const handleProductClick = (product: Product) => {
-    // Accessories (not phones) → quick sale dialog
     const isPhone = product.category === "celular" || product.category === "telefono" || product.category === "dispositivo";
     if (isPhone) {
       navigate("/panel/sales/new", { state: { preselectedProduct: product } });
@@ -54,7 +59,6 @@ const Dashboard = () => {
   const showRepairs = isAdminOrSuper || employeeType === "technician";
   const showSales = isAdminOrSuper || employeeType === "seller";
 
-  // Repair stats
   const repairStats = useMemo(() => {
     if (!showRepairs) return null;
     const today = new Date();
@@ -86,7 +90,6 @@ const Dashboard = () => {
     };
   }, [repairs, showRepairs]);
 
-  // Sales stats
   const salesStats = useMemo(() => {
     if (!showSales) return null;
     const today = new Date();
@@ -112,14 +115,12 @@ const Dashboard = () => {
     };
   }, [sales, showSales]);
 
-  // Repair status chart
   const statusData = useMemo(() => {
     if (!showRepairs) return [];
     const counts = repairs.reduce((acc, r) => { acc[r.status] = (acc[r.status] || 0) + 1; return acc; }, {} as Record<string, number>);
-    return Object.entries(counts).map(([status, count]) => ({ name: statusLabels[status], value: count, color: statusColors[status] }));
-  }, [repairs, showRepairs]);
+    return Object.entries(counts).map(([status, count]) => ({ name: statusLabels[status] || status, value: count, color: statusColors[status] }));
+  }, [repairs, showRepairs, t]);
 
-  // Weekly chart
   const weeklyData = useMemo(() => {
     const last7 = Array.from({ length: 7 }, (_, i) => { const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d; });
     return last7.map(date => {
@@ -127,21 +128,19 @@ const Dashboard = () => {
       const dayRepairs = showRepairs ? repairs.filter(r => r.completed_at && isWithinInterval(parseISO(r.completed_at), { start: ds, end: de })) : [];
       const daySales = showSales ? sales.filter(s => s.status === "completed" && isWithinInterval(parseISO(s.sale_date), { start: ds, end: de })) : [];
       return {
-        date: format(date, "EEE", { locale: es }),
-        Reparaciones: dayRepairs.reduce((s, r) => s + ((r.final_price || r.estimated_price || 0) - (r.parts_cost || 0)), 0),
-        Ventas: daySales.reduce((s, sale) => s + (sale.total_amount - (sale.product_cost || 0)), 0),
+        date: format(date, "EEE", { locale: dateLoc }),
+        [t("dashboard.repairsCount")]: dayRepairs.reduce((s, r) => s + ((r.final_price || r.estimated_price || 0) - (r.parts_cost || 0)), 0),
+        [t("dashboard.salesCount")]: daySales.reduce((s, sale) => s + (sale.total_amount - (sale.product_cost || 0)), 0),
       };
     });
-  }, [repairs, sales, showRepairs, showSales]);
+  }, [repairs, sales, showRepairs, showSales, t, dateLoc]);
 
-  // Repair types chart
   const repairTypeData = useMemo(() => {
     if (!showRepairs) return [];
-    const counts = repairs.reduce((acc, r) => { const t = r.repair_types?.name || "Otro"; acc[t] = (acc[t] || 0) + 1; return acc; }, {} as Record<string, number>);
+    const counts = repairs.reduce((acc, r) => { const tp = r.repair_types?.name || "Otro"; acc[tp] = (acc[tp] || 0) + 1; return acc; }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 5);
   }, [repairs, showRepairs]);
 
-  // Monthly stats (last 6 months)
   const monthlyStatsData = useMemo(() => {
     const months = Array.from({ length: 6 }, (_, i) => subMonths(new Date(), 5 - i));
     return months.map(month => {
@@ -150,16 +149,15 @@ const Dashboard = () => {
       const monthRepairs = showRepairs ? repairs.filter(r => r.completed_at && isWithinInterval(parseISO(r.completed_at), { start: ms, end: me })) : [];
       const monthSalesItems = showSales ? sales.filter(s => s.status === "completed" && isWithinInterval(parseISO(s.sale_date), { start: ms, end: me })) : [];
       return {
-        month: format(month, "MMM yy", { locale: es }),
-        Reparaciones: monthRepairs.length,
-        Ventas: monthSalesItems.length,
+        month: format(month, "MMM yy", { locale: dateLoc }),
+        [t("dashboard.repairsCount")]: monthRepairs.length,
+        [t("dashboard.salesCount")]: monthSalesItems.length,
         GananciaRep: monthRepairs.reduce((s, r) => s + ((r.final_price || r.estimated_price || 0) - (r.parts_cost || 0)), 0),
         GananciaVen: monthSalesItems.reduce((s, sale) => s + (sale.total_amount - (sale.product_cost || 0)), 0),
       };
     });
-  }, [repairs, sales, showRepairs, showSales]);
+  }, [repairs, sales, showRepairs, showSales, t, dateLoc]);
 
-  // Frequent clients
   const frequentClients = useMemo(() => {
     const clientMap: Record<string, { name: string; phone: string; repairCount: number; saleCount: number; totalSpent: number; lastVisit: string }> = {};
     
@@ -195,7 +193,6 @@ const Dashboard = () => {
       .slice(0, 10);
   }, [repairs, sales]);
 
-  // Product search
   const filteredProducts = useMemo(() => {
     if (!productSearch.trim()) return products.filter(p => p.is_active && p.stock > 0).slice(0, 8);
     const q = productSearch.toLowerCase();
@@ -203,14 +200,14 @@ const Dashboard = () => {
   }, [products, productSearch]);
 
   if (repairsLoading || salesLoading) {
-    return <div className="flex items-center justify-center h-64"><div className="animate-pulse text-muted-foreground">Cargando...</div></div>;
+    return <div className="flex items-center justify-center h-64"><div className="animate-pulse text-muted-foreground">{t("common.loading")}</div></div>;
   }
 
   return (
     <div className="space-y-4 sm:space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-sm text-muted-foreground">{format(new Date(), "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{t("dashboard.title")}</h1>
+        <p className="text-sm text-muted-foreground">{format(new Date(), "EEEE, d MMMM yyyy", { locale: dateLoc })}</p>
       </div>
 
       {/* Quick Access Shortcuts */}
@@ -219,19 +216,19 @@ const Dashboard = () => {
           <>
             <button onClick={() => navigate("/panel/repairs/new")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
               <PlusCircle className="h-5 w-5 text-primary" />
-              <span className="text-xs font-medium text-foreground">Nueva Rep.</span>
+              <span className="text-xs font-medium text-foreground">{t("dashboard.newRep")}</span>
             </button>
             <button onClick={() => navigate("/panel/repairs")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
               <Wrench className="h-5 w-5 text-primary" />
-              <span className="text-xs font-medium text-foreground">Reparaciones</span>
+              <span className="text-xs font-medium text-foreground">{t("dashboard.repairs")}</span>
             </button>
             <button onClick={() => navigate("/panel/history")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
               <Clock className="h-5 w-5 text-muted-foreground" />
-              <span className="text-xs font-medium text-foreground">Historial</span>
+              <span className="text-xs font-medium text-foreground">{t("dashboard.history")}</span>
             </button>
             <button onClick={() => navigate("/panel/income")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
               <DollarSign className="h-5 w-5 text-success" />
-              <span className="text-xs font-medium text-foreground">Ingresos</span>
+              <span className="text-xs font-medium text-foreground">{t("dashboard.income")}</span>
             </button>
           </>
         )}
@@ -239,11 +236,11 @@ const Dashboard = () => {
           <>
             <button onClick={() => navigate("/panel/sales/new")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
               <ShoppingBag className="h-5 w-5 text-accent" />
-              <span className="text-xs font-medium text-foreground">Nueva Venta</span>
+              <span className="text-xs font-medium text-foreground">{t("dashboard.newSale")}</span>
             </button>
             <button onClick={() => navigate("/panel/sales")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
               <ShoppingBag className="h-5 w-5 text-muted-foreground" />
-              <span className="text-xs font-medium text-foreground">Ventas</span>
+              <span className="text-xs font-medium text-foreground">{t("dashboard.sales")}</span>
             </button>
           </>
         )}
@@ -251,11 +248,11 @@ const Dashboard = () => {
           <>
             <button onClick={() => navigate("/panel/products")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
               <Package className="h-5 w-5 text-muted-foreground" />
-              <span className="text-xs font-medium text-foreground">Inventario</span>
+              <span className="text-xs font-medium text-foreground">{t("dashboard.inventory")}</span>
             </button>
             <button onClick={() => navigate("/panel/employees")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
               <Users className="h-5 w-5 text-muted-foreground" />
-              <span className="text-xs font-medium text-foreground">Empleados</span>
+              <span className="text-xs font-medium text-foreground">{t("dashboard.employees")}</span>
             </button>
           </>
         )}
@@ -267,22 +264,22 @@ const Dashboard = () => {
           <>
             <Card className="glass-card">
               <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
-                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Ganancia Reparaciones Hoy</CardTitle>
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{t("dashboard.repairProfitToday")}</CardTitle>
                 <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </CardHeader>
               <CardContent className="p-3 sm:p-6 pt-0">
                 <div className="text-xl font-bold text-foreground">{currencySymbol}{repairStats.todayProfit.toFixed(2)}</div>
-                <p className="text-xs text-muted-foreground">{repairStats.todayCount} registradas hoy</p>
+                <p className="text-xs text-muted-foreground">{t("dashboard.registeredToday", { count: repairStats.todayCount })}</p>
               </CardContent>
             </Card>
             <Card className="glass-card">
               <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
-                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Pendientes</CardTitle>
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{t("dashboard.pending")}</CardTitle>
                 <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
               </CardHeader>
               <CardContent className="p-3 sm:p-6 pt-0">
                 <div className="text-2xl font-bold text-foreground">{repairStats.pending}</div>
-                <p className="text-xs text-muted-foreground">{repairStats.inProgress} en progreso, {repairStats.ready} listas</p>
+                <p className="text-xs text-muted-foreground">{repairStats.inProgress} {t("dashboard.inProgress")}, {repairStats.ready} {t("dashboard.ready")}</p>
               </CardContent>
             </Card>
           </>
@@ -291,17 +288,17 @@ const Dashboard = () => {
           <>
             <Card className="glass-card">
               <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
-                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Ventas del Mes</CardTitle>
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{t("dashboard.salesOfMonth")}</CardTitle>
                 <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
               </CardHeader>
               <CardContent className="p-3 sm:p-6 pt-0">
                 <div className="text-xl font-bold text-foreground">{currencySymbol}{salesStats.monthRevenue.toFixed(2)}</div>
-                <p className="text-xs text-muted-foreground">{salesStats.totalSalesMonth} ventas completadas</p>
+                <p className="text-xs text-muted-foreground">{t("dashboard.completedSales", { count: salesStats.totalSalesMonth })}</p>
               </CardContent>
             </Card>
             <Card className="glass-card">
               <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
-                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{isAdminOrSuper ? "Ganancia Ventas Mes" : "Ventas Pendientes"}</CardTitle>
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{isAdminOrSuper ? t("dashboard.salesProfitMonth") : t("dashboard.pendingSales")}</CardTitle>
                 {isAdminOrSuper ? <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-success" /> : <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />}
               </CardHeader>
               <CardContent className="p-3 sm:p-6 pt-0">
@@ -310,7 +307,7 @@ const Dashboard = () => {
                 ) : (
                   <div className="text-2xl font-bold text-foreground">{salesStats.pendingCost}</div>
                 )}
-                <p className="text-xs text-muted-foreground">{isAdminOrSuper ? "ganancia neta" : "pendientes de costeo"}</p>
+                <p className="text-xs text-muted-foreground">{isAdminOrSuper ? t("dashboard.netProfit") : t("dashboard.pendingCosting")}</p>
               </CardContent>
             </Card>
           </>
@@ -318,12 +315,12 @@ const Dashboard = () => {
         {showRepairs && repairStats && (
           <Card className="glass-card">
             <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
-              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">Listas para Entrega</CardTitle>
+              <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{t("dashboard.readyForDelivery")}</CardTitle>
               <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
             </CardHeader>
             <CardContent className="p-3 sm:p-6 pt-0">
               <div className="text-2xl font-bold text-foreground">{repairStats.ready}</div>
-              <p className="text-xs text-muted-foreground">Esperando recogida</p>
+              <p className="text-xs text-muted-foreground">{t("dashboard.waitingPickup")}</p>
             </CardContent>
           </Card>
         )}
@@ -335,14 +332,14 @@ const Dashboard = () => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Search className="h-5 w-5 text-primary" />
-              Búsqueda Rápida de Productos
+              {t("dashboard.quickProductSearch")}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="relative max-w-md mb-4">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Buscar por nombre o modelo... ej: Samsung S22, cargador, protector"
+                placeholder={t("dashboard.searchProducts")}
                 className="pl-10"
                 value={productSearch}
                 onChange={e => setProductSearch(e.target.value)}
@@ -351,7 +348,7 @@ const Dashboard = () => {
             {filteredProducts.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <Package className="h-10 w-10 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">No se encontraron productos</p>
+                <p className="text-sm">{t("dashboard.noProductsFound")}</p>
               </div>
             ) : (
                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
@@ -372,12 +369,12 @@ const Dashboard = () => {
                     <div className="flex items-center justify-between mt-1">
                       <span className="text-sm font-bold text-primary">{currencySymbol}{product.selling_price.toFixed(2)}</span>
                       <Badge variant={product.stock > 3 ? "default" : "destructive"} className="text-xs">
-                        {product.stock} disp.
+                        {product.stock} {t("dashboard.available")}
                       </Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1 capitalize">{product.category} · {product.condition}</p>
                     <Button size="sm" variant="outline" className="w-full mt-2 text-xs">
-                      <Plus className="h-3 w-3 mr-1" />Vender
+                      <Plus className="h-3 w-3 mr-1" />{t("dashboard.quickSale")}
                     </Button>
                   </div>
                 ))}
@@ -393,7 +390,7 @@ const Dashboard = () => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-primary" />
-              Ganancias Últimos 7 Días
+              {t("dashboard.weeklyPerformance")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -413,13 +410,13 @@ const Dashboard = () => {
                 <XAxis dataKey="date" stroke="hsl(215, 20%, 65%)" />
                 <YAxis stroke="hsl(215, 20%, 65%)" />
                 <Tooltip contentStyle={{ backgroundColor: "hsl(222, 47%, 13%)", border: "1px solid hsl(217, 33%, 22%)", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(210, 40%, 98%)" }} />
-                {showRepairs && <Area type="monotone" dataKey="Reparaciones" stroke="hsl(142, 71%, 45%)" fillOpacity={1} fill="url(#colorRep)" />}
-                {showSales && <Area type="monotone" dataKey="Ventas" stroke="hsl(262, 83%, 58%)" fillOpacity={1} fill="url(#colorSales)" />}
+                {showRepairs && <Area type="monotone" dataKey={t("dashboard.repairsCount")} stroke="hsl(142, 71%, 45%)" fillOpacity={1} fill="url(#colorRep)" />}
+                {showSales && <Area type="monotone" dataKey={t("dashboard.salesCount")} stroke="hsl(262, 83%, 58%)" fillOpacity={1} fill="url(#colorSales)" />}
               </AreaChart>
             </ResponsiveContainer>
             <div className="flex justify-center gap-6 mt-2">
-              {showRepairs && <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-success" /><span className="text-sm text-muted-foreground">Reparaciones</span></div>}
-              {showSales && <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-accent" /><span className="text-sm text-muted-foreground">Ventas</span></div>}
+              {showRepairs && <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-success" /><span className="text-sm text-muted-foreground">{t("dashboard.repairsCount")}</span></div>}
+              {showSales && <div className="flex items-center gap-2"><div className="w-3 h-3 rounded-full bg-accent" /><span className="text-sm text-muted-foreground">{t("dashboard.salesCount")}</span></div>}
             </div>
           </CardContent>
         </Card>
@@ -427,7 +424,7 @@ const Dashboard = () => {
         {showRepairs && (
           <Card className="glass-card">
             <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2"><Package className="h-5 w-5 text-accent" />Estado de Reparaciones</CardTitle>
+              <CardTitle className="text-lg flex items-center gap-2"><Package className="h-5 w-5 text-accent" />{t("dashboard.repairsByStatus")}</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={250}>
@@ -446,11 +443,11 @@ const Dashboard = () => {
         )}
       </div>
 
-      {/* Repair Types - only for technicians/admins */}
+      {/* Repair Types */}
       {showRepairs && repairTypeData.length > 0 && (
         <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2"><Wrench className="h-5 w-5 text-primary" />Tipos de Reparación Más Comunes</CardTitle>
+            <CardTitle className="text-lg flex items-center gap-2"><Wrench className="h-5 w-5 text-primary" />{t("dashboard.repairsByType")}</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
@@ -470,7 +467,7 @@ const Dashboard = () => {
       {showRepairs && repairs.filter(r => r.status === "ready").length > 0 && (
         <Card className="glass-card border-warning/50">
           <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2 text-warning"><AlertCircle className="h-5 w-5" />Reparaciones Listas para Entrega</CardTitle>
+            <CardTitle className="text-lg flex items-center gap-2 text-warning"><AlertCircle className="h-5 w-5" />{t("dashboard.readyForDelivery")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -482,9 +479,9 @@ const Dashboard = () => {
                     <div>
                       <p className="font-medium text-foreground">{repair.customer_name}</p>
                       <p className="text-sm text-muted-foreground">{repair.device_brand} {repair.device_model} - {repair.repair_types?.name}</p>
-                      <p className="text-sm text-success">Ganancia: {currencySymbol}{netProfit.toFixed(2)}</p>
+                      <p className="text-sm text-success">{t("common.profit")}: {currencySymbol}{netProfit.toFixed(2)}</p>
                     </div>
-                    <a href={`https://wa.me/${repair.customer_phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="text-success hover:text-success/80 text-sm font-medium">Contactar</a>
+                    <a href={`https://wa.me/${repair.customer_phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="text-success hover:text-success/80 text-sm font-medium">{t("repairs.contact")}</a>
                   </div>
                 );
               })}
@@ -499,7 +496,7 @@ const Dashboard = () => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-primary" />
-              Estadísticas Mensuales (Últimos 6 meses)
+              {t("dashboard.monthlyEvolution")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -509,19 +506,19 @@ const Dashboard = () => {
                 <XAxis dataKey="month" stroke="hsl(215, 20%, 65%)" />
                 <YAxis stroke="hsl(215, 20%, 65%)" />
                 <Tooltip contentStyle={{ backgroundColor: "hsl(222, 47%, 13%)", border: "1px solid hsl(217, 33%, 22%)", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(210, 40%, 98%)" }} />
-                {showRepairs && <Bar dataKey="Reparaciones" fill="hsl(199, 89%, 48%)" radius={[4, 4, 0, 0]} />}
-                {showSales && <Bar dataKey="Ventas" fill="hsl(262, 83%, 58%)" radius={[4, 4, 0, 0]} />}
+                {showRepairs && <Bar dataKey={t("dashboard.repairsCount")} fill="hsl(199, 89%, 48%)" radius={[4, 4, 0, 0]} />}
+                {showSales && <Bar dataKey={t("dashboard.salesCount")} fill="hsl(262, 83%, 58%)" radius={[4, 4, 0, 0]} />}
               </BarChart>
             </ResponsiveContainer>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
               {showRepairs && (
                 <>
                   <div className="text-center p-2 rounded-lg bg-secondary/50">
-                    <p className="text-xs text-muted-foreground">Total Reparaciones</p>
-                    <p className="text-lg font-bold text-foreground">{monthlyStatsData.reduce((s, m) => s + m.Reparaciones, 0)}</p>
+                    <p className="text-xs text-muted-foreground">{t("dashboard.repairsCount")} (Total)</p>
+                    <p className="text-lg font-bold text-foreground">{monthlyStatsData.reduce((s, m) => s + ((m as any)[t("dashboard.repairsCount")] || 0), 0)}</p>
                   </div>
                   <div className="text-center p-2 rounded-lg bg-secondary/50">
-                    <p className="text-xs text-muted-foreground">Ganancia Rep.</p>
+                    <p className="text-xs text-muted-foreground">{t("common.profit")} Rep.</p>
                     <p className="text-lg font-bold text-success">{currencySymbol}{monthlyStatsData.reduce((s, m) => s + m.GananciaRep, 0).toFixed(2)}</p>
                   </div>
                 </>
@@ -529,11 +526,11 @@ const Dashboard = () => {
               {showSales && (
                 <>
                   <div className="text-center p-2 rounded-lg bg-secondary/50">
-                    <p className="text-xs text-muted-foreground">Total Ventas</p>
-                    <p className="text-lg font-bold text-foreground">{monthlyStatsData.reduce((s, m) => s + m.Ventas, 0)}</p>
+                    <p className="text-xs text-muted-foreground">{t("dashboard.salesCount")} (Total)</p>
+                    <p className="text-lg font-bold text-foreground">{monthlyStatsData.reduce((s, m) => s + ((m as any)[t("dashboard.salesCount")] || 0), 0)}</p>
                   </div>
                   <div className="text-center p-2 rounded-lg bg-secondary/50">
-                    <p className="text-xs text-muted-foreground">Ganancia Ven.</p>
+                    <p className="text-xs text-muted-foreground">{t("common.profit")} Ven.</p>
                     <p className="text-lg font-bold text-success">{currencySymbol}{monthlyStatsData.reduce((s, m) => s + m.GananciaVen, 0).toFixed(2)}</p>
                   </div>
                 </>
@@ -543,13 +540,13 @@ const Dashboard = () => {
         </Card>
       )}
 
-      {/* Frequent Clients - Admin only */}
+      {/* Frequent Clients */}
       {isAdminOrSuper && frequentClients.length > 0 && (
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
-              Clientes Frecuentes
+              {t("dashboard.frequentClients")}
               <Badge variant="secondary" className="ml-auto">{frequentClients.length}</Badge>
             </CardTitle>
           </CardHeader>
@@ -567,12 +564,12 @@ const Dashboard = () => {
                         {(client.repairCount + client.saleCount) >= 5 && <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        {client.repairCount > 0 && `${client.repairCount} reparaciones`}
+                        {client.repairCount > 0 && `${client.repairCount} ${t("dashboard.repairsQty").toLowerCase()}`}
                         {client.repairCount > 0 && client.saleCount > 0 && " · "}
-                        {client.saleCount > 0 && `${client.saleCount} compras`}
+                        {client.saleCount > 0 && `${client.saleCount} ${t("dashboard.salesQty").toLowerCase()}`}
                       </p>
                       <p className="text-xs text-muted-foreground">
-                        Última visita: {format(parseISO(client.lastVisit), "dd/MM/yyyy", { locale: es })}
+                        {t("dashboard.lastVisit")}: {format(parseISO(client.lastVisit), "dd/MM/yyyy", { locale: dateLoc })}
                       </p>
                     </div>
                   </div>
@@ -584,7 +581,7 @@ const Dashboard = () => {
                       rel="noopener noreferrer"
                       className="text-xs text-green-400 hover:underline"
                     >
-                      Contactar
+                      {t("repairs.contact")}
                     </a>
                   </div>
                 </div>
