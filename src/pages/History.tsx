@@ -376,6 +376,7 @@ const History = () => {
                 );
               })}
             </div>
+            </>
           )}
         </CardContent>
       </Card>
