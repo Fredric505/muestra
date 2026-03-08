@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Settings as SettingsIcon, Upload, Save, Building2, Image, CreditCard, CalendarClock } from "lucide-react";
+import { ThemeSelector } from "@/components/ThemeSelector";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,6 +26,9 @@ const Settings = () => {
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [themePreset, setThemePreset] = useState((brand as any).theme_preset || "green");
+  const [customPrimaryColor, setCustomPrimaryColor] = useState<string | null>((brand as any).custom_primary_color || null);
+  const [colorMode, setColorMode] = useState<"dark" | "light">(((brand as any).color_mode === "light") ? "light" : "dark");
 
   const { data: plan } = useQuery({
     queryKey: ["workshop-plan", workshop?.plan_id],
@@ -45,8 +49,11 @@ const Settings = () => {
     if (brand) {
       setBusinessName(brand.business_name);
       setTagline(brand.tagline);
+      setThemePreset((brand as any).theme_preset || "green");
+      setCustomPrimaryColor((brand as any).custom_primary_color || null);
+      setColorMode(((brand as any).color_mode === "light") ? "light" : "dark");
     }
-  }, [brand.business_name, brand.tagline]);
+  }, [brand.business_name, brand.tagline, (brand as any).theme_preset, (brand as any).custom_primary_color, (brand as any).color_mode]);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -91,7 +98,10 @@ const Settings = () => {
         business_name: businessName.trim(),
         tagline: tagline.trim(),
         logo_url: logoUrl,
-      });
+        theme_preset: themePreset,
+        custom_primary_color: customPrimaryColor,
+        color_mode: colorMode,
+      } as any);
       
       toast({
         title: "Configuración guardada",
@@ -190,6 +200,16 @@ const Settings = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Theme Selector */}
+      <ThemeSelector
+        themePreset={themePreset}
+        customPrimaryColor={customPrimaryColor}
+        colorMode={colorMode}
+        onThemePresetChange={setThemePreset}
+        onCustomColorChange={setCustomPrimaryColor}
+        onColorModeChange={setColorMode}
+      />
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Brand Identity */}

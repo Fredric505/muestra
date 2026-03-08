@@ -17,28 +17,37 @@ export type Database = {
       brand_settings: {
         Row: {
           business_name: string
+          color_mode: string
           created_at: string
+          custom_primary_color: string | null
           id: string
           logo_url: string | null
           tagline: string | null
+          theme_preset: string
           updated_at: string
           workshop_id: string | null
         }
         Insert: {
           business_name?: string
+          color_mode?: string
           created_at?: string
+          custom_primary_color?: string | null
           id?: string
           logo_url?: string | null
           tagline?: string | null
+          theme_preset?: string
           updated_at?: string
           workshop_id?: string | null
         }
         Update: {
           business_name?: string
+          color_mode?: string
           created_at?: string
+          custom_primary_color?: string | null
           id?: string
           logo_url?: string | null
           tagline?: string | null
+          theme_preset?: string
           updated_at?: string
           workshop_id?: string | null
         }

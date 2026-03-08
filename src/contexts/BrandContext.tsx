@@ -8,6 +8,9 @@ interface BrandSettings {
   business_name: string;
   tagline: string;
   logo_url: string | null;
+  theme_preset: string;
+  custom_primary_color: string | null;
+  color_mode: string;
 }
 
 interface BrandContextType {
@@ -22,6 +25,9 @@ const defaultBrand: BrandSettings = {
   business_name: "",
   tagline: "",
   logo_url: null,
+  theme_preset: "green",
+  custom_primary_color: null,
+  color_mode: "dark",
 };
 
 const BrandContext = createContext<BrandContextType | undefined>(undefined);
