@@ -52,7 +52,7 @@ const currencySymbols: Record<Currency, string> = {
 const NewRepair = () => {
   const navigate = useNavigate();
   const { repairTypes, createRepair } = useRepairs();
-  const { brand, defaultLogoUrl } = useBrand();
+  const { brand } = useBrand();
   const { workshop } = useAuth();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -593,7 +593,7 @@ const NewRepair = () => {
                   repair={savedRepair}
                   businessName={brand.business_name}
                   tagline={brand.tagline}
-                  logoUrl={brand.logo_url || defaultLogoUrl}
+                  logoUrl={brand.logo_url || ""}
                 />
               </div>
             )}

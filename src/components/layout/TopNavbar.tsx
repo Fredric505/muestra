@@ -38,7 +38,7 @@ const employeeItems = [
 export function TopNavbar() {
   const location = useLocation();
   const { signOut, profile, isAdmin, isSuperAdmin, employeeType } = useAuth();
-  const { brand, defaultLogoUrl } = useBrand();
+  const { brand } = useBrand();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -50,7 +50,7 @@ export function TopNavbar() {
     ...(isAdminOrSuper ? adminItems : employeeItems),
   ];
 
-  const logoUrl = brand.logo_url || defaultLogoUrl;
+  const brandInitial = (brand.business_name || "T").charAt(0).toUpperCase();
 
   const NavItems = ({ onClick }: { onClick?: () => void }) => (
     <>
@@ -79,8 +79,14 @@ export function TopNavbar() {
         <div className="flex items-center h-14 px-4 gap-3">
           {/* Logo */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <img src={logoUrl} alt={brand.business_name} className="h-8 w-8 rounded-lg object-cover" />
-            <span className="font-bold text-foreground hidden sm:inline text-sm">{brand.business_name}</span>
+            {brand.logo_url ? (
+              <img src={brand.logo_url} alt={brand.business_name} className="h-8 w-8 rounded-lg object-cover" />
+            ) : (
+              <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                <span className="text-sm font-bold text-primary">{brandInitial}</span>
+              </div>
+            )}
+            <span className="font-bold text-foreground hidden sm:inline text-sm">{brand.business_name || "Mi Taller"}</span>
           </div>
 
           {/* Desktop nav */}
@@ -113,8 +119,14 @@ export function TopNavbar() {
               <SheetContent side="right" className="w-72 p-0">
                 <SheetHeader className="p-4 border-b border-border">
                   <SheetTitle className="flex items-center gap-2">
-                    <img src={logoUrl} alt={brand.business_name} className="h-8 w-8 rounded-lg object-cover" />
-                    {brand.business_name}
+                    {brand.logo_url ? (
+                      <img src={brand.logo_url} alt={brand.business_name} className="h-8 w-8 rounded-lg object-cover" />
+                    ) : (
+                      <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                        <span className="text-sm font-bold text-primary">{brandInitial}</span>
+                      </div>
+                    )}
+                    {brand.business_name || "Mi Taller"}
                   </SheetTitle>
                 </SheetHeader>
                 <nav className="flex flex-col gap-1 p-4">

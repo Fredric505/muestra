@@ -15,7 +15,7 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
 const Settings = () => {
-  const { brand, updateBrand, uploadLogo, defaultLogoUrl, isLoading } = useBrand();
+  const { brand, updateBrand, uploadLogo, isLoading } = useBrand();
   const { workshop } = useAuth();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -112,7 +112,7 @@ const Settings = () => {
     }
   };
 
-  const currentLogo = logoPreview || brand.logo_url || defaultLogoUrl;
+  const currentLogo = logoPreview || brand.logo_url || null;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -242,9 +242,11 @@ const Settings = () => {
           <CardContent className="space-y-4">
             <div className="flex items-center gap-6">
               <Avatar className="h-24 w-24 rounded-xl">
-                <AvatarImage src={currentLogo} alt="Logo" className="object-cover" />
-                <AvatarFallback className="rounded-xl text-2xl">
-                  {businessName.charAt(0).toUpperCase()}
+                {currentLogo ? (
+                  <AvatarImage src={currentLogo} alt="Logo" className="object-cover" />
+                ) : null}
+                <AvatarFallback className="rounded-xl text-2xl bg-primary/20 text-primary">
+                  {(businessName || "T").charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-2">
@@ -284,11 +286,13 @@ const Settings = () => {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4 p-4 bg-sidebar rounded-lg">
-            <img
-              src={currentLogo}
-              alt="Logo preview"
-              className="h-12 w-12 rounded-lg object-cover"
-            />
+            {currentLogo ? (
+              <img src={currentLogo} alt="Logo preview" className="h-12 w-12 rounded-lg object-cover" />
+            ) : (
+              <div className="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                <span className="text-lg font-bold text-primary">{(businessName || "T").charAt(0).toUpperCase()}</span>
+              </div>
+            )}
             <div>
               <h3 className="font-bold text-sidebar-foreground">{businessName || "Nombre del Negocio"}</h3>
               <p className="text-xs text-muted-foreground">{tagline || "Eslogan"}</p>

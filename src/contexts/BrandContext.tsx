@@ -15,7 +15,6 @@ interface BrandContextType {
   isLoading: boolean;
   updateBrand: (updates: Partial<BrandSettings>) => Promise<void>;
   uploadLogo: (file: File) => Promise<string>;
-  defaultLogoUrl: string;
 }
 
 const defaultBrand: BrandSettings = {
@@ -34,9 +33,6 @@ export const useBrand = () => {
   }
   return context;
 };
-
-// Import the default logo
-import defaultLogo from "@/assets/wentech-logo.jpg";
 
 export const BrandProvider = ({ children }: { children: ReactNode }) => {
   const queryClient = useQueryClient();
@@ -136,7 +132,6 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
         isLoading,
         updateBrand,
         uploadLogo,
-        defaultLogoUrl: defaultLogo,
       }}
     >
       {children}
