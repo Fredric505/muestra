@@ -286,11 +286,13 @@ const Settings = () => {
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-4 p-4 bg-sidebar rounded-lg">
-            <img
-              src={currentLogo}
-              alt="Logo preview"
-              className="h-12 w-12 rounded-lg object-cover"
-            />
+            {currentLogo ? (
+              <img src={currentLogo} alt="Logo preview" className="h-12 w-12 rounded-lg object-cover" />
+            ) : (
+              <div className="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                <span className="text-lg font-bold text-primary">{(businessName || "T").charAt(0).toUpperCase()}</span>
+              </div>
+            )}
             <div>
               <h3 className="font-bold text-sidebar-foreground">{businessName || "Nombre del Negocio"}</h3>
               <p className="text-xs text-muted-foreground">{tagline || "Eslogan"}</p>

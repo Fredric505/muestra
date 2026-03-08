@@ -79,8 +79,14 @@ export function TopNavbar() {
         <div className="flex items-center h-14 px-4 gap-3">
           {/* Logo */}
           <div className="flex items-center gap-2 flex-shrink-0">
-            <img src={logoUrl} alt={brand.business_name} className="h-8 w-8 rounded-lg object-cover" />
-            <span className="font-bold text-foreground hidden sm:inline text-sm">{brand.business_name}</span>
+            {brand.logo_url ? (
+              <img src={brand.logo_url} alt={brand.business_name} className="h-8 w-8 rounded-lg object-cover" />
+            ) : (
+              <div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                <span className="text-sm font-bold text-primary">{brandInitial}</span>
+              </div>
+            )}
+            <span className="font-bold text-foreground hidden sm:inline text-sm">{brand.business_name || "Mi Taller"}</span>
           </div>
 
           {/* Desktop nav */}

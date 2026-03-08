@@ -132,7 +132,6 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
         isLoading,
         updateBrand,
         uploadLogo,
-        defaultLogoUrl: defaultLogo,
       }}
     >
       {children}
