@@ -75,6 +75,7 @@ export function ThemeSelector({
                   onClick={() => {
                     onThemePresetChange(preset.key);
                     onCustomColorChange(null);
+                    applyThemeToDOM(preset, colorMode);
                   }}
                   className={cn(
                     "relative flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-all",
