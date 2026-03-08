@@ -11,6 +11,7 @@ interface BrandSettings {
   theme_preset: string;
   custom_primary_color: string | null;
   color_mode: string;
+  invoice_size: string;
 }
 
 interface BrandContextType {
@@ -28,6 +29,7 @@ const defaultBrand: BrandSettings = {
   theme_preset: "green",
   custom_primary_color: null,
   color_mode: "dark",
+  invoice_size: "commercial",
 };
 
 const BrandContext = createContext<BrandContextType | undefined>(undefined);

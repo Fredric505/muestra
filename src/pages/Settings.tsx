@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Settings as SettingsIcon, Upload, Save, Building2, Image, CreditCard, CalendarClock } from "lucide-react";
+import { Settings as SettingsIcon, Upload, Save, Building2, Image, CreditCard, CalendarClock, FileText } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ThemeSelector } from "@/components/ThemeSelector";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -32,6 +34,7 @@ const Settings = () => {
   const [themePreset, setThemePreset] = useState((brand as any).theme_preset || "green");
   const [customPrimaryColor, setCustomPrimaryColor] = useState<string | null>((brand as any).custom_primary_color || null);
   const [colorMode, setColorMode] = useState<"dark" | "light">(((brand as any).color_mode === "light") ? "light" : "dark");
+  const [invoiceSize, setInvoiceSize] = useState((brand as any).invoice_size || "commercial");
 
   const { data: plan } = useQuery({
     queryKey: ["workshop-plan", workshop?.plan_id],
@@ -55,8 +58,9 @@ const Settings = () => {
       setThemePreset((brand as any).theme_preset || "green");
       setCustomPrimaryColor((brand as any).custom_primary_color || null);
       setColorMode(((brand as any).color_mode === "light") ? "light" : "dark");
+      setInvoiceSize((brand as any).invoice_size || "commercial");
     }
-  }, [brand.business_name, brand.tagline, (brand as any).theme_preset, (brand as any).custom_primary_color, (brand as any).color_mode]);
+  }, [brand.business_name, brand.tagline, (brand as any).theme_preset, (brand as any).custom_primary_color, (brand as any).color_mode, (brand as any).invoice_size]);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -104,6 +108,7 @@ const Settings = () => {
         theme_preset: themePreset,
         custom_primary_color: customPrimaryColor,
         color_mode: colorMode,
+        invoice_size: invoiceSize,
       } as any);
       
       toast({
@@ -213,6 +218,45 @@ const Settings = () => {
         onCustomColorChange={setCustomPrimaryColor}
         onColorModeChange={setColorMode}
       />
+
+      {/* Invoice Size Selector */}
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <FileText className="h-5 w-5 text-primary" />
+            {t("settings.invoiceSize")}
+          </CardTitle>
+          <CardDescription>
+            {t("settings.invoiceSizeDesc")}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <RadioGroup value={invoiceSize} onValueChange={setInvoiceSize} className="grid gap-3 sm:grid-cols-3">
+            {[
+              { value: "commercial", label: t("settings.sizeCommercial"), desc: t("settings.sizeCommercialDesc") },
+              { value: "letter", label: t("settings.sizeLetter"), desc: t("settings.sizeLetterDesc") },
+              { value: "ticket", label: t("settings.sizeTicket"), desc: t("settings.sizeTicketDesc") },
+            ].map((opt) => (
+              <Label
+                key={opt.value}
+                htmlFor={`size-${opt.value}`}
+                className={cn(
+                  "flex items-start gap-3 rounded-lg border p-4 cursor-pointer transition-colors",
+                  invoiceSize === opt.value
+                    ? "border-primary bg-primary/10"
+                    : "border-border hover:bg-muted/50"
+                )}
+              >
+                <RadioGroupItem value={opt.value} id={`size-${opt.value}`} className="mt-0.5" />
+                <div>
+                  <div className="font-medium text-foreground">{opt.label}</div>
+                  <div className="text-xs text-muted-foreground">{opt.desc}</div>
+                </div>
+              </Label>
+            ))}
+          </RadioGroup>
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Brand Identity */}

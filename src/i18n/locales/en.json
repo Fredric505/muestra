@@ -526,7 +526,15 @@
     "colorCyan": "Cyan",
     "colorPink": "Pink",
     "colorAmber": "Amber",
-    "colorCustom": "Custom"
+    "colorCustom": "Custom",
+    "invoiceSize": "Invoice Size",
+    "invoiceSizeDesc": "Select the paper size for phone sales and repair invoices",
+    "sizeLetter": "Letter",
+    "sizeLetterDesc": "8.5 × 11 in — Full size",
+    "sizeCommercial": "Commercial",
+    "sizeCommercialDesc": "22 × 14.3 cm — Most used in shops",
+    "sizeTicket": "Ticket",
+    "sizeTicketDesc": "80mm — Thermal printer"
   },
   "exportPage": {
     "title": "Export Data",

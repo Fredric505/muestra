@@ -44,8 +44,8 @@ const getCurrencySymbol = (currency: string) => {
   return map[currency] || currency;
 };
 
-/** Letter-size invoice for phones/repairs — with seal/signature spaces */
-export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale) => {
+/** Unified invoice for phones/repairs — supports letter, commercial (22×14.3cm), and ticket sizes */
+export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial') => {
   const symbol = getCurrencySymbol(sale.currency);
   const items = sale.sale_items || [];
   const w = window.open('', '_blank', 'width=900,height=700');
@@ -53,44 +53,44 @@ export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
 
   w.document.write(`<!DOCTYPE html><html><head><title>${t("invoice.invoiceTitle")} ${sale.id.slice(0, 8).toUpperCase()}</title>
 <style>
-  @page { size: letter; margin: 15mm; }
+  @page { size: ${invoiceSize === 'commercial' ? '220mm 143mm' : 'letter'}; margin: ${invoiceSize === 'commercial' ? '8mm' : '15mm'}; }
   @media print { body { margin: 0; } .no-print { display: none; } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; padding: 30px; max-width: 800px; margin: 0 auto; font-size: 13px; }
-  .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #222; padding-bottom: 16px; margin-bottom: 20px; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; padding: ${invoiceSize === 'commercial' ? '12px' : '30px'}; max-width: ${invoiceSize === 'commercial' ? '210mm' : '800px'}; margin: 0 auto; font-size: ${invoiceSize === 'commercial' ? '10px' : '13px'}; }
+  .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #222; padding-bottom: ${invoiceSize === 'commercial' ? '8px' : '16px'}; margin-bottom: ${invoiceSize === 'commercial' ? '10px' : '20px'}; }
   .header-left { display: flex; align-items: center; gap: 16px; }
-  .header-left img { max-height: 65px; border-radius: 8px; }
-  .header-left h1 { font-size: 22px; margin: 0; }
-  .header-left p { color: #666; font-size: 12px; margin: 2px 0; }
+  .header-left img { max-height: ${invoiceSize === 'commercial' ? '40px' : '65px'}; border-radius: 8px; }
+  .header-left h1 { font-size: ${invoiceSize === 'commercial' ? '15px' : '22px'}; margin: 0; }
+  .header-left p { color: #666; font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; margin: 2px 0; }
   .header-right { text-align: right; font-size: 12px; color: #555; }
-  .header-right .inv-num { font-size: 18px; font-weight: bold; color: #222; }
-  .section { margin-bottom: 18px; }
-  .section-title { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600; }
-  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .info-box { background: #f7f7f7; padding: 14px; border-radius: 8px; }
+  .header-right .inv-num { font-size: ${invoiceSize === 'commercial' ? '13px' : '18px'}; font-weight: bold; color: #222; }
+  .section { margin-bottom: ${invoiceSize === 'commercial' ? '8px' : '18px'}; }
+  .section-title { font-size: ${invoiceSize === 'commercial' ? '9px' : '11px'}; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: ${invoiceSize === 'commercial' ? '3px' : '6px'}; font-weight: 600; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: ${invoiceSize === 'commercial' ? '8px' : '16px'}; }
+  .info-box { background: #f7f7f7; padding: ${invoiceSize === 'commercial' ? '8px' : '14px'}; border-radius: 8px; }
   .info-box p { margin: 3px 0; font-size: 13px; }
   .info-box strong { font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-  thead th { background: #333; color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  table { width: 100%; border-collapse: collapse; margin: ${invoiceSize === 'commercial' ? '6px 0' : '16px 0'}; }
+  thead th { background: #333; color: #fff; padding: ${invoiceSize === 'commercial' ? '5px 8px' : '10px 12px'}; text-align: left; font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; text-transform: uppercase; letter-spacing: 0.5px; }
   thead th:last-child { text-align: right; }
-  tbody td { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; font-size: 13px; }
+  tbody td { padding: ${invoiceSize === 'commercial' ? '5px 8px' : '10px 12px'}; border-bottom: 1px solid #e0e0e0; font-size: ${invoiceSize === 'commercial' ? '10px' : '13px'}; }
   tbody td:last-child { text-align: right; font-weight: 600; }
   tbody tr:nth-child(even) { background: #fafafa; }
   .totals { display: flex; justify-content: flex-end; margin: 10px 0 30px; }
-  .totals-box { min-width: 250px; }
-  .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
-  .totals-row.total { border-top: 3px solid #222; padding-top: 10px; margin-top: 6px; font-size: 18px; font-weight: bold; }
+  .totals-box { min-width: ${invoiceSize === 'commercial' ? '180px' : '250px'}; }
+  .totals-row { display: flex; justify-content: space-between; padding: ${invoiceSize === 'commercial' ? '3px 0' : '6px 0'}; font-size: ${invoiceSize === 'commercial' ? '11px' : '14px'}; }
+  .totals-row.total { border-top: 3px solid #222; padding-top: ${invoiceSize === 'commercial' ? '6px' : '10px'}; margin-top: ${invoiceSize === 'commercial' ? '3px' : '6px'}; font-size: ${invoiceSize === 'commercial' ? '13px' : '18px'}; font-weight: bold; }
   .photos { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
   .photos img { max-width: 180px; max-height: 180px; border-radius: 8px; border: 1px solid #ddd; object-fit: cover; }
-  .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 50px; }
+  .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: ${invoiceSize === 'commercial' ? '20px' : '40px'}; margin-top: ${invoiceSize === 'commercial' ? '15px' : '50px'}; }
   .sig-box { text-align: center; }
-  .sig-line { border-top: 2px solid #222; margin-top: 60px; padding-top: 8px; }
-  .sig-label { font-size: 12px; color: #666; }
-  .warranty-box { background: #f0f9f0; border: 1px solid #c3e6c3; border-radius: 8px; padding: 14px; margin: 20px 0; text-align: center; }
+  .sig-line { border-top: 2px solid #222; margin-top: ${invoiceSize === 'commercial' ? '25px' : '60px'}; padding-top: 8px; }
+  .sig-label { font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; color: #666; }
+  .warranty-box { background: #f0f9f0; border: 1px solid #c3e6c3; border-radius: 8px; padding: ${invoiceSize === 'commercial' ? '8px' : '14px'}; margin: ${invoiceSize === 'commercial' ? '8px 0' : '20px 0'}; text-align: center; }
   .warranty-box strong { color: #2d7a2d; }
-  .footer { text-align: center; margin-top: 30px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 11px; color: #999; }
-  .stamp-area { display: flex; justify-content: center; margin-top: 20px; }
-  .stamp-box { width: 140px; height: 140px; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 11px; }
+  .footer { text-align: center; margin-top: ${invoiceSize === 'commercial' ? '10px' : '30px'}; padding-top: ${invoiceSize === 'commercial' ? '6px' : '16px'}; border-top: 1px solid #ddd; font-size: ${invoiceSize === 'commercial' ? '8px' : '11px'}; color: #999; }
+  .stamp-area { display: flex; justify-content: center; margin-top: ${invoiceSize === 'commercial' ? '8px' : '20px'}; }
+  .stamp-box { width: ${invoiceSize === 'commercial' ? '80px' : '140px'}; height: ${invoiceSize === 'commercial' ? '80px' : '140px'}; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: ${invoiceSize === 'commercial' ? '9px' : '11px'}; }
 </style></head><body>
 
 <div class="header">
@@ -248,47 +248,47 @@ ${items.map(item => `<div class="item">
   setTimeout(() => { w.print(); }, 500);
 };
 
-/** Letter-size invoice for repairs */
-export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale) => {
+/** Invoice for repairs — supports letter, commercial (22×14.3cm) sizes */
+export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial') => {
   const symbol = getCurrencySymbol(repair.currency || workshop?.currency || "USD");
   const w = window.open('', '_blank', 'width=900,height=700');
   if (!w) return;
 
   w.document.write(`<!DOCTYPE html><html><head><title>${t("invoice.serviceOrder")} ${repair.id.slice(0, 8).toUpperCase()}</title>
 <style>
-  @page { size: letter; margin: 15mm; }
+  @page { size: ${invoiceSize === 'commercial' ? '220mm 143mm' : 'letter'}; margin: ${invoiceSize === 'commercial' ? '8mm' : '15mm'}; }
   @media print { body { margin: 0; } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; padding: 30px; max-width: 800px; margin: 0 auto; font-size: 13px; }
-  .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #222; padding-bottom: 16px; margin-bottom: 20px; }
-  .header-left { display: flex; align-items: center; gap: 16px; }
-  .header-left img { max-height: 65px; border-radius: 8px; }
-  .header-left h1 { font-size: 22px; }
-  .header-left p { color: #666; font-size: 12px; margin: 2px 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; padding: ${invoiceSize === 'commercial' ? '12px' : '30px'}; max-width: ${invoiceSize === 'commercial' ? '210mm' : '800px'}; margin: 0 auto; font-size: ${invoiceSize === 'commercial' ? '10px' : '13px'}; }
+  .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #222; padding-bottom: ${invoiceSize === 'commercial' ? '8px' : '16px'}; margin-bottom: ${invoiceSize === 'commercial' ? '10px' : '20px'}; }
+  .header-left { display: flex; align-items: center; gap: ${invoiceSize === 'commercial' ? '10px' : '16px'}; }
+  .header-left img { max-height: ${invoiceSize === 'commercial' ? '40px' : '65px'}; border-radius: 8px; }
+  .header-left h1 { font-size: ${invoiceSize === 'commercial' ? '15px' : '22px'}; }
+  .header-left p { color: #666; font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; margin: 2px 0; }
   .header-right { text-align: right; }
-  .header-right .inv-num { font-size: 18px; font-weight: bold; }
-  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-  .info-box { background: #f7f7f7; padding: 14px; border-radius: 8px; }
-  .info-box p { margin: 3px 0; font-size: 13px; }
-  .section-title { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-  thead th { background: #333; color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; }
+  .header-right .inv-num { font-size: ${invoiceSize === 'commercial' ? '13px' : '18px'}; font-weight: bold; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: ${invoiceSize === 'commercial' ? '8px' : '16px'}; margin-bottom: ${invoiceSize === 'commercial' ? '10px' : '20px'}; }
+  .info-box { background: #f7f7f7; padding: ${invoiceSize === 'commercial' ? '8px' : '14px'}; border-radius: 8px; }
+  .info-box p { margin: 3px 0; font-size: ${invoiceSize === 'commercial' ? '10px' : '13px'}; }
+  .section-title { font-size: ${invoiceSize === 'commercial' ? '9px' : '11px'}; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: ${invoiceSize === 'commercial' ? '3px' : '6px'}; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; margin: ${invoiceSize === 'commercial' ? '6px 0' : '16px 0'}; }
+  thead th { background: #333; color: #fff; padding: ${invoiceSize === 'commercial' ? '5px 8px' : '10px 12px'}; text-align: left; font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; }
   thead th:last-child { text-align: right; }
-  tbody td { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; }
+  tbody td { padding: ${invoiceSize === 'commercial' ? '5px 8px' : '10px 12px'}; border-bottom: 1px solid #e0e0e0; }
   tbody td:last-child { text-align: right; font-weight: 600; }
-  .totals { display: flex; justify-content: flex-end; margin: 10px 0 30px; }
-  .totals-box { min-width: 250px; }
-  .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
-  .totals-row.total { border-top: 3px solid #222; padding-top: 10px; font-size: 18px; font-weight: bold; }
-  .warranty-box { background: #f0f9f0; border: 1px solid #c3e6c3; border-radius: 8px; padding: 14px; margin: 20px 0; text-align: center; }
+  .totals { display: flex; justify-content: flex-end; margin: ${invoiceSize === 'commercial' ? '6px 0 10px' : '10px 0 30px'}; }
+  .totals-box { min-width: ${invoiceSize === 'commercial' ? '180px' : '250px'}; }
+  .totals-row { display: flex; justify-content: space-between; padding: ${invoiceSize === 'commercial' ? '3px 0' : '6px 0'}; font-size: ${invoiceSize === 'commercial' ? '11px' : '14px'}; }
+  .totals-row.total { border-top: 3px solid #222; padding-top: ${invoiceSize === 'commercial' ? '6px' : '10px'}; font-size: ${invoiceSize === 'commercial' ? '13px' : '18px'}; font-weight: bold; }
+  .warranty-box { background: #f0f9f0; border: 1px solid #c3e6c3; border-radius: 8px; padding: ${invoiceSize === 'commercial' ? '8px' : '14px'}; margin: ${invoiceSize === 'commercial' ? '8px 0' : '20px 0'}; text-align: center; }
   .warranty-box strong { color: #2d7a2d; }
-  .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 50px; }
+  .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: ${invoiceSize === 'commercial' ? '20px' : '40px'}; margin-top: ${invoiceSize === 'commercial' ? '15px' : '50px'}; }
   .sig-box { text-align: center; }
-  .sig-line { border-top: 2px solid #222; margin-top: 60px; padding-top: 8px; }
-  .sig-label { font-size: 12px; color: #666; }
-  .stamp-area { display: flex; justify-content: center; margin-top: 20px; }
-  .stamp-box { width: 140px; height: 140px; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: 11px; }
-  .footer { text-align: center; margin-top: 30px; padding-top: 16px; border-top: 1px solid #ddd; font-size: 11px; color: #999; }
+  .sig-line { border-top: 2px solid #222; margin-top: ${invoiceSize === 'commercial' ? '25px' : '60px'}; padding-top: 8px; }
+  .sig-label { font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; color: #666; }
+  .stamp-area { display: flex; justify-content: center; margin-top: ${invoiceSize === 'commercial' ? '8px' : '20px'}; }
+  .stamp-box { width: ${invoiceSize === 'commercial' ? '80px' : '140px'}; height: ${invoiceSize === 'commercial' ? '80px' : '140px'}; border: 2px dashed #ccc; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #bbb; font-size: ${invoiceSize === 'commercial' ? '9px' : '11px'}; }
+  .footer { text-align: center; margin-top: ${invoiceSize === 'commercial' ? '10px' : '30px'}; padding-top: ${invoiceSize === 'commercial' ? '6px' : '16px'}; border-top: 1px solid #ddd; font-size: ${invoiceSize === 'commercial' ? '8px' : '11px'}; color: #999; }
 </style></head><body>
 
 <div class="header">

@@ -138,7 +138,7 @@ const NewSale = () => {
       })),
     };
     const hasDevices = savedSale.items.some((i: SaleItemForm) => i.condition === "usado" || i.warranty_days > 30);
-    if (hasDevices) { printLetterInvoice(saleForPrint, brand, workshop, t, dateLoc); } else { printTicketInvoice(saleForPrint, brand, workshop, t, dateLoc); }
+    if (hasDevices) { printLetterInvoice(saleForPrint, brand, workshop, t, dateLoc, (brand as any).invoice_size || 'commercial'); } else { printTicketInvoice(saleForPrint, brand, workshop, t, dateLoc); }
   };
 
   const availableProducts = products.filter(p => p.is_active && p.stock > 0);

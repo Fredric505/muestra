@@ -526,7 +526,15 @@
     "colorCyan": "Cyan",
     "colorPink": "Rose",
     "colorAmber": "Ambre",
-    "colorCustom": "Personnalisé"
+    "colorCustom": "Personnalisé",
+    "invoiceSize": "Taille de Facture",
+    "invoiceSizeDesc": "Sélectionnez la taille du papier pour les factures de ventes de téléphones et réparations",
+    "sizeLetter": "Lettre",
+    "sizeLetterDesc": "21,6 × 27,9 cm — Taille complète",
+    "sizeCommercial": "Commercial",
+    "sizeCommercialDesc": "22 × 14,3 cm — Le plus utilisé en magasin",
+    "sizeTicket": "Ticket",
+    "sizeTicketDesc": "80mm — Imprimante thermique"
   },
   "exportPage": {
     "title": "Exporter les Données",
