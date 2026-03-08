@@ -218,7 +218,8 @@ const History = () => {
               <p>No hay reparaciones en el historial</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -249,128 +250,60 @@ const History = () => {
                       <TableRow key={repair.id}>
                         <TableCell>
                           <div>
-                            <p className="font-medium text-foreground">
-                              {repair.customer_name}
-                            </p>
-                            <a
-                              href={`https://wa.me/${phone}?text=${encodeURIComponent(whatsappMessage)}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-sm text-success hover:underline flex items-center gap-1"
-                            >
-                              <MessageCircle className="h-3 w-3" />
-                              {repair.customer_phone}
+                            <p className="font-medium text-foreground">{repair.customer_name}</p>
+                            <a href={`https://wa.me/${phone}?text=${encodeURIComponent(whatsappMessage)}`} target="_blank" rel="noopener noreferrer" className="text-sm text-success hover:underline flex items-center gap-1">
+                              <MessageCircle className="h-3 w-3" />{repair.customer_phone}
                             </a>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <p className="font-medium">
-                            {repair.device_brand} {repair.device_model}
-                          </p>
-                        </TableCell>
-                        <TableCell>
-                          <p>{repair.repair_types?.name || "N/A"}</p>
-                        </TableCell>
+                        <TableCell><p className="font-medium">{repair.device_brand} {repair.device_model}</p></TableCell>
+                        <TableCell><p>{repair.repair_types?.name || "N/A"}</p></TableCell>
                         <TableCell>
                           {repair.status === "delivered" ? (
-                            <Badge className="bg-success/20 text-success border-success/30">
-                              Entregado
-                            </Badge>
+                            <Badge className="bg-success/20 text-success border-success/30">Entregado</Badge>
                           ) : (
-                            <Badge variant="destructive" className="flex items-center gap-1 w-fit">
-                              <XCircle className="h-3 w-3" />
-                              Fallido
-                            </Badge>
+                            <Badge variant="destructive" className="flex items-center gap-1 w-fit"><XCircle className="h-3 w-3" />Fallido</Badge>
                           )}
                         </TableCell>
-                        <TableCell>
-                          <p className="font-medium text-foreground">
-                            {symbol}{price.toFixed(2)}
-                          </p>
-                        </TableCell>
-                        <TableCell>
-                          <p className={`font-medium ${netProfit >= 0 ? 'text-success' : 'text-destructive'}`}>
-                            {symbol}{netProfit.toFixed(2)}
-                          </p>
-                        </TableCell>
+                        <TableCell><p className="font-medium text-foreground">{symbol}{price.toFixed(2)}</p></TableCell>
+                        <TableCell><p className={`font-medium ${netProfit >= 0 ? 'text-success' : 'text-destructive'}`}>{symbol}{netProfit.toFixed(2)}</p></TableCell>
                         <TableCell>
                           {repair.warranty_days && repair.warranty_days > 0 ? (
-                            <Badge 
-                              variant={warrantyValid ? "default" : "secondary"}
-                              className={warrantyValid ? "bg-success text-success-foreground" : ""}
-                            >
-                              <Shield className="h-3 w-3 mr-1" />
-                              {repair.warranty_days} días
+                            <Badge variant={warrantyValid ? "default" : "secondary"} className={warrantyValid ? "bg-success text-success-foreground" : ""}>
+                              <Shield className="h-3 w-3 mr-1" />{repair.warranty_days} días
                             </Badge>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">Sin garantía</span>
-                          )}
+                          ) : (<span className="text-muted-foreground text-sm">Sin garantía</span>)}
                         </TableCell>
                         <TableCell>
                           {(repair.device_photo_received || repair.device_photo_delivered) ? (
                             <Dialog>
                               <DialogTrigger asChild>
-                                <Button variant="outline" size="sm" className="gap-1">
-                                  <Camera className="h-3.5 w-3.5" />
-                                  Ver
-                                </Button>
+                                <Button variant="outline" size="sm" className="gap-1"><Camera className="h-3.5 w-3.5" />Ver</Button>
                               </DialogTrigger>
                               <DialogContent className="max-w-2xl">
-                                <DialogHeader>
-                                  <DialogTitle>Fotos del dispositivo - {repair.device_brand} {repair.device_model}</DialogTitle>
-                                </DialogHeader>
+                                <DialogHeader><DialogTitle>Fotos - {repair.device_brand} {repair.device_model}</DialogTitle></DialogHeader>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                                   <div className="space-y-2">
                                     <p className="text-sm font-medium text-muted-foreground">📥 Recibido</p>
                                     {repair.device_photo_received ? (
-                                      <img
-                                        src={repair.device_photo_received.startsWith("http") ? repair.device_photo_received : supabase.storage.from("device-photos").getPublicUrl(repair.device_photo_received).data.publicUrl}
-                                        alt="Foto al recibir"
-                                        className="rounded-lg border w-full object-cover max-h-80"
-                                      />
-                                    ) : (
-                                      <div className="rounded-lg border border-dashed flex items-center justify-center h-48 text-muted-foreground text-sm">
-                                        <ImageIcon className="h-5 w-5 mr-2 opacity-50" />
-                                        Sin foto
-                                      </div>
-                                    )}
+                                      <img src={repair.device_photo_received.startsWith("http") ? repair.device_photo_received : supabase.storage.from("device-photos").getPublicUrl(repair.device_photo_received).data.publicUrl} alt="Recibido" className="rounded-lg border w-full object-cover max-h-80" />
+                                    ) : (<div className="rounded-lg border border-dashed flex items-center justify-center h-48 text-muted-foreground text-sm"><ImageIcon className="h-5 w-5 mr-2 opacity-50" />Sin foto</div>)}
                                   </div>
                                   <div className="space-y-2">
                                     <p className="text-sm font-medium text-muted-foreground">📤 Entregado</p>
                                     {repair.device_photo_delivered ? (
-                                      <img
-                                        src={repair.device_photo_delivered.startsWith("http") ? repair.device_photo_delivered : supabase.storage.from("device-photos").getPublicUrl(repair.device_photo_delivered).data.publicUrl}
-                                        alt="Foto al entregar"
-                                        className="rounded-lg border w-full object-cover max-h-80"
-                                      />
-                                    ) : (
-                                      <div className="rounded-lg border border-dashed flex items-center justify-center h-48 text-muted-foreground text-sm">
-                                        <ImageIcon className="h-5 w-5 mr-2 opacity-50" />
-                                        Sin foto
-                                      </div>
-                                    )}
+                                      <img src={repair.device_photo_delivered.startsWith("http") ? repair.device_photo_delivered : supabase.storage.from("device-photos").getPublicUrl(repair.device_photo_delivered).data.publicUrl} alt="Entregado" className="rounded-lg border w-full object-cover max-h-80" />
+                                    ) : (<div className="rounded-lg border border-dashed flex items-center justify-center h-48 text-muted-foreground text-sm"><ImageIcon className="h-5 w-5 mr-2 opacity-50" />Sin foto</div>)}
                                   </div>
                                 </div>
                               </DialogContent>
                             </Dialog>
-                          ) : (
-                            <span className="text-muted-foreground text-sm">Sin fotos</span>
-                          )}
+                          ) : (<span className="text-muted-foreground text-sm">Sin fotos</span>)}
                         </TableCell>
-                        <TableCell>
-                          {repair.completed_at &&
-                            format(parseISO(repair.completed_at), "dd MMM yyyy", {
-                              locale: es,
-                            })}
-                        </TableCell>
+                        <TableCell>{repair.completed_at && format(parseISO(repair.completed_at), "dd MMM yyyy", { locale: es })}</TableCell>
                         {isAdmin && (
                           <TableCell className="text-right">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="text-destructive hover:text-destructive"
-                              onClick={() => openDeleteDialog(repair.id)}
-                            >
+                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => openDeleteDialog(repair.id)}>
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </TableCell>
@@ -380,6 +313,66 @@ const History = () => {
                   })}
                 </TableBody>
               </Table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden space-y-3">
+              {completedRepairs.map((repair) => {
+                const symbol = currencySymbols[repair.currency];
+                const price = repair.final_price || repair.estimated_price;
+                const netProfit = price - (repair.parts_cost || 0);
+                const warrantyValid = repair.completed_at && repair.warranty_days 
+                  ? isWarrantyValid(repair.completed_at, repair.warranty_days) : false;
+                const whatsappMessage = getHistoryWhatsAppMessage(repair, brand.business_name);
+                const phone = repair.customer_phone.replace(/\D/g, "");
+
+                return (
+                  <div key={repair.id} className="border border-border rounded-lg p-3 space-y-2">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="font-medium text-foreground">{repair.customer_name}</p>
+                        <p className="text-sm text-muted-foreground">{repair.device_brand} {repair.device_model}</p>
+                      </div>
+                      {repair.status === "delivered" ? (
+                        <Badge className="bg-success/20 text-success border-success/30 text-xs">Entregado</Badge>
+                      ) : (
+                        <Badge variant="destructive" className="text-xs">Fallido</Badge>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">{repair.repair_types?.name || "N/A"}</span>
+                      <span className="text-muted-foreground">{repair.completed_at && format(parseISO(repair.completed_at), "dd/MM/yy", { locale: es })}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-xs text-muted-foreground">Precio: </span>
+                        <span className="font-medium">{symbol}{price.toFixed(2)}</span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Ganancia: </span>
+                        <span className={`font-medium ${netProfit >= 0 ? 'text-success' : 'text-destructive'}`}>{symbol}{netProfit.toFixed(2)}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 pt-1">
+                      <a href={`https://wa.me/${phone}?text=${encodeURIComponent(whatsappMessage)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-success hover:underline flex items-center gap-1">
+                        <MessageCircle className="h-3 w-3" />WhatsApp
+                      </a>
+                      {repair.warranty_days && repair.warranty_days > 0 && (
+                        <Badge variant={warrantyValid ? "default" : "secondary"} className={cn("text-xs", warrantyValid ? "bg-success text-success-foreground" : "")}>
+                          <Shield className="h-3 w-3 mr-1" />{repair.warranty_days}d
+                        </Badge>
+                      )}
+                      <div className="ml-auto">
+                        {isAdmin && (
+                          <Button variant="ghost" size="sm" className="text-destructive h-7 px-2" onClick={() => openDeleteDialog(repair.id)}>
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </CardContent>
