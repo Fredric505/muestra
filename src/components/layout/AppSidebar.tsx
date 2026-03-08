@@ -81,11 +81,13 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-sidebar-border p-4">
         <div className="flex items-center gap-3">
           <div className="relative flex-shrink-0">
-            <img 
-              src={logoUrl} 
-              alt={brand.business_name} 
-              className="h-10 w-10 rounded-lg object-cover"
-            />
+            {brand.logo_url ? (
+              <img src={brand.logo_url} alt={brand.business_name} className="h-10 w-10 rounded-lg object-cover" />
+            ) : (
+              <div className="h-10 w-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                <span className="text-lg font-bold text-primary">{brandInitial}</span>
+              </div>
+            )}
           </div>
           {open && (
             <div className="animate-fade-in">
