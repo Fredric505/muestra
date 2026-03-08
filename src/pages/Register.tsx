@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,10 +8,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Smartphone, ArrowLeft, Building2, Phone, Mail, MapPin, User, Lock } from "lucide-react";
+import { Smartphone, ArrowLeft, Building2, Phone, Mail, MapPin, User, Lock, MessageSquare as MessageSquareIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { LanguageSelector } from "@/components/LanguageSelector";
+
+const currencies = ["USD", "NIO", "HNL", "GTQ", "CRC", "PAB", "MXN", "COP", "PEN", "ARS", "CLP", "BRL", "EUR"];
 
 const Register = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,22 +49,19 @@ const Register = () => {
     const address = formData.get("address") as string;
 
     try {
-      // 0. Check IP restrictions before registration
       try {
         const { data: ipCheck } = await supabase.functions.invoke("check-ip", {
           body: { action: "register_ip" },
         });
         if (ipCheck && !ipCheck.allowed) {
-          toast({ title: "Registro no permitido", description: ipCheck.reason, variant: "destructive" });
+          toast({ title: t("auth.registrationBlocked"), description: ipCheck.reason, variant: "destructive" });
           setIsSubmitting(false);
           return;
         }
       } catch (ipErr) {
         console.error("IP check error:", ipErr);
-        // Don't block registration if IP check fails
       }
 
-      // 1. Sign up user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
@@ -73,7 +75,6 @@ const Register = () => {
 
       const userId = authData.user.id;
 
-      // 2. Create workshop
       const selectedPlan = plans?.find((p) => p.id === selectedPlanId);
       const hasTrial = selectedPlan?.has_free_trial;
 
@@ -95,9 +96,6 @@ const Register = () => {
 
       if (wsError) throw wsError;
 
-      // 3. Role & profile are auto-created by database triggers
-
-      // 4. Notify via Telegram
       try {
         await supabase.functions.invoke("telegram-notify", {
           body: {
@@ -115,18 +113,15 @@ const Register = () => {
       }
 
       toast({
-        title: "¡Registro exitoso!",
-        description: hasTrial
-          ? "Tu prueba gratis ha comenzado. Ya puedes iniciar sesión."
-          : "Tu cuenta ha sido creada. Inicia sesión y realiza el pago para activar tu taller.",
+        title: t("auth.registrationSuccess"),
+        description: hasTrial ? t("auth.trialStarted") : t("auth.accountCreated"),
       });
 
-      // Auto sign-in the user so they land on the payment page
       await supabase.auth.signInWithPassword({ email, password });
       navigate(hasTrial ? "/panel/dashboard" : "/payment");
     } catch (error: any) {
       toast({
-        title: "Error",
+        title: t("common.error"),
         description: error.message,
         variant: "destructive",
       });
@@ -138,42 +133,45 @@ const Register = () => {
   return (
     <div className="min-h-screen bg-[hsl(222,47%,7%)] text-white flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
-        <div className="flex items-center gap-2 mb-8">
-          <Link to="/" className="text-gray-400 hover:text-white transition-colors">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <Smartphone className="h-6 w-6 text-cyan-400" />
-          <span className="text-lg font-bold">RepairControl</span>
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-2">
+            <Link to="/" className="text-gray-400 hover:text-white transition-colors">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <Smartphone className="h-6 w-6 text-cyan-400" />
+            <span className="text-lg font-bold">RepairControl</span>
+          </div>
+          <LanguageSelector variant="ghost" />
         </div>
 
         <Card className="bg-white/[0.03] border-white/10">
           <CardHeader>
-            <CardTitle className="text-2xl">Registra tu taller</CardTitle>
+            <CardTitle className="text-2xl">{t("auth.registerTitle")}</CardTitle>
             <CardDescription className="text-gray-400">
-              Crea tu cuenta y comienza a gestionar tus reparaciones.
+              {t("auth.registerSubtitle")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="full_name">Tu nombre completo</Label>
+                  <Label htmlFor="full_name">{t("auth.fullName")}</Label>
                   <div className="relative">
                     <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input id="full_name" name="full_name" placeholder="Tu nombre" className="pl-10 bg-white/5 border-white/10" required />
+                    <Input id="full_name" name="full_name" placeholder={t("auth.fullName")} className="pl-10 bg-white/5 border-white/10" required />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="workshop_name">Nombre del taller</Label>
+                  <Label htmlFor="workshop_name">{t("auth.workshopName")}</Label>
                   <div className="relative">
                     <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input id="workshop_name" name="workshop_name" placeholder="Mi Taller" className="pl-10 bg-white/5 border-white/10" required />
+                    <Input id="workshop_name" name="workshop_name" placeholder={t("auth.workshopName")} className="pl-10 bg-white/5 border-white/10" required />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Correo electrónico</Label>
+                <Label htmlFor="email">{t("common.email")}</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                   <Input id="email" name="email" type="email" placeholder="tu@email.com" className="pl-10 bg-white/5 border-white/10" required />
@@ -181,23 +179,23 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Contraseña</Label>
+                <Label htmlFor="password">{t("common.password")}</Label>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                  <Input id="password" name="password" type="password" placeholder="Mínimo 6 caracteres" className="pl-10 bg-white/5 border-white/10" required minLength={6} />
+                  <Input id="password" name="password" type="password" placeholder={t("auth.minPasswordChars")} className="pl-10 bg-white/5 border-white/10" required minLength={6} />
                 </div>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Teléfono</Label>
+                  <Label htmlFor="phone">{t("common.phone")}</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     <Input id="phone" name="phone" placeholder="+505 1234 5678" className="pl-10 bg-white/5 border-white/10" />
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="whatsapp">WhatsApp</Label>
+                  <Label htmlFor="whatsapp">{t("auth.whatsapp")}</Label>
                   <div className="relative">
                     <MessageSquareIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
                     <Input id="whatsapp" name="whatsapp" placeholder="+505 1234 5678" className="pl-10 bg-white/5 border-white/10" />
@@ -206,49 +204,39 @@ const Register = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="address">Dirección (opcional)</Label>
+                <Label htmlFor="address">{t("auth.addressOptional")}</Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                  <Input id="address" name="address" placeholder="Dirección del taller" className="pl-10 bg-white/5 border-white/10" />
+                  <Input id="address" name="address" placeholder={t("auth.address")} className="pl-10 bg-white/5 border-white/10" />
                 </div>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label>Moneda del taller</Label>
+                  <Label>{t("auth.workshopCurrency")}</Label>
                   <Select value={selectedCurrency} onValueChange={setSelectedCurrency} required>
                     <SelectTrigger className="bg-white/5 border-white/10">
-                      <SelectValue placeholder="Selecciona tu moneda" />
+                      <SelectValue placeholder={t("auth.selectCurrency")} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="USD">🇺🇸 USD - Dólar estadounidense</SelectItem>
-                      <SelectItem value="NIO">🇳🇮 NIO - Córdoba nicaragüense</SelectItem>
-                      <SelectItem value="HNL">🇭🇳 HNL - Lempira hondureño</SelectItem>
-                      <SelectItem value="GTQ">🇬🇹 GTQ - Quetzal guatemalteco</SelectItem>
-                      <SelectItem value="CRC">🇨🇷 CRC - Colón costarricense</SelectItem>
-                      <SelectItem value="PAB">🇵🇦 PAB - Balboa panameño</SelectItem>
-                      <SelectItem value="MXN">🇲🇽 MXN - Peso mexicano</SelectItem>
-                      <SelectItem value="COP">🇨🇴 COP - Peso colombiano</SelectItem>
-                      <SelectItem value="PEN">🇵🇪 PEN - Sol peruano</SelectItem>
-                      <SelectItem value="ARS">🇦🇷 ARS - Peso argentino</SelectItem>
-                      <SelectItem value="CLP">🇨🇱 CLP - Peso chileno</SelectItem>
-                      <SelectItem value="BRL">🇧🇷 BRL - Real brasileño</SelectItem>
-                      <SelectItem value="EUR">🇪🇺 EUR - Euro</SelectItem>
+                      {currencies.map((code) => (
+                        <SelectItem key={code} value={code}>{t(`currencies.${code}`)}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Plan</Label>
+                  <Label>{t("auth.plan")}</Label>
                   <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
                     <SelectTrigger className="bg-white/5 border-white/10">
-                      <SelectValue placeholder="Selecciona un plan" />
+                      <SelectValue placeholder={t("auth.selectPlan")} />
                     </SelectTrigger>
                     <SelectContent>
                       {plans?.map((plan) => (
                         <SelectItem key={plan.id} value={plan.id}>
-                          {plan.name} - {(plan as any).currency === "USD" ? "$" : "C$"}{plan.monthly_price}/mes
-                          {plan.has_free_trial && ` (${plan.trial_days} días gratis)`}
+                          {plan.name} - {(plan as any).currency === "USD" ? "$" : "C$"}{plan.monthly_price}/{t("common.month")}
+                          {plan.has_free_trial && ` (${plan.trial_days} ${t("common.days")} ${t("landing.freeTrial").toLowerCase()})`}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -257,13 +245,13 @@ const Register = () => {
               </div>
 
               <Button type="submit" disabled={isSubmitting} className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-full">
-                {isSubmitting ? "Creando cuenta..." : "Crear cuenta"}
+                {isSubmitting ? t("auth.creatingAccount") : t("auth.createAccount")}
               </Button>
 
               <p className="text-center text-sm text-gray-400">
-                ¿Ya tienes cuenta?{" "}
+                {t("auth.hasAccount")}{" "}
                 <Link to="/login" className="text-cyan-400 hover:underline">
-                  Inicia sesión
+                  {t("auth.signIn")}
                 </Link>
               </p>
             </form>
@@ -273,7 +261,5 @@ const Register = () => {
     </div>
   );
 };
-
-import { MessageSquare as MessageSquareIcon } from "lucide-react";
 
 export default Register;
