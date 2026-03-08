@@ -672,6 +672,8 @@ const Employees = () => {
                   <p>No hay empleados para mostrar ganancias</p>
                 </div>
               ) : (
+                <>
+                <div className="hidden md:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -686,39 +688,41 @@ const Employees = () => {
                   </TableHeader>
                   <TableBody>
                     {employees.map((employee) => {
-                      const biweeklyData = calculateBiweeklyEarnings(
-                        employee.id,
-                        biweeklyStart,
-                        biweeklyEnd
-                      );
+                      const biweeklyData = calculateBiweeklyEarnings(employee.id, biweeklyStart, biweeklyEnd);
                       return (
                         <TableRow key={employee.id}>
-                          <TableCell className="font-medium">
-                            {employee.profiles?.full_name || "Sin nombre"}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {biweeklyData.repairsCount}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ${biweeklyData.totalNetProfit.toFixed(2)}
-                          </TableCell>
-                          <TableCell className="text-right text-green-400">
-                            +${biweeklyData.totalCommission.toFixed(2)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ${biweeklyData.baseSalary.toFixed(2)}
-                          </TableCell>
-                          <TableCell className="text-right text-red-400">
-                            -${biweeklyData.totalLoans.toFixed(2)}
-                          </TableCell>
-                          <TableCell className="text-right font-bold text-primary">
-                            ${biweeklyData.netPay.toFixed(2)}
-                          </TableCell>
+                          <TableCell className="font-medium">{employee.profiles?.full_name || "Sin nombre"}</TableCell>
+                          <TableCell className="text-right">{biweeklyData.repairsCount}</TableCell>
+                          <TableCell className="text-right">${biweeklyData.totalNetProfit.toFixed(2)}</TableCell>
+                          <TableCell className="text-right text-success">+${biweeklyData.totalCommission.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">${biweeklyData.baseSalary.toFixed(2)}</TableCell>
+                          <TableCell className="text-right text-destructive">-${biweeklyData.totalLoans.toFixed(2)}</TableCell>
+                          <TableCell className="text-right font-bold text-primary">${biweeklyData.netPay.toFixed(2)}</TableCell>
                         </TableRow>
                       );
                     })}
                   </TableBody>
                 </Table>
+                </div>
+                <div className="md:hidden space-y-3">
+                  {employees.map((employee) => {
+                    const biweeklyData = calculateBiweeklyEarnings(employee.id, biweeklyStart, biweeklyEnd);
+                    return (
+                      <div key={employee.id} className="border border-border rounded-lg p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <p className="font-medium text-foreground">{employee.profiles?.full_name || "Sin nombre"}</p>
+                          <p className="font-bold text-primary">${biweeklyData.netPay.toFixed(2)}</p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs">
+                          <div><span className="text-muted-foreground">Reparaciones</span><p className="font-medium">{biweeklyData.repairsCount}</p></div>
+                          <div><span className="text-muted-foreground">Comisión</span><p className="font-medium text-success">+${biweeklyData.totalCommission.toFixed(2)}</p></div>
+                          <div><span className="text-muted-foreground">Préstamos</span><p className="font-medium text-destructive">-${biweeklyData.totalLoans.toFixed(2)}</p></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                </>
               )}
             </CardContent>
           </Card>
