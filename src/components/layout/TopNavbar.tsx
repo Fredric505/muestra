@@ -99,6 +99,7 @@ export function TopNavbar() {
           {/* Right side */}
           <div className="flex items-center gap-2 ml-auto">
             <GlobalSearch />
+            <LanguageSelector />
             <button
               onClick={() => setProfileDialogOpen(true)}
               className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30 transition-colors"
