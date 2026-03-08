@@ -62,7 +62,7 @@ export function AppSidebar() {
   const { open } = useSidebar();
   const location = useLocation();
   const { signOut, profile, isAdmin, isSuperAdmin, employeeType } = useAuth();
-  const { brand, defaultLogoUrl } = useBrand();
+  const { brand } = useBrand();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
 
   // Build menu items based on role
@@ -74,7 +74,7 @@ export function AppSidebar() {
     ...(isAdminOrSuper || employeeType === "seller" ? salesMenuItems : []),
   ];
 
-  const logoUrl = brand.logo_url || defaultLogoUrl;
+  const brandInitial = (brand.business_name || "T").charAt(0).toUpperCase();
 
   return (
     <Sidebar collapsible="icon">

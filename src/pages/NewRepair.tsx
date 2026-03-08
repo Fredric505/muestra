@@ -593,7 +593,7 @@ const NewRepair = () => {
                   repair={savedRepair}
                   businessName={brand.business_name}
                   tagline={brand.tagline}
-                  logoUrl={brand.logo_url || defaultLogoUrl}
+                  logoUrl={brand.logo_url || ""}
                 />
               </div>
             )}
