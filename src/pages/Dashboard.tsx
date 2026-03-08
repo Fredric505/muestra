@@ -141,6 +141,60 @@ const Dashboard = () => {
     return Object.entries(counts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 5);
   }, [repairs, showRepairs]);
 
+  // Monthly stats (last 6 months)
+  const monthlyStatsData = useMemo(() => {
+    const months = Array.from({ length: 6 }, (_, i) => subMonths(new Date(), 5 - i));
+    return months.map(month => {
+      const ms = startOfMonth(month);
+      const me = endOfMonth(month);
+      const monthRepairs = showRepairs ? repairs.filter(r => r.completed_at && isWithinInterval(parseISO(r.completed_at), { start: ms, end: me })) : [];
+      const monthSalesItems = showSales ? sales.filter(s => s.status === "completed" && isWithinInterval(parseISO(s.sale_date), { start: ms, end: me })) : [];
+      return {
+        month: format(month, "MMM yy", { locale: es }),
+        Reparaciones: monthRepairs.length,
+        Ventas: monthSalesItems.length,
+        GananciaRep: monthRepairs.reduce((s, r) => s + ((r.final_price || r.estimated_price || 0) - (r.parts_cost || 0)), 0),
+        GananciaVen: monthSalesItems.reduce((s, sale) => s + (sale.total_amount - (sale.product_cost || 0)), 0),
+      };
+    });
+  }, [repairs, sales, showRepairs, showSales]);
+
+  // Frequent clients
+  const frequentClients = useMemo(() => {
+    const clientMap: Record<string, { name: string; phone: string; repairCount: number; saleCount: number; totalSpent: number; lastVisit: string }> = {};
+    
+    repairs.forEach(r => {
+      const key = r.customer_phone.replace(/\D/g, "");
+      if (!clientMap[key]) {
+        clientMap[key] = { name: r.customer_name, phone: r.customer_phone, repairCount: 0, saleCount: 0, totalSpent: 0, lastVisit: r.created_at };
+      }
+      clientMap[key].repairCount++;
+      clientMap[key].totalSpent += r.final_price || r.estimated_price || 0;
+      if (r.created_at > clientMap[key].lastVisit) {
+        clientMap[key].lastVisit = r.created_at;
+        clientMap[key].name = r.customer_name;
+      }
+    });
+
+    sales.forEach(s => {
+      if (!s.customer_phone) return;
+      const key = s.customer_phone.replace(/\D/g, "");
+      if (!clientMap[key]) {
+        clientMap[key] = { name: s.customer_name, phone: s.customer_phone, repairCount: 0, saleCount: 0, totalSpent: 0, lastVisit: s.sale_date };
+      }
+      clientMap[key].saleCount++;
+      clientMap[key].totalSpent += s.total_amount;
+      if (s.sale_date > clientMap[key].lastVisit) {
+        clientMap[key].lastVisit = s.sale_date;
+      }
+    });
+
+    return Object.values(clientMap)
+      .filter(c => (c.repairCount + c.saleCount) >= 2)
+      .sort((a, b) => (b.repairCount + b.saleCount) - (a.repairCount + a.saleCount))
+      .slice(0, 10);
+  }, [repairs, sales]);
+
   // Product search
   const filteredProducts = useMemo(() => {
     if (!productSearch.trim()) return products.filter(p => p.is_active && p.stock > 0).slice(0, 8);
