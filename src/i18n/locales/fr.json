@@ -608,5 +608,33 @@
     "repairReady": "Bonjour {{name}}, nous vous informons de {{business}} que votre {{brand}} {{model}} est prêt à être récupéré.",
     "repairFailed": "Bonjour {{name}}, nous vous contactons de {{business}} concernant votre {{brand}} {{model}}.\n\nMalheureusement, nous n'avons pas pu réparer l'appareil. Raison : {{reason}}.\n\nVous pouvez le récupérer quand vous le souhaitez. Merci pour votre confiance !",
     "repairFollowUp": "Bonjour {{name}}, c'est {{business}}. Comment fonctionne votre {{brand}} {{model}} après la réparation ?\n\nSi vous avez des questions ou des problèmes, n'hésitez pas à nous contacter.{{warranty}}\n\nMerci pour votre préférence !"
+  },
+  "repairTicket": {
+    "techService": "Service Technique de Téléphones",
+    "whatsappAvailable": "WhatsApp disponible",
+    "deviceLabel": "APPAREIL :",
+    "customerLabel": "CLIENT :",
+    "problem": "PROBLÈME :",
+    "estPrice": "Prix Est. :",
+    "depositLabel": "Acompte :",
+    "remainingLabel": "Reste :",
+    "entry": "Entrée :",
+    "deliveryLabel": "Livraison :",
+    "warrantyLabel": "GARANTIE :",
+    "daysLabel": "JOURS",
+    "keepTicket": "Conservez ce ticket",
+    "thanks": "Merci pour votre préférence"
+  },
+  "quickSale": {
+    "title": "Vente Rapide",
+    "emptyCart": "Panier vide",
+    "noStock": "Rupture de stock",
+    "noMoreUnits": "Plus d'unités disponibles",
+    "processing": "Traitement...",
+    "chargeAndPrint": "Encaisser et Imprimer Ticket",
+    "saleRegistered": "Vente enregistrée",
+    "stockUpdated": "Stock mis à jour avec succès",
+    "errorProcessing": "Erreur lors du traitement de la vente",
+    "generalCustomer": "Client Général"
   }
 }

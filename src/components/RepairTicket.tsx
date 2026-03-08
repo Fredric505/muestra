@@ -1,6 +1,7 @@
 import { forwardRef } from "react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { useTranslation } from "react-i18next";
+import { getDateLocale } from "@/lib/dateLocale";
 
 interface RepairTicketProps {
   repair: {
@@ -28,6 +29,8 @@ const currencySymbols: Record<string, string> = {
 
 export const RepairTicket = forwardRef<HTMLDivElement, RepairTicketProps>(
   ({ repair }, ref) => {
+    const { t, i18n } = useTranslation();
+    const dateLoc = getDateLocale(i18n.language);
     const symbol = currencySymbols[repair.currency] || "C$";
     const ticketNumber = repair.id.slice(-8).toUpperCase();
 
@@ -40,19 +43,19 @@ export const RepairTicket = forwardRef<HTMLDivElement, RepairTicketProps>(
         {/* Header */}
         <div className="text-center border-b border-dashed border-gray-400 pb-2 mb-2">
           <div className="font-bold text-sm">REPAIR TECH</div>
-          <div className="text-[10px]">Servicio Técnico de Celulares</div>
-          <div className="text-[10px] mt-1">📞 WhatsApp disponible</div>
+          <div className="text-[10px]">{t("repairTicket.techService")}</div>
+          <div className="text-[10px] mt-1">📞 {t("repairTicket.whatsappAvailable")}</div>
         </div>
 
         {/* Ticket Number */}
         <div className="text-center border border-gray-400 py-1 mb-2">
-          <div className="text-[10px]">TICKET #</div>
+          <div className="text-[10px]">{t("invoice.ticket")} #</div>
           <div className="font-bold text-lg tracking-wider">{ticketNumber}</div>
         </div>
 
         {/* Device Info */}
         <div className="border-b border-dashed border-gray-400 pb-2 mb-2">
-          <div className="font-bold mb-1">DISPOSITIVO:</div>
+          <div className="font-bold mb-1">{t("repairTicket.deviceLabel")}</div>
           <div>{repair.device_brand} {repair.device_model}</div>
           {repair.device_imei && (
             <div className="text-[10px]">IMEI: {repair.device_imei}</div>
@@ -61,7 +64,7 @@ export const RepairTicket = forwardRef<HTMLDivElement, RepairTicketProps>(
 
         {/* Customer */}
         <div className="border-b border-dashed border-gray-400 pb-2 mb-2">
-          <div className="font-bold mb-1">CLIENTE:</div>
+          <div className="font-bold mb-1">{t("repairTicket.customerLabel")}</div>
           <div>{repair.customer_name}</div>
           <div>{repair.customer_phone}</div>
         </div>
@@ -69,7 +72,7 @@ export const RepairTicket = forwardRef<HTMLDivElement, RepairTicketProps>(
         {/* Repair Details */}
         {repair.repair_description && (
           <div className="border-b border-dashed border-gray-400 pb-2 mb-2">
-            <div className="font-bold mb-1">PROBLEMA:</div>
+            <div className="font-bold mb-1">{t("repairTicket.problem")}</div>
             <div className="text-[10px] break-words">{repair.repair_description}</div>
           </div>
         )}
@@ -77,17 +80,17 @@ export const RepairTicket = forwardRef<HTMLDivElement, RepairTicketProps>(
         {/* Pricing */}
         <div className="border-b border-dashed border-gray-400 pb-2 mb-2">
           <div className="flex justify-between">
-            <span>Precio Est:</span>
+            <span>{t("repairTicket.estPrice")}</span>
             <span className="font-bold">{symbol}{repair.estimated_price.toFixed(2)}</span>
           </div>
           {repair.deposit && repair.deposit > 0 && (
             <div className="flex justify-between">
-              <span>Anticipo:</span>
+              <span>{t("repairTicket.depositLabel")}</span>
               <span>{symbol}{repair.deposit.toFixed(2)}</span>
             </div>
           )}
           <div className="flex justify-between font-bold">
-            <span>Resta:</span>
+            <span>{t("repairTicket.remainingLabel")}</span>
             <span>{symbol}{(repair.estimated_price - (repair.deposit || 0)).toFixed(2)}</span>
           </div>
         </div>
@@ -95,14 +98,14 @@ export const RepairTicket = forwardRef<HTMLDivElement, RepairTicketProps>(
         {/* Dates */}
         <div className="border-b border-dashed border-gray-400 pb-2 mb-2 text-[10px]">
           <div className="flex justify-between">
-            <span>Ingreso:</span>
-            <span>{format(new Date(repair.created_at), "dd/MM/yyyy HH:mm", { locale: es })}</span>
+            <span>{t("repairTicket.entry")}</span>
+            <span>{format(new Date(repair.created_at), "dd/MM/yyyy HH:mm", { locale: dateLoc })}</span>
           </div>
           {repair.delivery_date && (
             <div className="flex justify-between">
-              <span>Entrega:</span>
+              <span>{t("repairTicket.deliveryLabel")}</span>
               <span>
-                {format(new Date(repair.delivery_date), "dd/MM/yyyy", { locale: es })}
+                {format(new Date(repair.delivery_date), "dd/MM/yyyy", { locale: dateLoc })}
                 {repair.delivery_time && ` ${repair.delivery_time}`}
               </span>
             </div>
@@ -111,13 +114,13 @@ export const RepairTicket = forwardRef<HTMLDivElement, RepairTicketProps>(
 
         {/* Warranty */}
         <div className="text-center text-[10px] border border-gray-400 py-1 mb-2">
-          <div className="font-bold">GARANTÍA: {repair.warranty_days || 0} DÍAS</div>
-          <div>Conserve este ticket</div>
+          <div className="font-bold">{t("repairTicket.warrantyLabel")} {repair.warranty_days || 0} {t("repairTicket.daysLabel")}</div>
+          <div>{t("repairTicket.keepTicket")}</div>
         </div>
 
         {/* Footer */}
         <div className="text-center text-[10px] text-gray-600">
-          <div>Gracias por su preferencia</div>
+          <div>{t("repairTicket.thanks")}</div>
           <div>- - - - - - - - - - - - - - - -</div>
         </div>
       </div>

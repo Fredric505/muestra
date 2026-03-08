@@ -608,5 +608,33 @@
     "repairReady": "Hello {{name}}, we're contacting you from {{business}} to inform you that your {{brand}} {{model}} is ready for pickup.",
     "repairFailed": "Hello {{name}}, we're contacting you from {{business}} regarding your {{brand}} {{model}}.\n\nUnfortunately, we were unable to repair the device. Reason: {{reason}}.\n\nYou can pick it up at your convenience. Thank you for trusting us!",
     "repairFollowUp": "Hello {{name}}, we're from {{business}}. How is your {{brand}} {{model}} working after the repair?\n\nIf you have any questions or issues, don't hesitate to contact us.{{warranty}}\n\nThank you for your preference!"
+  },
+  "repairTicket": {
+    "techService": "Cell Phone Technical Service",
+    "whatsappAvailable": "WhatsApp available",
+    "deviceLabel": "DEVICE:",
+    "customerLabel": "CUSTOMER:",
+    "problem": "PROBLEM:",
+    "estPrice": "Est. Price:",
+    "depositLabel": "Deposit:",
+    "remainingLabel": "Remaining:",
+    "entry": "Entry:",
+    "deliveryLabel": "Delivery:",
+    "warrantyLabel": "WARRANTY:",
+    "daysLabel": "DAYS",
+    "keepTicket": "Keep this ticket",
+    "thanks": "Thank you for your preference"
+  },
+  "quickSale": {
+    "title": "Quick Sale",
+    "emptyCart": "Empty cart",
+    "noStock": "Out of stock",
+    "noMoreUnits": "No more units available",
+    "processing": "Processing...",
+    "chargeAndPrint": "Charge & Print Ticket",
+    "saleRegistered": "Sale registered",
+    "stockUpdated": "Stock updated successfully",
+    "errorProcessing": "Error processing sale",
+    "generalCustomer": "General Customer"
   }
 }

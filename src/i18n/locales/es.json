@@ -608,5 +608,33 @@
     "repairReady": "Hola {{name}}, te informamos de {{business}} que tu {{brand}} {{model}} ya está listo para recoger.",
     "repairFailed": "Hola {{name}}, te contactamos de {{business}} respecto a tu {{brand}} {{model}}.\n\nLamentablemente no fue posible reparar el equipo. Motivo: {{reason}}.\n\nPuedes pasar a recogerlo cuando gustes. ¡Gracias por confiar en nosotros!",
     "repairFollowUp": "Hola {{name}}, somos de {{business}}. ¿Cómo está funcionando tu {{brand}} {{model}} después de la reparación?\n\nSi tienes alguna duda o problema, no dudes en contactarnos.{{warranty}}\n\n¡Gracias por tu preferencia!"
+  },
+  "repairTicket": {
+    "techService": "Servicio Técnico de Celulares",
+    "whatsappAvailable": "WhatsApp disponible",
+    "deviceLabel": "DISPOSITIVO:",
+    "customerLabel": "CLIENTE:",
+    "problem": "PROBLEMA:",
+    "estPrice": "Precio Est:",
+    "depositLabel": "Anticipo:",
+    "remainingLabel": "Resta:",
+    "entry": "Ingreso:",
+    "deliveryLabel": "Entrega:",
+    "warrantyLabel": "GARANTÍA:",
+    "daysLabel": "DÍAS",
+    "keepTicket": "Conserve este ticket",
+    "thanks": "Gracias por su preferencia"
+  },
+  "quickSale": {
+    "title": "Venta Rápida",
+    "emptyCart": "Carrito vacío",
+    "noStock": "Sin stock",
+    "noMoreUnits": "No hay más unidades disponibles",
+    "processing": "Procesando...",
+    "chargeAndPrint": "Cobrar e Imprimir Ticket",
+    "saleRegistered": "Venta registrada",
+    "stockUpdated": "Stock actualizado correctamente",
+    "errorProcessing": "Error al procesar la venta",
+    "generalCustomer": "Cliente General"
   }
 }
