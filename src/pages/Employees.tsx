@@ -555,6 +555,7 @@ const Employees = () => {
                   <p className="text-sm">Haz clic en "Agregar Empleado" para comenzar</p>
                 </div>
               ) : (
+                <>
                 {/* Desktop Table */}
                 <div className="hidden md:block">
                 <Table>
