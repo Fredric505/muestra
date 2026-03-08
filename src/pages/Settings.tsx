@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Settings as SettingsIcon, Upload, Save, Building2, Image, CreditCard, CalendarClock, FileText } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ThemeSelector } from "@/components/ThemeSelector";
+import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
