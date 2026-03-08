@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useRepairs } from "@/hooks/useRepairs";
 import { useSales } from "@/hooks/useSales";
 import { useEmployees } from "@/hooks/useEmployees";
@@ -13,9 +14,11 @@ import {
 } from "@/components/ui/select";
 import { FileDown, Shield, FileText, Wrench, ShoppingBag, Users } from "lucide-react";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { getDateLocale } from "@/lib/dateLocale";
 
 const ExportData = () => {
+  const { t, i18n } = useTranslation();
+  const dateLoc = getDateLocale(i18n.language);
   const { isAdmin } = useAuth();
   const { brand } = useBrand();
   const { workshop } = useAuth();
@@ -32,7 +35,7 @@ const ExportData = () => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <Shield className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-muted-foreground">No tienes permisos para ver esta página</p>
+          <p className="text-muted-foreground">{t("employeesPage.noPermission")}</p>
         </div>
       </div>
     );
@@ -56,111 +59,111 @@ const ExportData = () => {
     let title = "";
     let tableContent = "";
 
-    const now = format(new Date(), "dd/MM/yyyy HH:mm", { locale: es });
+    const now = format(new Date(), "dd/MM/yyyy HH:mm", { locale: dateLoc });
     const rangeText = dateFrom || dateTo
-      ? `Período: ${dateFrom || "inicio"} al ${dateTo || "actual"}`
-      : "Todos los registros";
+      ? `${t("common.date")}: ${dateFrom || "—"} → ${dateTo || "—"}`
+      : t("common.all");
 
     switch (exportType) {
       case "repairs": {
-        title = "Reporte de Reparaciones";
+        title = t("nav.repairs");
         const data = filterByDate(repairs);
         tableContent = `
           <table>
-            <thead><tr><th>#</th><th>Cliente</th><th>Teléfono</th><th>Dispositivo</th><th>Estado</th><th>Precio</th><th>Costo Partes</th><th>Garantía</th><th>Fecha</th></tr></thead>
+            <thead><tr><th>#</th><th>${t("common.name")}</th><th>${t("common.phone")}</th><th>${t("historyPage.device")}</th><th>${t("common.status")}</th><th>${t("common.price")}</th><th>${t("common.cost")}</th><th>${t("common.warranty")}</th><th>${t("common.date")}</th></tr></thead>
             <tbody>${data.map((r, i) => `<tr>
               <td>${i + 1}</td>
               <td>${r.customer_name}</td>
               <td>${r.customer_phone}</td>
               <td>${r.device_brand} ${r.device_model}</td>
-              <td>${r.status}</td>
+              <td>${t(`repairStatus.${r.status}`)}</td>
               <td>${r.currency === "USD" ? "$" : "C$"}${r.estimated_price.toFixed(2)}</td>
               <td>${r.currency === "USD" ? "$" : "C$"}${(r.parts_cost || 0).toFixed(2)}</td>
-              <td>${r.warranty_days || 0} días</td>
-              <td>${format(new Date(r.created_at), "dd/MM/yyyy", { locale: es })}</td>
+              <td>${r.warranty_days || 0} ${t("common.days")}</td>
+              <td>${format(new Date(r.created_at), "dd/MM/yyyy", { locale: dateLoc })}</td>
             </tr>`).join('')}</tbody>
           </table>
-          <div class="summary"><p>Total registros: ${data.length}</p><p>Ingresos totales: C$${data.reduce((s, r) => s + r.estimated_price, 0).toFixed(2)}</p></div>`;
+          <div class="summary"><p>${t("common.total")}: ${data.length}</p></div>`;
         break;
       }
       case "sales": {
-        title = "Reporte de Ventas";
+        title = t("nav.sales");
         const data = filterByDate(sales);
         tableContent = `
           <table>
-            <thead><tr><th>#</th><th>Cliente</th><th>Productos</th><th>Total</th><th>Costo</th><th>Ganancia</th><th>Estado</th><th>Fecha</th></tr></thead>
+            <thead><tr><th>#</th><th>${t("salesPage.client")}</th><th>${t("salesPage.products")}</th><th>${t("common.total")}</th><th>${t("common.cost")}</th><th>${t("common.profit")}</th><th>${t("common.status")}</th><th>${t("common.date")}</th></tr></thead>
             <tbody>${data.map((s, i) => `<tr>
               <td>${i + 1}</td>
               <td>${s.customer_name}</td>
               <td>${s.sale_items?.map(item => item.product_name).join(", ") || "—"}</td>
               <td>${s.currency === "USD" ? "$" : "C$"}${s.total_amount.toFixed(2)}</td>
-              <td>${s.product_cost != null ? `C$${s.product_cost.toFixed(2)}` : "Pendiente"}</td>
+              <td>${s.product_cost != null ? `C$${s.product_cost.toFixed(2)}` : "—"}</td>
               <td>${s.product_cost != null ? `C$${(s.total_amount - s.product_cost).toFixed(2)}` : "—"}</td>
-              <td>${s.status === "completed" ? "Completada" : "Pendiente"}</td>
-              <td>${format(new Date(s.sale_date), "dd/MM/yyyy", { locale: es })}</td>
+              <td>${s.status === "completed" ? t("salesPage.completed") : t("salesPage.pending")}</td>
+              <td>${format(new Date(s.sale_date), "dd/MM/yyyy", { locale: dateLoc })}</td>
             </tr>`).join('')}</tbody>
           </table>
-          <div class="summary"><p>Total ventas: ${data.length}</p><p>Ingresos: C$${data.reduce((s, sale) => s + sale.total_amount, 0).toFixed(2)}</p></div>`;
+          <div class="summary"><p>${t("common.total")}: ${data.length}</p></div>`;
         break;
       }
       case "employees": {
-        title = "Reporte de Empleados";
+        title = t("nav.employees");
         tableContent = `
           <table>
-            <thead><tr><th>#</th><th>Nombre</th><th>Tipo</th><th>Comisión</th><th>Salario Base</th><th>Fecha Ingreso</th><th>Estado</th></tr></thead>
+            <thead><tr><th>#</th><th>${t("common.name")}</th><th>${t("employeesPage.employeeType")}</th><th>${t("employeesPage.commission")}</th><th>${t("employeesPage.salary")}</th><th>${t("common.date")}</th><th>${t("common.status")}</th></tr></thead>
             <tbody>${employees.map((e, i) => `<tr>
               <td>${i + 1}</td>
-              <td>${e.profiles?.full_name || "Sin nombre"}</td>
-              <td>${(e as any).employee_type === "seller" ? "Vendedor" : "Técnico"}</td>
+              <td>${e.profiles?.full_name || "—"}</td>
+              <td>${(e as any).employee_type === "seller" ? t("employeesPage.seller") : t("employeesPage.technician")}</td>
               <td>${e.monthly_commission_rate}%</td>
               <td>C$${(e.base_salary || 0).toFixed(2)}</td>
-              <td>${format(new Date(e.hired_at), "dd/MM/yyyy", { locale: es })}</td>
-              <td>${e.is_active ? "Activo" : "Inactivo"}</td>
+              <td>${format(new Date(e.hired_at), "dd/MM/yyyy", { locale: dateLoc })}</td>
+              <td>${e.is_active ? t("employeesPage.active") : t("employeesPage.inactive")}</td>
             </tr>`).join('')}</tbody>
           </table>`;
         break;
       }
       case "earnings": {
-        title = "Reporte de Ganancias de Empleados";
+        title = t("incomePage.title");
         const data = filterByDate(earnings);
         tableContent = `
           <table>
-            <thead><tr><th>#</th><th>Empleado</th><th>Ingreso Bruto</th><th>Costo Partes</th><th>Ganancia Neta</th><th>Comisión</th><th>Fecha</th></tr></thead>
+            <thead><tr><th>#</th><th>${t("employeesPage.employee")}</th><th>${t("incomePage.grossIncome")}</th><th>${t("common.cost")}</th><th>${t("incomePage.netProfit")}</th><th>${t("employeesPage.commission")}</th><th>${t("common.date")}</th></tr></thead>
             <tbody>${data.map((e, i) => {
               const emp = employees.find(em => em.id === e.employee_id);
               return `<tr>
                 <td>${i + 1}</td>
-                <td>${emp?.profiles?.full_name || "Desconocido"}</td>
+                <td>${emp?.profiles?.full_name || "—"}</td>
                 <td>C$${e.gross_income.toFixed(2)}</td>
                 <td>C$${e.parts_cost.toFixed(2)}</td>
                 <td>C$${e.net_profit.toFixed(2)}</td>
                 <td>C$${e.commission_earned.toFixed(2)}</td>
-                <td>${format(new Date(e.earnings_date), "dd/MM/yyyy", { locale: es })}</td>
+                <td>${format(new Date(e.earnings_date), "dd/MM/yyyy", { locale: dateLoc })}</td>
               </tr>`;
             }).join('')}</tbody>
           </table>
-          <div class="summary"><p>Total registros: ${data.length}</p></div>`;
+          <div class="summary"><p>${t("common.total")}: ${data.length}</p></div>`;
         break;
       }
       case "loans": {
-        title = "Reporte de Préstamos";
+        title = t("employeesPage.pendingLoans");
         const data = filterByDate(loans);
         tableContent = `
           <table>
-            <thead><tr><th>#</th><th>Empleado</th><th>Monto</th><th>Descripción</th><th>Estado</th><th>Fecha</th></tr></thead>
+            <thead><tr><th>#</th><th>${t("employeesPage.employee")}</th><th>${t("employeesPage.amount")}</th><th>${t("common.description")}</th><th>${t("common.status")}</th><th>${t("common.date")}</th></tr></thead>
             <tbody>${data.map((l, i) => {
               const emp = employees.find(e => e.id === l.employee_id);
               return `<tr>
                 <td>${i + 1}</td>
-                <td>${emp?.profiles?.full_name || "Desconocido"}</td>
+                <td>${emp?.profiles?.full_name || "—"}</td>
                 <td>C$${l.amount.toFixed(2)}</td>
                 <td>${l.description || "—"}</td>
-                <td>${l.is_paid ? "Pagado" : "Pendiente"}</td>
-                <td>${format(new Date(l.loan_date), "dd/MM/yyyy", { locale: es })}</td>
+                <td>${l.is_paid ? t("employeesPage.paid") : t("salesPage.pending")}</td>
+                <td>${format(new Date(l.loan_date), "dd/MM/yyyy", { locale: dateLoc })}</td>
               </tr>`;
             }).join('')}</tbody>
           </table>
-          <div class="summary"><p>Total préstamos: ${data.length}</p><p>Monto total: C$${data.reduce((s, l) => s + l.amount, 0).toFixed(2)}</p></div>`;
+          <div class="summary"><p>${t("common.total")}: ${data.length}</p></div>`;
         break;
       }
     }
@@ -187,10 +190,10 @@ const ExportData = () => {
         <h1>${brand.business_name}</h1>
         <h2>${title}</h2>
         <p>${rangeText}</p>
-        <p>Generado: ${now}</p>
+        <p>${now}</p>
       </div>
       ${tableContent}
-      <div class="footer"><p>Documento generado automáticamente · ${brand.business_name} · No afecta los datos del sistema</p></div>
+      <div class="footer"><p>${brand.business_name}</p></div>
       </body></html>`);
     printWindow.document.close();
     printWindow.focus();
@@ -200,51 +203,47 @@ const ExportData = () => {
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl mx-auto">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Exportar Datos</h1>
-        <p className="text-sm text-muted-foreground">Genera copias de seguridad en PDF de tus registros</p>
+        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{t("exportPage.title")}</h1>
+        <p className="text-sm text-muted-foreground">{t("exportPage.subtitle")}</p>
       </div>
 
       <Card className="glass-card">
         <CardHeader>
           <CardTitle className="text-lg flex items-center gap-2">
             <FileDown className="h-5 w-5 text-primary" />
-            Generar Reporte PDF
+            {t("exportPage.title")}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label>Tipo de reporte</Label>
+            <Label>{t("common.category")}</Label>
             <Select value={exportType} onValueChange={setExportType}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="repairs"><div className="flex items-center gap-2"><Wrench className="h-4 w-4" />Reparaciones</div></SelectItem>
-                <SelectItem value="sales"><div className="flex items-center gap-2"><ShoppingBag className="h-4 w-4" />Ventas</div></SelectItem>
-                <SelectItem value="employees"><div className="flex items-center gap-2"><Users className="h-4 w-4" />Empleados</div></SelectItem>
-                <SelectItem value="earnings"><div className="flex items-center gap-2"><FileText className="h-4 w-4" />Ganancias de Empleados</div></SelectItem>
-                <SelectItem value="loans"><div className="flex items-center gap-2"><FileText className="h-4 w-4" />Préstamos</div></SelectItem>
+                <SelectItem value="repairs"><div className="flex items-center gap-2"><Wrench className="h-4 w-4" />{t("nav.repairs")}</div></SelectItem>
+                <SelectItem value="sales"><div className="flex items-center gap-2"><ShoppingBag className="h-4 w-4" />{t("nav.sales")}</div></SelectItem>
+                <SelectItem value="employees"><div className="flex items-center gap-2"><Users className="h-4 w-4" />{t("nav.employees")}</div></SelectItem>
+                <SelectItem value="earnings"><div className="flex items-center gap-2"><FileText className="h-4 w-4" />{t("incomePage.title")}</div></SelectItem>
+                <SelectItem value="loans"><div className="flex items-center gap-2"><FileText className="h-4 w-4" />{t("employeesPage.pendingLoans")}</div></SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Desde (opcional)</Label>
+              <Label>{t("common.date")} ({t("common.optional")})</Label>
               <Input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Hasta (opcional)</Label>
+              <Label>{t("common.date")} ({t("common.optional")})</Label>
               <Input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)} />
             </div>
           </div>
 
           <Button onClick={generatePDF} className="w-full" size="lg">
             <FileDown className="h-5 w-5 mr-2" />
-            Generar y Descargar PDF
+            {t("common.download")} PDF
           </Button>
-
-          <p className="text-xs text-muted-foreground text-center">
-            El PDF se genera e imprime desde tu navegador. No afecta los datos del sistema.
-          </p>
         </CardContent>
       </Card>
     </div>
