@@ -49,8 +49,11 @@ const Settings = () => {
     if (brand) {
       setBusinessName(brand.business_name);
       setTagline(brand.tagline);
+      setThemePreset((brand as any).theme_preset || "green");
+      setCustomPrimaryColor((brand as any).custom_primary_color || null);
+      setColorMode(((brand as any).color_mode === "light") ? "light" : "dark");
     }
-  }, [brand.business_name, brand.tagline]);
+  }, [brand.business_name, brand.tagline, (brand as any).theme_preset, (brand as any).custom_primary_color, (brand as any).color_mode]);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
