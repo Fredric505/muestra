@@ -107,6 +107,7 @@ const Settings = () => {
         theme_preset: themePreset,
         custom_primary_color: customPrimaryColor,
         color_mode: colorMode,
+        invoice_size: invoiceSize,
       } as any);
       
       toast({
