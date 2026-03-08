@@ -31,9 +31,9 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
       return (
         <AccountBlockedScreen
           type="paused"
-          pauseType={(workshop as any).pause_type}
-          pauseReason={(workshop as any).pause_reason}
-          pauseEstimatedResume={(workshop as any).pause_estimated_resume}
+          pauseType={workshop.pause_type}
+          pauseReason={workshop.pause_reason}
+          pauseEstimatedResume={workshop.pause_estimated_resume}
         />
       );
     }
@@ -52,9 +52,9 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
     return (
       <AccountBlockedScreen
         type="paused"
-        pauseType={(workshop as any).pause_type}
-        pauseReason={(workshop as any).pause_reason}
-        pauseEstimatedResume={(workshop as any).pause_estimated_resume}
+        pauseType={workshop.pause_type}
+        pauseReason={workshop.pause_reason}
+        pauseEstimatedResume={workshop.pause_estimated_resume}
       />
     );
   }
