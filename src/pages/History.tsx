@@ -186,7 +186,7 @@ const History = () => {
                           </div>
                         </TableCell>
                         <TableCell><p className="font-medium">{repair.device_brand} {repair.device_model}</p></TableCell>
-                        <TableCell><p>{repair.repair_types?.name || "N/A"}</p></TableCell>
+                        <TableCell><p>{t(`repairTypeNames.${repair.repair_types?.name}`, repair.repair_types?.name || "N/A")}</p></TableCell>
                         <TableCell>
                           {repair.status === "delivered" ? (
                             <Badge className="bg-success/20 text-success border-success/30">{t("historyPage.deliveredStatus")}</Badge>
