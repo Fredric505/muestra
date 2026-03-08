@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Repair, RepairStatus } from "@/hooks/useRepairs";
 import { useBrand } from "@/contexts/BrandContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,49 +16,13 @@ import {
   Phone,
 } from "lucide-react";
 import { format, parseISO } from "date-fns";
-import { es } from "date-fns/locale";
+import { getDateLocale } from "@/lib/dateLocale";
 
 interface RepairProgressViewProps {
   repairs: Repair[];
   onAdvanceStatus: (id: string, currentStatus: RepairStatus) => void;
   onContact: (repair: Repair) => void;
 }
-
-const statusConfig: Record<
-  RepairStatus,
-  { label: string; icon: React.ElementType; color: string; bgColor: string }
-> = {
-  received: {
-    label: "Recibidos",
-    icon: Clock,
-    color: "text-yellow-500",
-    bgColor: "bg-yellow-500/10 border-yellow-500/30",
-  },
-  in_progress: {
-    label: "En Progreso",
-    icon: Wrench,
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10 border-blue-500/30",
-  },
-  ready: {
-    label: "Listos",
-    icon: CheckCircle,
-    color: "text-green-500",
-    bgColor: "bg-green-500/10 border-green-500/30",
-  },
-  delivered: {
-    label: "Entregados",
-    icon: Package,
-    color: "text-gray-400",
-    bgColor: "bg-gray-500/10 border-gray-500/30",
-  },
-  failed: {
-    label: "Fallidos",
-    icon: Package,
-    color: "text-red-500",
-    bgColor: "bg-red-500/10 border-red-500/30",
-  },
-};
 
 const getWhatsAppMessage = (repair: Repair, businessName: string): string => {
   const deviceInfo = `${repair.device_brand} ${repair.device_model}`;
@@ -84,8 +49,46 @@ export function RepairProgressView({
   onAdvanceStatus,
   onContact,
 }: RepairProgressViewProps) {
+  const { t, i18n } = useTranslation();
+  const dateLoc = getDateLocale(i18n.language);
   const { brand } = useBrand();
   
+  const statusConfig: Record<
+    RepairStatus,
+    { label: string; icon: React.ElementType; color: string; bgColor: string }
+  > = {
+    received: {
+      label: t("repairStatus.received"),
+      icon: Clock,
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-500/10 border-yellow-500/30",
+    },
+    in_progress: {
+      label: t("repairStatus.in_progress"),
+      icon: Wrench,
+      color: "text-blue-500",
+      bgColor: "bg-blue-500/10 border-blue-500/30",
+    },
+    ready: {
+      label: t("repairStatus.ready"),
+      icon: CheckCircle,
+      color: "text-green-500",
+      bgColor: "bg-green-500/10 border-green-500/30",
+    },
+    delivered: {
+      label: t("repairStatus.delivered"),
+      icon: Package,
+      color: "text-gray-400",
+      bgColor: "bg-gray-500/10 border-gray-500/30",
+    },
+    failed: {
+      label: t("repairStatus.failed"),
+      icon: Package,
+      color: "text-red-500",
+      bgColor: "bg-red-500/10 border-red-500/30",
+    },
+  };
+
   const repairsByStatus = useMemo(() => {
     const grouped: Record<RepairStatus, Repair[]> = {
       received: [],
@@ -129,7 +132,7 @@ export function RepairProgressView({
                 <div className="space-y-2">
                   {statusRepairs.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-8">
-                      Sin reparaciones
+                      {t("common.noData")}
                     </p>
                   ) : (
                     statusRepairs.map((repair) => (
@@ -148,7 +151,7 @@ export function RepairProgressView({
                           </div>
                           <span className="text-xs text-muted-foreground">
                             {format(parseISO(repair.created_at), "dd MMM", {
-                              locale: es,
+                              locale: dateLoc,
                             })}
                           </span>
                         </div>
@@ -195,7 +198,7 @@ export function RepairProgressView({
                               onClick={() => onAdvanceStatus(repair.id, status)}
                             >
                               <ArrowRight className="h-3 w-3 mr-1" />
-                              Avanzar
+                              {t("repairs.advanceStatus")}
                             </Button>
                           )}
                         </div>
