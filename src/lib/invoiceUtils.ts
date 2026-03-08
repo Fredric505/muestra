@@ -65,9 +65,9 @@ export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
   .header-right { text-align: right; font-size: 12px; color: #555; }
   .header-right .inv-num { font-size: ${invoiceSize === 'commercial' ? '13px' : '18px'}; font-weight: bold; color: #222; }
   .section { margin-bottom: ${invoiceSize === 'commercial' ? '8px' : '18px'}; }
-  .section-title { font-size: 11px; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600; }
-  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .info-box { background: #f7f7f7; padding: 14px; border-radius: 8px; }
+  .section-title { font-size: ${invoiceSize === 'commercial' ? '9px' : '11px'}; text-transform: uppercase; color: #888; letter-spacing: 1px; margin-bottom: ${invoiceSize === 'commercial' ? '3px' : '6px'}; font-weight: 600; }
+  .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: ${invoiceSize === 'commercial' ? '8px' : '16px'}; }
+  .info-box { background: #f7f7f7; padding: ${invoiceSize === 'commercial' ? '8px' : '14px'}; border-radius: 8px; }
   .info-box p { margin: 3px 0; font-size: 13px; }
   .info-box strong { font-weight: 600; }
   table { width: 100%; border-collapse: collapse; margin: 16px 0; }
