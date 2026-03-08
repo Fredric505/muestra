@@ -8,6 +8,9 @@ interface BrandSettings {
   business_name: string;
   tagline: string;
   logo_url: string | null;
+  theme_preset: string;
+  custom_primary_color: string | null;
+  color_mode: string;
 }
 
 interface BrandContextType {
