@@ -38,7 +38,7 @@ const employeeItems = [
 export function TopNavbar() {
   const location = useLocation();
   const { signOut, profile, isAdmin, isSuperAdmin, employeeType } = useAuth();
-  const { brand, defaultLogoUrl } = useBrand();
+  const { brand } = useBrand();
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
