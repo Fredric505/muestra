@@ -445,6 +445,107 @@ const Dashboard = () => {
         </Card>
       )}
 
+      {/* Monthly Statistics */}
+      {isAdminOrSuper && monthlyStatsData.length > 0 && (
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Estadísticas Mensuales (Últimos 6 meses)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={monthlyStatsData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(217, 33%, 22%)" />
+                <XAxis dataKey="month" stroke="hsl(215, 20%, 65%)" />
+                <YAxis stroke="hsl(215, 20%, 65%)" />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(222, 47%, 13%)", border: "1px solid hsl(217, 33%, 22%)", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(210, 40%, 98%)" }} />
+                {showRepairs && <Bar dataKey="Reparaciones" fill="hsl(199, 89%, 48%)" radius={[4, 4, 0, 0]} />}
+                {showSales && <Bar dataKey="Ventas" fill="hsl(262, 83%, 58%)" radius={[4, 4, 0, 0]} />}
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+              {showRepairs && (
+                <>
+                  <div className="text-center p-2 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground">Total Reparaciones</p>
+                    <p className="text-lg font-bold text-foreground">{monthlyStatsData.reduce((s, m) => s + m.Reparaciones, 0)}</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground">Ganancia Rep.</p>
+                    <p className="text-lg font-bold text-success">{currencySymbol}{monthlyStatsData.reduce((s, m) => s + m.GananciaRep, 0).toFixed(2)}</p>
+                  </div>
+                </>
+              )}
+              {showSales && (
+                <>
+                  <div className="text-center p-2 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground">Total Ventas</p>
+                    <p className="text-lg font-bold text-foreground">{monthlyStatsData.reduce((s, m) => s + m.Ventas, 0)}</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground">Ganancia Ven.</p>
+                    <p className="text-lg font-bold text-success">{currencySymbol}{monthlyStatsData.reduce((s, m) => s + m.GananciaVen, 0).toFixed(2)}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Frequent Clients */}
+      {frequentClients.length > 0 && (
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              Clientes Frecuentes
+              <Badge variant="secondary" className="ml-auto">{frequentClients.length}</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {frequentClients.map((client, i) => (
+                <div key={client.phone} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+                      {i + 1}
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground flex items-center gap-1">
+                        {client.name}
+                        {(client.repairCount + client.saleCount) >= 5 && <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {client.repairCount > 0 && `${client.repairCount} reparaciones`}
+                        {client.repairCount > 0 && client.saleCount > 0 && " · "}
+                        {client.saleCount > 0 && `${client.saleCount} compras`}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Última visita: {format(parseISO(client.lastVisit), "dd/MM/yyyy", { locale: es })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-success">{currencySymbol}{client.totalSpent.toFixed(2)}</p>
+                    <a
+                      href={`https://wa.me/${client.phone.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-green-400 hover:underline"
+                    >
+                      Contactar
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       <QuickSaleDialog
         open={quickSaleOpen}
         onOpenChange={setQuickSaleOpen}
