@@ -350,12 +350,33 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
 
   const deleteWorkshop = useMutation({
     mutationFn: async (id: string) => {
-      // Delete related data first
-      await supabase.from("brand_settings").delete().eq("workshop_id", id);
+      // Get all sales for this workshop to delete sale_items first
+      const { data: workshopSales } = await supabase.from("sales").select("id").eq("workshop_id", id);
+      const saleIds = workshopSales?.map(s => s.id) || [];
+      
+      // Delete sale_items (FK to sales)
+      if (saleIds.length > 0) {
+        await supabase.from("sale_items").delete().in("sale_id", saleIds);
+      }
+      
+      // Delete all related data
+      await supabase.from("sale_earnings").delete().eq("workshop_id", id);
       await supabase.from("daily_earnings").delete().eq("workshop_id", id);
+      await supabase.from("sales").delete().eq("workshop_id", id);
+      await supabase.from("brand_settings").delete().eq("workshop_id", id);
       await supabase.from("employee_loans").delete().eq("workshop_id", id);
       await supabase.from("repairs").delete().eq("workshop_id", id);
       await supabase.from("repair_types").delete().eq("workshop_id", id);
+      await supabase.from("products").delete().eq("workshop_id", id);
+      await supabase.from("registration_ips").delete().eq("workshop_id", id);
+      
+      // Get employees to clean up their user_roles
+      const { data: emps } = await supabase.from("employees").select("user_id").eq("workshop_id", id);
+      if (emps && emps.length > 0) {
+        const empUserIds = emps.map(e => e.user_id);
+        await supabase.from("user_roles").delete().in("user_id", empUserIds).eq("role", "technician");
+      }
+      
       await supabase.from("employees").delete().eq("workshop_id", id);
       await supabase.from("payment_requests").delete().eq("workshop_id", id);
       // Unlink profiles

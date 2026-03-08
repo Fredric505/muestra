@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 import { AccountBlockedScreen } from "@/components/AccountBlockedScreen";
+import { AccountRemovedScreen } from "@/components/AccountRemovedScreen";
 
 interface SubscriptionGateProps {
   children: React.ReactNode;
@@ -23,9 +24,9 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
 
   // Employees (non-admin) bypass payment gate — only owners pay
   if (!isAdmin) {
-    // But even employees need a workshop
+    // Employee without workshop = was removed from workshop
     if (!workshop) {
-      return <AccountBlockedScreen type="deleted" />;
+      return <AccountRemovedScreen />;
     }
     if (workshop.subscription_status === "paused") {
       return (
