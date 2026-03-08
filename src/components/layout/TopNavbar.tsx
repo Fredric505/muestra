@@ -9,6 +9,7 @@ import { useBrand } from "@/contexts/BrandContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ProfileEditDialog } from "@/components/ProfileEditDialog";
+import { GlobalSearch } from "@/components/GlobalSearch";
 import {
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger,
 } from "@/components/ui/sheet";
@@ -96,6 +97,7 @@ export function TopNavbar() {
 
           {/* Right side */}
           <div className="flex items-center gap-2 ml-auto">
+            <GlobalSearch />
             <button
               onClick={() => setProfileDialogOpen(true)}
               className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30 transition-colors"
