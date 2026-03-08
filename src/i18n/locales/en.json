@@ -517,7 +517,16 @@
     "customColor": "Custom Color",
     "apply": "Apply",
     "customColorHint": "Choose any color and a palette will be generated automatically",
-    "livePreview": "Preview"
+    "livePreview": "Preview",
+    "colorGreen": "Green",
+    "colorBlue": "Blue",
+    "colorRed": "Red",
+    "colorPurple": "Purple",
+    "colorOrange": "Orange",
+    "colorCyan": "Cyan",
+    "colorPink": "Pink",
+    "colorAmber": "Amber",
+    "colorCustom": "Custom"
   },
   "exportPage": {
     "title": "Export Data",
