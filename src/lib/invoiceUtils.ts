@@ -276,11 +276,11 @@ export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: Work
   thead th:last-child { text-align: right; }
   tbody td { padding: ${invoiceSize === 'commercial' ? '5px 8px' : '10px 12px'}; border-bottom: 1px solid #e0e0e0; }
   tbody td:last-child { text-align: right; font-weight: 600; }
-  .totals { display: flex; justify-content: flex-end; margin: 10px 0 30px; }
-  .totals-box { min-width: 250px; }
-  .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
-  .totals-row.total { border-top: 3px solid #222; padding-top: 10px; font-size: 18px; font-weight: bold; }
-  .warranty-box { background: #f0f9f0; border: 1px solid #c3e6c3; border-radius: 8px; padding: 14px; margin: 20px 0; text-align: center; }
+  .totals { display: flex; justify-content: flex-end; margin: ${invoiceSize === 'commercial' ? '6px 0 10px' : '10px 0 30px'}; }
+  .totals-box { min-width: ${invoiceSize === 'commercial' ? '180px' : '250px'}; }
+  .totals-row { display: flex; justify-content: space-between; padding: ${invoiceSize === 'commercial' ? '3px 0' : '6px 0'}; font-size: ${invoiceSize === 'commercial' ? '11px' : '14px'}; }
+  .totals-row.total { border-top: 3px solid #222; padding-top: ${invoiceSize === 'commercial' ? '6px' : '10px'}; font-size: ${invoiceSize === 'commercial' ? '13px' : '18px'}; font-weight: bold; }
+  .warranty-box { background: #f0f9f0; border: 1px solid #c3e6c3; border-radius: 8px; padding: ${invoiceSize === 'commercial' ? '8px' : '14px'}; margin: ${invoiceSize === 'commercial' ? '8px 0' : '20px 0'}; text-align: center; }
   .warranty-box strong { color: #2d7a2d; }
   .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 50px; }
   .sig-box { text-align: center; }
