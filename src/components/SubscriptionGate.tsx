@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 import { AccountBlockedScreen } from "@/components/AccountBlockedScreen";
+import { AccountRemovedScreen } from "@/components/AccountRemovedScreen";
 
 interface SubscriptionGateProps {
   children: React.ReactNode;
