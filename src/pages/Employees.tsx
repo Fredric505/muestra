@@ -555,6 +555,9 @@ const Employees = () => {
                   <p className="text-sm">Haz clic en "Agregar Empleado" para comenzar</p>
                 </div>
               ) : (
+                <>
+                {/* Desktop Table */}
+                <div className="hidden md:block">
                 <Table>
                   <TableHeader>
                      <TableRow>
@@ -574,73 +577,26 @@ const Employees = () => {
                       const compType = (employee as any).compensation_type;
                       return (
                         <TableRow key={employee.id}>
-                          <TableCell className="font-medium">
-                            {employee.profiles?.full_name || "Sin nombre"}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={empType === "seller" ? "outline" : "secondary"}>
-                              {empType === "seller" ? "🛒 Vendedor" : "🔧 Técnico"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="secondary" className="bg-primary/20 text-primary">
-                              {employee.monthly_commission_rate}%
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            ${employee.base_salary?.toFixed(2) || "0.00"}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="text-xs">
-                              {compType === "both" ? "Salario + Comisión" : compType === "fixed" ? "Solo Salario" : "Solo Comisión"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            {format(parseISO(employee.hired_at), "dd MMM yyyy", {
-                              locale: es,
-                            })}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={employee.is_active ? "default" : "secondary"}>
-                              {employee.is_active ? "Activo" : "Inactivo"}
-                            </Badge>
-                          </TableCell>
+                          <TableCell className="font-medium">{employee.profiles?.full_name || "Sin nombre"}</TableCell>
+                          <TableCell><Badge variant={empType === "seller" ? "outline" : "secondary"}>{empType === "seller" ? "🛒 Vendedor" : "🔧 Técnico"}</Badge></TableCell>
+                          <TableCell><Badge variant="secondary" className="bg-primary/20 text-primary">{employee.monthly_commission_rate}%</Badge></TableCell>
+                          <TableCell>${employee.base_salary?.toFixed(2) || "0.00"}</TableCell>
+                          <TableCell><Badge variant="outline" className="text-xs">{compType === "both" ? "Salario + Comisión" : compType === "fixed" ? "Solo Salario" : "Solo Comisión"}</Badge></TableCell>
+                          <TableCell>{format(parseISO(employee.hired_at), "dd MMM yyyy", { locale: es })}</TableCell>
+                          <TableCell><Badge variant={employee.is_active ? "default" : "secondary"}>{employee.is_active ? "Activo" : "Inactivo"}</Badge></TableCell>
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="text-muted-foreground hover:text-primary"
-                                onClick={() => openResetPasswordDialog(employee)}
-                                title="Cambiar contraseña"
-                              >
-                                <KeyRound className="h-4 w-4" />
-                              </Button>
+                              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" onClick={() => openResetPasswordDialog(employee)} title="Cambiar contraseña"><KeyRound className="h-4 w-4" /></Button>
                               <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive/80 hover:bg-destructive/10">
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </AlertDialogTrigger>
+                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader>
-                                    <AlertDialogTitle className="flex items-center gap-2">
-                                      <AlertTriangle className="h-5 w-5 text-destructive" />
-                                      ¿Eliminar empleado?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Esta acción desactivará al empleado <strong>{employee.profiles?.full_name}</strong>. 
-                                      No podrá acceder al sistema pero sus datos se conservarán.
-                                    </AlertDialogDescription>
+                                    <AlertDialogTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-destructive" />¿Eliminar empleado?</AlertDialogTitle>
+                                    <AlertDialogDescription>Esta acción desactivará al empleado <strong>{employee.profiles?.full_name}</strong>.</AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
                                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={() => handleDeleteEmployee(employee.id)}
-                                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                    >
-                                      Eliminar
-                                    </AlertDialogAction>
+                                    <AlertDialogAction onClick={() => handleDeleteEmployee(employee.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Eliminar</AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
                               </AlertDialog>
@@ -651,6 +607,51 @@ const Employees = () => {
                     })}
                   </TableBody>
                 </Table>
+                </div>
+
+                {/* Mobile Cards */}
+                <div className="md:hidden space-y-3">
+                  {employees.filter(e => e.is_active).map((employee) => {
+                    const empType = (employee as any).employee_type;
+                    const compType = (employee as any).compensation_type;
+                    return (
+                      <div key={employee.id} className="border border-border rounded-lg p-3 space-y-2">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="font-medium text-foreground">{employee.profiles?.full_name || "Sin nombre"}</p>
+                            <Badge variant={empType === "seller" ? "outline" : "secondary"} className="text-xs mt-1">{empType === "seller" ? "🛒 Vendedor" : "🔧 Técnico"}</Badge>
+                          </div>
+                          <Badge variant={employee.is_active ? "default" : "secondary"} className="text-xs">{employee.is_active ? "Activo" : "Inactivo"}</Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div><span className="text-muted-foreground">Comisión: </span><span className="text-primary font-medium">{employee.monthly_commission_rate}%</span></div>
+                          <div><span className="text-muted-foreground">Salario: </span><span>${employee.base_salary?.toFixed(2) || "0.00"}</span></div>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                          <span>{compType === "both" ? "Salario + Comisión" : compType === "fixed" ? "Solo Salario" : "Solo Comisión"}</span>
+                          <span>{format(parseISO(employee.hired_at), "dd/MM/yy", { locale: es })}</span>
+                        </div>
+                        <div className="flex items-center gap-2 pt-1">
+                          <Button variant="ghost" size="sm" className="h-7 px-2 text-muted-foreground" onClick={() => openResetPasswordDialog(employee)}><KeyRound className="h-3 w-3 mr-1" />Contraseña</Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild><Button variant="ghost" size="sm" className="text-destructive h-7 px-2 ml-auto"><Trash2 className="h-3 w-3" /></Button></AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>¿Eliminar empleado?</AlertDialogTitle>
+                                <AlertDialogDescription>Se desactivará a {employee.profiles?.full_name}.</AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleDeleteEmployee(employee.id)} className="bg-destructive text-destructive-foreground">Eliminar</AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                </>
               )}
             </CardContent>
           </Card>
@@ -671,6 +672,8 @@ const Employees = () => {
                   <p>No hay empleados para mostrar ganancias</p>
                 </div>
               ) : (
+                <>
+                <div className="hidden md:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -685,39 +688,41 @@ const Employees = () => {
                   </TableHeader>
                   <TableBody>
                     {employees.map((employee) => {
-                      const biweeklyData = calculateBiweeklyEarnings(
-                        employee.id,
-                        biweeklyStart,
-                        biweeklyEnd
-                      );
+                      const biweeklyData = calculateBiweeklyEarnings(employee.id, biweeklyStart, biweeklyEnd);
                       return (
                         <TableRow key={employee.id}>
-                          <TableCell className="font-medium">
-                            {employee.profiles?.full_name || "Sin nombre"}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            {biweeklyData.repairsCount}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ${biweeklyData.totalNetProfit.toFixed(2)}
-                          </TableCell>
-                          <TableCell className="text-right text-green-400">
-                            +${biweeklyData.totalCommission.toFixed(2)}
-                          </TableCell>
-                          <TableCell className="text-right">
-                            ${biweeklyData.baseSalary.toFixed(2)}
-                          </TableCell>
-                          <TableCell className="text-right text-red-400">
-                            -${biweeklyData.totalLoans.toFixed(2)}
-                          </TableCell>
-                          <TableCell className="text-right font-bold text-primary">
-                            ${biweeklyData.netPay.toFixed(2)}
-                          </TableCell>
+                          <TableCell className="font-medium">{employee.profiles?.full_name || "Sin nombre"}</TableCell>
+                          <TableCell className="text-right">{biweeklyData.repairsCount}</TableCell>
+                          <TableCell className="text-right">${biweeklyData.totalNetProfit.toFixed(2)}</TableCell>
+                          <TableCell className="text-right text-success">+${biweeklyData.totalCommission.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">${biweeklyData.baseSalary.toFixed(2)}</TableCell>
+                          <TableCell className="text-right text-destructive">-${biweeklyData.totalLoans.toFixed(2)}</TableCell>
+                          <TableCell className="text-right font-bold text-primary">${biweeklyData.netPay.toFixed(2)}</TableCell>
                         </TableRow>
                       );
                     })}
                   </TableBody>
                 </Table>
+                </div>
+                <div className="md:hidden space-y-3">
+                  {employees.map((employee) => {
+                    const biweeklyData = calculateBiweeklyEarnings(employee.id, biweeklyStart, biweeklyEnd);
+                    return (
+                      <div key={employee.id} className="border border-border rounded-lg p-3 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <p className="font-medium text-foreground">{employee.profiles?.full_name || "Sin nombre"}</p>
+                          <p className="font-bold text-primary">${biweeklyData.netPay.toFixed(2)}</p>
+                        </div>
+                        <div className="grid grid-cols-3 gap-2 text-xs">
+                          <div><span className="text-muted-foreground">Reparaciones</span><p className="font-medium">{biweeklyData.repairsCount}</p></div>
+                          <div><span className="text-muted-foreground">Comisión</span><p className="font-medium text-success">+${biweeklyData.totalCommission.toFixed(2)}</p></div>
+                          <div><span className="text-muted-foreground">Préstamos</span><p className="font-medium text-destructive">-${biweeklyData.totalLoans.toFixed(2)}</p></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                </>
               )}
             </CardContent>
           </Card>
@@ -738,6 +743,8 @@ const Employees = () => {
                   <p>No hay préstamos pendientes</p>
                 </div>
               ) : (
+                <>
+                <div className="hidden md:block">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -749,41 +756,44 @@ const Employees = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {loans
-                      .filter((l) => !l.is_paid)
-                      .map((loan) => {
-                        const employee = employees.find((e) => e.id === loan.employee_id);
-                        return (
-                          <TableRow key={loan.id}>
-                            <TableCell className="font-medium">
-                              {employee?.profiles?.full_name || "Desconocido"}
-                            </TableCell>
-                            <TableCell>
-                              {loan.description || "Sin descripción"}
-                            </TableCell>
-                            <TableCell>
-                              {format(parseISO(loan.loan_date), "dd MMM yyyy", {
-                                locale: es,
-                              })}
-                            </TableCell>
-                            <TableCell className="text-right text-red-400 font-medium">
-                              ${loan.amount.toFixed(2)}
-                            </TableCell>
-                            <TableCell className="text-right">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleMarkLoanPaid(loan.id)}
-                              >
-                                <Check className="h-4 w-4 mr-1" />
-                                Marcar Pagado
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
+                    {loans.filter((l) => !l.is_paid).map((loan) => {
+                      const employee = employees.find((e) => e.id === loan.employee_id);
+                      return (
+                        <TableRow key={loan.id}>
+                          <TableCell className="font-medium">{employee?.profiles?.full_name || "Desconocido"}</TableCell>
+                          <TableCell>{loan.description || "Sin descripción"}</TableCell>
+                          <TableCell>{format(parseISO(loan.loan_date), "dd MMM yyyy", { locale: es })}</TableCell>
+                          <TableCell className="text-right text-destructive font-medium">${loan.amount.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">
+                            <Button variant="outline" size="sm" onClick={() => handleMarkLoanPaid(loan.id)}><Check className="h-4 w-4 mr-1" />Marcar Pagado</Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
                   </TableBody>
                 </Table>
+                </div>
+                <div className="md:hidden space-y-3">
+                  {loans.filter((l) => !l.is_paid).map((loan) => {
+                    const employee = employees.find((e) => e.id === loan.employee_id);
+                    return (
+                      <div key={loan.id} className="border border-border rounded-lg p-3 space-y-2">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <p className="font-medium text-foreground">{employee?.profiles?.full_name || "Desconocido"}</p>
+                            <p className="text-xs text-muted-foreground">{loan.description || "Sin descripción"}</p>
+                          </div>
+                          <p className="font-bold text-destructive">${loan.amount.toFixed(2)}</p>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-muted-foreground">{format(parseISO(loan.loan_date), "dd/MM/yy", { locale: es })}</span>
+                          <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => handleMarkLoanPaid(loan.id)}><Check className="h-3 w-3 mr-1" />Pagado</Button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                </>
               )}
             </CardContent>
           </Card>

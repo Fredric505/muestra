@@ -97,6 +97,7 @@ const Sales = () => {
     return totalEarned;
   }, [completedSales, myEmployee, isAdmin]);
 
+  // Desktop table row
   const renderSaleRow = (sale: typeof sales[0], showCostAction: boolean) => {
     const items = sale.sale_items || [];
     const profit = sale.product_cost != null ? sale.total_amount - sale.product_cost : null;
@@ -124,7 +125,7 @@ const Sales = () => {
           <>
             {isAdmin && <TableCell className="text-right">{sale.product_cost != null ? `${currencySymbol}${sale.product_cost.toFixed(2)}` : "—"}</TableCell>}
             {isAdmin && (
-              <TableCell className={`text-right font-bold ${profit && profit > 0 ? "text-green-500" : "text-red-500"}`}>
+              <TableCell className={`text-right font-bold ${profit && profit > 0 ? "text-success" : "text-destructive"}`}>
                 {profit != null ? `${currencySymbol}${profit.toFixed(2)}` : "—"}
               </TableCell>
             )}
@@ -158,6 +159,60 @@ const Sales = () => {
           </>
         )}
       </TableRow>
+    );
+  };
+
+  // Mobile card
+  const renderSaleCard = (sale: typeof sales[0], showCostAction: boolean) => {
+    const items = sale.sale_items || [];
+    const profit = sale.product_cost != null ? sale.total_amount - sale.product_cost : null;
+    return (
+      <div key={sale.id} className="border border-border rounded-lg p-3 space-y-2">
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="font-medium text-foreground">{sale.customer_name}</p>
+            <p className="text-xs text-muted-foreground">{items.map(i => i.product_name).join(", ") || "—"}</p>
+          </div>
+          <p className="font-bold text-foreground">{currencySymbol}{sale.total_amount.toFixed(2)}</p>
+        </div>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span>{format(new Date(sale.sale_date), "dd/MM/yy", { locale: es })}</span>
+          {isAdmin && <span>{sale.employees?.profiles?.full_name || "—"}</span>}
+        </div>
+        {!showCostAction && isAdmin && profit != null && (
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-muted-foreground">Costo: {currencySymbol}{(sale.product_cost || 0).toFixed(2)}</span>
+            <span className={`font-bold ${profit > 0 ? "text-success" : "text-destructive"}`}>
+              Ganancia: {currencySymbol}{profit.toFixed(2)}
+            </span>
+          </div>
+        )}
+        <div className="flex items-center gap-2 pt-1">
+          {showCostAction && isAdmin && (
+            <Button size="sm" variant="outline" className="text-xs h-7" onClick={() => setCostDialogSale(sale.id)}>
+              <DollarSign className="h-3 w-3 mr-1" />Costear
+            </Button>
+          )}
+          <Button size="sm" variant="ghost" className="h-7" onClick={() => handlePrintInvoice(sale)}><Printer className="h-3 w-3" /></Button>
+          {!showCostAction && isAdmin && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-destructive h-7 ml-auto"><Trash2 className="h-3 w-3" /></Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>¿Eliminar venta?</AlertDialogTitle>
+                  <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => deleteSale.mutate(sale.id)} className="bg-destructive text-destructive-foreground">Eliminar</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
+      </div>
     );
   };
 
@@ -238,7 +293,8 @@ const Sales = () => {
                 {filtered(pendingSales).length === 0 ? (
                   <div className="text-center py-12 text-muted-foreground"><ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-50" /><p>No hay ventas pendientes</p></div>
                 ) : (
-                  <div className="overflow-x-auto">
+                  <>
+                  <div className="hidden md:block overflow-x-auto">
                     <Table>
                       <TableHeader><TableRow>
                         <TableHead>Cliente</TableHead><TableHead>Productos</TableHead>
@@ -248,6 +304,10 @@ const Sales = () => {
                       <TableBody>{filtered(pendingSales).map(s => renderSaleRow(s, true))}</TableBody>
                     </Table>
                   </div>
+                  <div className="md:hidden space-y-3">
+                    {filtered(pendingSales).map(s => renderSaleCard(s, true))}
+                  </div>
+                  </>
                 )}
               </CardContent>
             </Card>
@@ -261,7 +321,8 @@ const Sales = () => {
               {filtered(completedSales).length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground"><ShoppingBag className="h-12 w-12 mx-auto mb-4 opacity-50" /><p>No hay ventas completadas</p></div>
               ) : (
-                <div className="overflow-x-auto">
+                <>
+                <div className="hidden md:block overflow-x-auto">
                   <Table>
                     <TableHeader><TableRow>
                       <TableHead>Cliente</TableHead><TableHead>Productos</TableHead>
@@ -275,6 +336,10 @@ const Sales = () => {
                     <TableBody>{filtered(completedSales).map(s => renderSaleRow(s, false))}</TableBody>
                   </Table>
                 </div>
+                <div className="md:hidden space-y-3">
+                  {filtered(completedSales).map(s => renderSaleCard(s, false))}
+                </div>
+                </>
               )}
             </CardContent>
           </Card>

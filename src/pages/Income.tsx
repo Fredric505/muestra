@@ -457,6 +457,8 @@ const Income = () => {
               No hay datos para este mes
             </p>
           ) : (
+            <>
+            <div className="hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -473,23 +475,34 @@ const Income = () => {
                   return (
                     <TableRow key={idx}>
                       <TableCell className="font-medium">{type.name}</TableCell>
-                      <TableCell>
-                        <span className={type.currency === "NIO" ? "text-success" : "text-accent"}>
-                          {symbol}
-                        </span>
-                      </TableCell>
+                      <TableCell><span className={type.currency === "NIO" ? "text-success" : "text-accent"}>{symbol}</span></TableCell>
                       <TableCell className="text-right">{type.count}</TableCell>
-                      <TableCell className="text-right text-muted-foreground">
-                        {symbol}{type.income.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right font-medium text-success">
-                        {symbol}{type.netProfit.toFixed(2)}
-                      </TableCell>
+                      <TableCell className="text-right text-muted-foreground">{symbol}{type.income.toFixed(2)}</TableCell>
+                      <TableCell className="text-right font-medium text-success">{symbol}{type.netProfit.toFixed(2)}</TableCell>
                     </TableRow>
                   );
                 })}
               </TableBody>
             </Table>
+            </div>
+            <div className="md:hidden space-y-3">
+              {monthData.typeBreakdown.map((type, idx) => {
+                const symbol = currencySymbols[type.currency as Currency];
+                return (
+                  <div key={idx} className="border border-border rounded-lg p-3 flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-foreground">{type.name}</p>
+                      <p className="text-xs text-muted-foreground">{type.count} reparaciones · {symbol}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium text-success">{symbol}{type.netProfit.toFixed(2)}</p>
+                      <p className="text-xs text-muted-foreground">{symbol}{type.income.toFixed(2)} bruto</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            </>
           )}
         </CardContent>
       </Card>
