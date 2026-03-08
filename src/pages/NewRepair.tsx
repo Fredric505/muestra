@@ -216,7 +216,7 @@ const NewRepair = () => {
               <div className="space-y-2">
                 <Label htmlFor="repair_type_id">{t("newRepair.repairType")}</Label>
                 <Select name="repair_type_id"><SelectTrigger><SelectValue placeholder={t("newRepair.selectType")} /></SelectTrigger>
-                  <SelectContent>{repairTypes.map((type) => (<SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>))}</SelectContent>
+                  <SelectContent>{repairTypes.map((type) => (<SelectItem key={type.id} value={type.id}>{t(`repairTypeNames.${type.name}`, type.name)}</SelectItem>))}</SelectContent>
                 </Select>
               </div>
               <div className="space-y-2">

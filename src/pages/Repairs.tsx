@@ -279,7 +279,7 @@ const Repairs = () => {
                           </Badge>
                         </div>
                         <div className="flex items-center justify-between text-xs">
-                          <span className="text-muted-foreground">{repair.repair_types?.name || "N/A"}</span>
+                          <span className="text-muted-foreground">{t(`repairTypeNames.${repair.repair_types?.name}`, repair.repair_types?.name || "N/A")}</span>
                           <span className="font-medium">{repairSymbol}{price.toFixed(2)}</span>
                         </div>
                         <div className="flex gap-2 pt-1">
@@ -337,7 +337,7 @@ const Repairs = () => {
                               </div>
                             </TableCell>
                             <TableCell><p className="font-medium text-sm">{repair.device_brand} {repair.device_model}</p></TableCell>
-                            <TableCell><p className="text-sm">{repair.repair_types?.name || "N/A"}</p></TableCell>
+                            <TableCell><p className="text-sm">{t(`repairTypeNames.${repair.repair_types?.name}`, repair.repair_types?.name || "N/A")}</p></TableCell>
                             <TableCell>
                               <p className="font-medium text-foreground text-sm">{repairSymbol}{price.toFixed(2)}</p>
                               {repair.deposit && repair.deposit > 0 && (<p className="text-xs text-muted-foreground">{t("invoice.deposit")}: {repairSymbol}{repair.deposit.toFixed(2)}</p>)}

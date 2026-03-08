@@ -186,7 +186,7 @@ const History = () => {
                           </div>
                         </TableCell>
                         <TableCell><p className="font-medium">{repair.device_brand} {repair.device_model}</p></TableCell>
-                        <TableCell><p>{repair.repair_types?.name || "N/A"}</p></TableCell>
+                        <TableCell><p>{t(`repairTypeNames.${repair.repair_types?.name}`, repair.repair_types?.name || "N/A")}</p></TableCell>
                         <TableCell>
                           {repair.status === "delivered" ? (
                             <Badge className="bg-success/20 text-success border-success/30">{t("historyPage.deliveredStatus")}</Badge>
@@ -266,7 +266,7 @@ const History = () => {
                       )}
                     </div>
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">{repair.repair_types?.name || "N/A"}</span>
+                      <span className="text-muted-foreground">{t(`repairTypeNames.${repair.repair_types?.name}`, repair.repair_types?.name || "N/A")}</span>
                       <span className="text-muted-foreground">{repair.completed_at && format(parseISO(repair.completed_at), "dd/MM/yy", { locale: dateLoc })}</span>
                     </div>
                     <div className="flex items-center justify-between">

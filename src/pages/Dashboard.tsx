@@ -138,9 +138,9 @@ const Dashboard = () => {
 
   const repairTypeData = useMemo(() => {
     if (!showRepairs) return [];
-    const counts = repairs.reduce((acc, r) => { const tp = r.repair_types?.name || "Otro"; acc[tp] = (acc[tp] || 0) + 1; return acc; }, {} as Record<string, number>);
+    const counts = repairs.reduce((acc, r) => { const tp = t(`repairTypeNames.${r.repair_types?.name}`, r.repair_types?.name || "Otro"); acc[tp] = (acc[tp] || 0) + 1; return acc; }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 5);
-  }, [repairs, showRepairs]);
+  }, [repairs, showRepairs, t]);
 
   const monthlyStatsData = useMemo(() => {
     const months = Array.from({ length: 6 }, (_, i) => subMonths(new Date(), 5 - i));
@@ -479,7 +479,7 @@ const Dashboard = () => {
                   <div key={repair.id} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
                     <div>
                       <p className="font-medium text-foreground">{repair.customer_name}</p>
-                      <p className="text-sm text-muted-foreground">{repair.device_brand} {repair.device_model} - {repair.repair_types?.name}</p>
+                      <p className="text-sm text-muted-foreground">{repair.device_brand} {repair.device_model} - {t(`repairTypeNames.${repair.repair_types?.name}`, repair.repair_types?.name)}</p>
                       <p className="text-sm text-success">{t("common.profit")}: {currencySymbol}{netProfit.toFixed(2)}</p>
                     </div>
                     <a href={`https://wa.me/${repair.customer_phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="text-success hover:text-success/80 text-sm font-medium">{t("repairs.contact")}</a>
