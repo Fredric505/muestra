@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,18 +17,20 @@ import {
   Menu,
   X,
 } from "lucide-react";
-
-const features = [
-  { icon: Wrench, title: "Gestión de Reparaciones", description: "Control total del flujo de reparaciones desde recepción hasta entrega." },
-  { icon: Users, title: "Gestión de Empleados", description: "Administra técnicos, comisiones, préstamos y pagos quincenales." },
-  { icon: BarChart3, title: "Reportes de Ingresos", description: "Estadísticas en tiempo real de tus ganancias y rendimiento." },
-  { icon: Printer, title: "Etiquetas y Facturas", description: "Imprime etiquetas para dispositivos y facturas para clientes." },
-  { icon: MessageSquare, title: "WhatsApp Integrado", description: "Notifica a tus clientes automáticamente sobre el estado de su reparación." },
-  { icon: Shield, title: "Garantías", description: "Gestiona días de garantía por reparación con seguimiento completo." },
-];
+import { LanguageSelector } from "@/components/LanguageSelector";
 
 const Landing = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { t } = useTranslation();
+
+  const features = [
+    { icon: Wrench, title: t("landing.featureRepairs"), description: t("landing.featureRepairsDesc") },
+    { icon: Users, title: t("landing.featureEmployees"), description: t("landing.featureEmployeesDesc") },
+    { icon: BarChart3, title: t("landing.featureReports"), description: t("landing.featureReportsDesc") },
+    { icon: Printer, title: t("landing.featureLabels"), description: t("landing.featureLabelsDesc") },
+    { icon: MessageSquare, title: t("landing.featureWhatsApp"), description: t("landing.featureWhatsAppDesc") },
+    { icon: Shield, title: t("landing.featureWarranty"), description: t("landing.featureWarrantyDesc") },
+  ];
 
   return (
     <div className="min-h-screen bg-[hsl(222,47%,7%)] text-white">
@@ -40,12 +43,13 @@ const Landing = () => {
               <span className="text-xl font-bold">RepairControl</span>
             </div>
             <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-sm text-gray-400 hover:text-white transition-colors">Características</a>
-              <a href="#pricing" className="text-sm text-gray-400 hover:text-white transition-colors">Precios</a>
-              <Link to="/login" className="text-sm font-semibold hover:text-cyan-400 transition-colors">Iniciar sesión</Link>
+              <a href="#features" className="text-sm text-gray-400 hover:text-white transition-colors">{t("landing.features")}</a>
+              <a href="#pricing" className="text-sm text-gray-400 hover:text-white transition-colors">{t("landing.pricing")}</a>
+              <LanguageSelector variant="ghost" />
+              <Link to="/login" className="text-sm font-semibold hover:text-cyan-400 transition-colors">{t("landing.login")}</Link>
               <Link to="/register">
                 <Button className="bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-full px-6">
-                  Prueba gratis
+                  {t("landing.freeTrial")}
                 </Button>
               </Link>
             </div>
@@ -56,11 +60,12 @@ const Landing = () => {
         </div>
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-white/5 bg-[hsl(222,47%,7%)] p-4 space-y-3">
-            <a href="#features" className="block text-gray-400 hover:text-white">Características</a>
-            <a href="#pricing" className="block text-gray-400 hover:text-white">Precios</a>
-            <Link to="/login" className="block font-semibold">Iniciar sesión</Link>
+            <a href="#features" className="block text-gray-400 hover:text-white">{t("landing.features")}</a>
+            <a href="#pricing" className="block text-gray-400 hover:text-white">{t("landing.pricing")}</a>
+            <LanguageSelector variant="outline" />
+            <Link to="/login" className="block font-semibold">{t("landing.login")}</Link>
             <Link to="/register">
-              <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-full">Prueba gratis</Button>
+              <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-full">{t("landing.freeTrial")}</Button>
             </Link>
           </div>
         )}
@@ -71,29 +76,28 @@ const Landing = () => {
         <div className="max-w-4xl mx-auto text-center">
           <Badge variant="outline" className="mb-6 border-cyan-500/30 text-cyan-400 px-4 py-1.5 rounded-full">
             <Clock className="h-3.5 w-3.5 mr-1.5" />
-            Plataforma profesional para talleres.
+            {t("landing.heroSubtitle")}
           </Badge>
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold leading-tight mb-6">
-            Gestiona tu taller de{" "}
+            {t("landing.heroTitle1")}{" "}
             <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              reparaciones
+              {t("landing.heroTitleHighlight")}
             </span>{" "}
-            como un profesional.
+            {t("landing.heroTitle2")}
           </h1>
           <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-            Control total de reparaciones, empleados, finanzas y clientes.
-            WhatsApp automático, impresión de etiquetas y estadísticas en tiempo real.
+            {t("landing.heroDescription")}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/register">
               <Button size="lg" className="bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-full px-8 text-base">
-                Prueba gratis 7 días
+                {t("landing.freeTrialDays")}
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             </Link>
             <a href="#pricing">
               <Button size="lg" variant="outline" className="border-white/20 hover:bg-white/5 rounded-full px-8 text-base">
-                Ver precios
+                {t("landing.viewPricing")}
               </Button>
             </a>
           </div>
@@ -104,8 +108,8 @@ const Landing = () => {
       <section id="features" className="py-20 px-4 border-t border-white/5">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Todo lo que necesitas</h2>
-            <p className="text-gray-400 text-lg">Herramientas diseñadas para talleres de reparación de celulares.</p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">{t("landing.allYouNeed")}</h2>
+            <p className="text-gray-400 text-lg">{t("landing.allYouNeedDesc")}</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((f) => (
@@ -131,7 +135,7 @@ const Landing = () => {
             <Smartphone className="h-5 w-5 text-cyan-400" />
             <span className="font-bold">RepairControl</span>
           </div>
-          <p className="text-sm text-gray-500">© {new Date().getFullYear()} RepairControl. Todos los derechos reservados.</p>
+          <p className="text-sm text-gray-500">© {new Date().getFullYear()} RepairControl. {t("landing.allRightsReserved")}</p>
         </div>
       </footer>
     </div>
@@ -144,6 +148,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export function PricingSection() {
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "annual">("monthly");
+  const { t } = useTranslation();
 
   const { data: plans } = useQuery({
     queryKey: ["public_plans"],
@@ -161,8 +166,8 @@ export function PricingSection() {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="text-center mb-12">
-        <h2 className="text-3xl sm:text-4xl font-bold mb-4">Planes y precios</h2>
-        <p className="text-gray-400 text-lg mb-8">Elige el plan que mejor se adapte a tu taller.</p>
+        <h2 className="text-3xl sm:text-4xl font-bold mb-4">{t("landing.plansAndPricing")}</h2>
+        <p className="text-gray-400 text-lg mb-8">{t("landing.plansDesc")}</p>
         <div className="inline-flex bg-white/5 rounded-full p-1">
           <button
             onClick={() => setBillingPeriod("monthly")}
@@ -170,7 +175,7 @@ export function PricingSection() {
               billingPeriod === "monthly" ? "bg-cyan-500 text-black" : "text-gray-400 hover:text-white"
             }`}
           >
-            Mensual
+            {t("landing.monthly")}
           </button>
           <button
             onClick={() => setBillingPeriod("annual")}
@@ -178,7 +183,7 @@ export function PricingSection() {
               billingPeriod === "annual" ? "bg-cyan-500 text-black" : "text-gray-400 hover:text-white"
             }`}
           >
-            Anual <span className="text-xs opacity-80">(-17%)</span>
+            {t("landing.annual")} <span className="text-xs opacity-80">(-17%)</span>
           </button>
         </div>
       </div>
@@ -199,16 +204,16 @@ export function PricingSection() {
             >
               {isPopular && (
                 <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyan-500 text-black font-semibold">
-                  Más popular
+                  {t("landing.mostPopular")}
                 </Badge>
               )}
               <h3 className="text-xl font-bold mb-1">{plan.name}</h3>
               <p className="text-gray-400 text-sm mb-4">{plan.description}</p>
               <div className="mb-6">
                 <span className="text-4xl font-extrabold">{plan.currency === "USD" ? "$" : "C$"}{perMonth}</span>
-                <span className="text-gray-400 text-sm">/mes</span>
+                <span className="text-gray-400 text-sm">{t("landing.perMonth")}</span>
                 {billingPeriod === "annual" && (
-                  <p className="text-xs text-gray-500 mt-1">{plan.currency === "USD" ? "$" : "C$"}{price} facturado anualmente</p>
+                  <p className="text-xs text-gray-500 mt-1">{plan.currency === "USD" ? "$" : "C$"}{price} {t("landing.billedAnnually")}</p>
                 )}
               </div>
               <Link to="/register">
@@ -217,7 +222,7 @@ export function PricingSection() {
                     isPopular ? "bg-cyan-500 hover:bg-cyan-600 text-black" : "bg-white/10 hover:bg-white/20"
                   }`}
                 >
-                  {plan.has_free_trial ? `Prueba gratis ${plan.trial_days} días` : "Comenzar ahora"}
+                  {plan.has_free_trial ? t("landing.freeTrialPlanDays", { days: plan.trial_days }) : t("landing.startNow")}
                 </Button>
               </Link>
               <ul className="space-y-3">
