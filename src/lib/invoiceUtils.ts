@@ -256,10 +256,10 @@ export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: Work
 
   w.document.write(`<!DOCTYPE html><html><head><title>${t("invoice.serviceOrder")} ${repair.id.slice(0, 8).toUpperCase()}</title>
 <style>
-  @page { size: letter; margin: 15mm; }
+  @page { size: ${invoiceSize === 'commercial' ? '220mm 143mm' : 'letter'}; margin: ${invoiceSize === 'commercial' ? '8mm' : '15mm'}; }
   @media print { body { margin: 0; } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; padding: 30px; max-width: 800px; margin: 0 auto; font-size: 13px; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; color: #222; padding: ${invoiceSize === 'commercial' ? '12px' : '30px'}; max-width: ${invoiceSize === 'commercial' ? '210mm' : '800px'}; margin: 0 auto; font-size: ${invoiceSize === 'commercial' ? '10px' : '13px'}; }
   .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #222; padding-bottom: 16px; margin-bottom: 20px; }
   .header-left { display: flex; align-items: center; gap: 16px; }
   .header-left img { max-height: 65px; border-radius: 8px; }
