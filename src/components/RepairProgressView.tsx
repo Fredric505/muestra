@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { Repair, RepairStatus } from "@/hooks/useRepairs";
 import { useBrand } from "@/contexts/BrandContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
