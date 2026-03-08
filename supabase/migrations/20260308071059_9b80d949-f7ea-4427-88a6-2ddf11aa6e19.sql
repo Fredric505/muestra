@@ -1,0 +1,1 @@
+ALTER TABLE public.workshops DROP CONSTRAINT IF EXISTS workshops_subscription_status_check;
