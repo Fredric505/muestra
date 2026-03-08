@@ -72,7 +72,7 @@ const Sales = () => {
   const handlePrintInvoice = (sale: typeof sales[0]) => {
     const items = sale.sale_items || [];
     const hasDevices = items.some(i => i.condition === "nuevo" || i.condition === "usado" || (i.warranty_days && i.warranty_days > 30));
-    if (hasDevices) { printLetterInvoice(sale, brand, workshop); } else { printTicketInvoice(sale, brand, workshop); }
+    if (hasDevices) { printLetterInvoice(sale, brand, workshop, t, dateLoc); } else { printTicketInvoice(sale, brand, workshop, t, dateLoc); }
   };
 
   const myCommission = useMemo(() => {
