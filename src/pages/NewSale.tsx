@@ -27,7 +27,7 @@ interface SaleItemForm {
 }
 
 const NewSale = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { createSale } = useSales();
   const { products, updateProduct } = useProducts();
