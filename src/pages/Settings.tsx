@@ -33,6 +33,7 @@ const Settings = () => {
   const [themePreset, setThemePreset] = useState((brand as any).theme_preset || "green");
   const [customPrimaryColor, setCustomPrimaryColor] = useState<string | null>((brand as any).custom_primary_color || null);
   const [colorMode, setColorMode] = useState<"dark" | "light">(((brand as any).color_mode === "light") ? "light" : "dark");
+  const [invoiceSize, setInvoiceSize] = useState((brand as any).invoice_size || "commercial");
 
   const { data: plan } = useQuery({
     queryKey: ["workshop-plan", workshop?.plan_id],
