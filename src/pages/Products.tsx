@@ -260,7 +260,9 @@ const Products = () => {
               <p>No hay productos registrados</p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -285,18 +287,10 @@ const Products = () => {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{p.category === "celular" ? "📱 Celular" : "🔌 Accesorio"}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={p.condition === "nuevo" ? "default" : "outline"}>{p.condition}</Badge>
-                      </TableCell>
-                      <TableCell className="text-right font-medium">
-                        {p.currency === "USD" ? "$" : "C$"}{p.selling_price.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Badge variant={p.stock > 0 ? "secondary" : "destructive"}>{p.stock}</Badge>
-                      </TableCell>
+                      <TableCell><Badge variant="secondary">{p.category === "celular" ? "📱 Celular" : "🔌 Accesorio"}</Badge></TableCell>
+                      <TableCell><Badge variant={p.condition === "nuevo" ? "default" : "outline"}>{p.condition}</Badge></TableCell>
+                      <TableCell className="text-right font-medium">{p.currency === "USD" ? "$" : "C$"}{p.selling_price.toFixed(2)}</TableCell>
+                      <TableCell className="text-right"><Badge variant={p.stock > 0 ? "secondary" : "destructive"}>{p.stock}</Badge></TableCell>
                       <TableCell>{p.warranty_days} días</TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
@@ -323,6 +317,50 @@ const Products = () => {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden space-y-3">
+              {filtered.map(p => (
+                <div key={p.id} className="border border-border rounded-lg p-3 space-y-2">
+                  <div className="flex items-start gap-3">
+                    {p.photo_url && <img src={p.photo_url} alt={p.name} className="w-12 h-12 rounded object-cover flex-shrink-0" />}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-foreground truncate">{p.name}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="secondary" className="text-xs">{p.category === "celular" ? "📱" : "🔌"} {p.category}</Badge>
+                        <Badge variant={p.condition === "nuevo" ? "default" : "outline"} className="text-xs">{p.condition}</Badge>
+                      </div>
+                    </div>
+                    <p className="font-bold text-foreground whitespace-nowrap">{p.currency === "USD" ? "$" : "C$"}{p.selling_price.toFixed(2)}</p>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-sm">
+                      <span>Stock: <Badge variant={p.stock > 0 ? "secondary" : "destructive"} className="text-xs">{p.stock}</Badge></span>
+                      <span className="text-muted-foreground">{p.warranty_days}d garantía</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="sm" className="h-7 px-2" onClick={() => openEdit(p)}><Edit className="h-3 w-3" /></Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="text-destructive h-7 px-2"><Trash2 className="h-3 w-3" /></Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>¿Eliminar producto?</AlertDialogTitle>
+                            <AlertDialogDescription>Se eliminará {p.name} del inventario.</AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => deleteProduct.mutate(p.id)} className="bg-destructive text-destructive-foreground">Eliminar</AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            </>
           )}
         </CardContent>
       </Card>
