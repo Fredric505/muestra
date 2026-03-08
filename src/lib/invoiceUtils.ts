@@ -70,8 +70,8 @@ export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
   .info-box { background: #f7f7f7; padding: ${invoiceSize === 'commercial' ? '8px' : '14px'}; border-radius: 8px; }
   .info-box p { margin: 3px 0; font-size: 13px; }
   .info-box strong { font-weight: 600; }
-  table { width: 100%; border-collapse: collapse; margin: 16px 0; }
-  thead th { background: #333; color: #fff; padding: 10px 12px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  table { width: 100%; border-collapse: collapse; margin: ${invoiceSize === 'commercial' ? '6px 0' : '16px 0'}; }
+  thead th { background: #333; color: #fff; padding: ${invoiceSize === 'commercial' ? '5px 8px' : '10px 12px'}; text-align: left; font-size: ${invoiceSize === 'commercial' ? '9px' : '12px'}; text-transform: uppercase; letter-spacing: 0.5px; }
   thead th:last-child { text-align: right; }
   tbody td { padding: 10px 12px; border-bottom: 1px solid #e0e0e0; font-size: 13px; }
   tbody td:last-child { text-align: right; font-weight: 600; }
