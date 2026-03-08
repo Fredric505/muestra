@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
 import { AccountBlockedScreen } from "@/components/AccountBlockedScreen";
 import { AccountRemovedScreen } from "@/components/AccountRemovedScreen";
+import { useTranslation } from "react-i18next";
 
 interface SubscriptionGateProps {
   children: React.ReactNode;
