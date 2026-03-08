@@ -49,12 +49,15 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [isUserDataLoaded, setIsUserDataLoaded] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [profile, setProfile] = useState<{ id: string; full_name: string; avatar_url: string | null } | null>(null);
   const [workshop, setWorkshop] = useState<WorkshopInfo | null>(null);
   const [employeeType, setEmployeeType] = useState<"technician" | "seller" | null>(null);
+
+  const isLoading = initialLoading || (!!user && !isUserDataLoaded);
 
   const fetchUserData = async (userId: string) => {
     try {
@@ -101,13 +104,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     } catch (error) {
       console.error("Error fetching user data:", error);
+    } finally {
+      setIsUserDataLoaded(true);
     }
   };
 
   useEffect(() => {
     let isMounted = true;
 
-    // Listener for ONGOING auth changes — do NOT await inside, do NOT control isLoading
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         if (!isMounted) return;
@@ -115,7 +119,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(currentSession?.user ?? null);
 
         if (currentSession?.user) {
-          // Use setTimeout to avoid deadlock inside onAuthStateChange callback
+          setIsUserDataLoaded(false);
           setTimeout(() => {
             if (isMounted) fetchUserData(currentSession.user.id);
           }, 0);
@@ -125,11 +129,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setIsSuperAdmin(false);
           setWorkshop(null);
           setEmployeeType(null);
+          setIsUserDataLoaded(false);
         }
       }
     );
 
-    // INITIAL load — this controls isLoading
     const initializeAuth = async () => {
       try {
         const { data: { session: currentSession } } = await supabase.auth.getSession();
@@ -144,7 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       } catch (error) {
         console.error("Error initializing auth:", error);
       } finally {
-        if (isMounted) setIsLoading(false);
+        if (isMounted) setInitialLoading(false);
       }
     };
 
