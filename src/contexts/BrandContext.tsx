@@ -29,6 +29,7 @@ const defaultBrand: BrandSettings = {
   theme_preset: "green",
   custom_primary_color: null,
   color_mode: "dark",
+  invoice_size: "commercial",
 };
 
 const BrandContext = createContext<BrandContextType | undefined>(undefined);
