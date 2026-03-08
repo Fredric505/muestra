@@ -8,12 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Wrench, DollarSign, Clock, CheckCircle, TrendingUp, Package,
-  AlertCircle, Search, ShoppingBag, Image as ImageIcon, Plus,
+  AlertCircle, Search, ShoppingBag, Image as ImageIcon, Plus, Users, Star,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import QuickSaleDialog from "@/components/QuickSaleDialog";
-import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, startOfDay, endOfDay } from "date-fns";
+import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, startOfDay, endOfDay, subMonths } from "date-fns";
 import { es } from "date-fns/locale";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
