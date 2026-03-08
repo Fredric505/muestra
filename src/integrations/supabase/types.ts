@@ -360,14 +360,23 @@ export type Database = {
           created_at: string
           currency: string
           description: string | null
+          description_en: string | null
+          description_fr: string | null
+          description_pt: string | null
           display_order: number | null
           features: Json | null
+          features_en: Json | null
+          features_fr: Json | null
+          features_pt: Json | null
           has_free_trial: boolean | null
           id: string
           is_active: boolean | null
           max_employees: number | null
           monthly_price: number
           name: string
+          name_en: string | null
+          name_fr: string | null
+          name_pt: string | null
           trial_days: number | null
           updated_at: string
         }
@@ -376,14 +385,23 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          description_pt?: string | null
           display_order?: number | null
           features?: Json | null
+          features_en?: Json | null
+          features_fr?: Json | null
+          features_pt?: Json | null
           has_free_trial?: boolean | null
           id?: string
           is_active?: boolean | null
           max_employees?: number | null
           monthly_price?: number
           name: string
+          name_en?: string | null
+          name_fr?: string | null
+          name_pt?: string | null
           trial_days?: number | null
           updated_at?: string
         }
@@ -392,14 +410,23 @@ export type Database = {
           created_at?: string
           currency?: string
           description?: string | null
+          description_en?: string | null
+          description_fr?: string | null
+          description_pt?: string | null
           display_order?: number | null
           features?: Json | null
+          features_en?: Json | null
+          features_fr?: Json | null
+          features_pt?: Json | null
           has_free_trial?: boolean | null
           id?: string
           is_active?: boolean | null
           max_employees?: number | null
           monthly_price?: number
           name?: string
+          name_en?: string | null
+          name_fr?: string | null
+          name_pt?: string | null
           trial_days?: number | null
           updated_at?: string
         }
