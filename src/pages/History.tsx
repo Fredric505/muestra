@@ -219,6 +219,7 @@ const History = () => {
               <p>No hay reparaciones en el historial</p>
             </div>
           ) : (
+            <>
             {/* Desktop Table */}
             <div className="hidden md:block overflow-x-auto">
               <Table>
