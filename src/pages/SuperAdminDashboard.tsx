@@ -264,6 +264,10 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
   const queryClient = useQueryClient();
   const [editingWs, setEditingWs] = useState<any>(null);
   const [deletingWsId, setDeletingWsId] = useState<string | null>(null);
+  const [pausingWs, setPausingWs] = useState<any>(null);
+  const [pauseType, setPauseType] = useState<string>("suspension");
+  const [pauseReason, setPauseReason] = useState("");
+  const [pauseEstimatedResume, setPauseEstimatedResume] = useState("");
 
   const statusColors: Record<string, string> = {
     active: "bg-green-500/20 text-green-400",
@@ -303,22 +307,44 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
     },
   });
 
-  const togglePause = useMutation({
-    mutationFn: async ({ id, currentStatus }: { id: string; currentStatus: string }) => {
-      const newStatus = currentStatus === "paused" ? "active" : "paused";
-      const isActive = newStatus !== "paused";
+  const pauseWorkshop = useMutation({
+    mutationFn: async ({ id, type, reason, estimatedResume }: { id: string; type: string; reason: string; estimatedResume: string }) => {
       const { error } = await supabase.from("workshops").update({
-        subscription_status: newStatus,
-        is_active: isActive,
+        subscription_status: "paused",
+        is_active: false,
+        pause_type: type,
+        pause_reason: reason || null,
+        pause_estimated_resume: estimatedResume || null,
       }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sa_workshops"] });
-      toast({ title: "Estado del taller actualizado" });
+      setPausingWs(null);
+      setPauseType("suspension");
+      setPauseReason("");
+      setPauseEstimatedResume("");
+      toast({ title: "Taller pausado correctamente" });
     },
     onError: (err: any) => {
       toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const unpauseWorkshop = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("workshops").update({
+        subscription_status: "active",
+        is_active: true,
+        pause_type: null,
+        pause_reason: null,
+        pause_estimated_resume: null,
+      }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sa_workshops"] });
+      toast({ title: "Taller reactivado" });
     },
   });
 
