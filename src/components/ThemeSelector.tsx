@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Palette, Sun, Moon } from "lucide-react";
-import { THEME_PRESETS, customColorToPreset } from "@/contexts/ThemeContext";
+import { THEME_PRESETS, customColorToPreset, applyThemeToDOM, resolvePreset } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 
 interface ThemeSelectorProps {
@@ -51,7 +51,11 @@ export function ThemeSelector({
           </div>
           <Switch
             checked={colorMode === "light"}
-            onCheckedChange={(checked) => onColorModeChange(checked ? "light" : "dark")}
+            onCheckedChange={(checked) => {
+              const newMode = checked ? "light" : "dark";
+              onColorModeChange(newMode);
+              applyThemeToDOM(resolvePreset(themePreset, customPrimaryColor), newMode);
+            }}
           />
         </div>
 
@@ -71,6 +75,7 @@ export function ThemeSelector({
                   onClick={() => {
                     onThemePresetChange(preset.key);
                     onCustomColorChange(null);
+                    applyThemeToDOM(preset, colorMode);
                   }}
                   className={cn(
                     "relative flex flex-col items-center gap-1.5 p-3 rounded-lg border-2 transition-all",
@@ -112,6 +117,7 @@ export function ThemeSelector({
               onClick={() => {
                 onThemePresetChange("custom");
                 onCustomColorChange(customHex);
+                applyThemeToDOM(customColorToPreset(customHex), colorMode);
               }}
               className={cn(
                 "px-3 py-2 text-sm rounded-lg border transition-all",

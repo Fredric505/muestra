@@ -103,6 +103,52 @@ export function customColorToPreset(hex: string): ThemePreset {
   return { key: "custom", label: "Personalizado", emoji: "🎨", primary, accent, ring: primary, sidebarPrimary: primary };
 }
 
+// ── Helper to apply theme to DOM ───────────────────────────────
+export function applyThemeToDOM(preset: ThemePreset, colorMode: "dark" | "light") {
+  const root = document.documentElement;
+  const base = colorMode === "light" ? LIGHT_BASE : DARK_BASE;
+
+  root.style.setProperty("--background", base.background);
+  root.style.setProperty("--foreground", base.foreground);
+  root.style.setProperty("--card", base.card);
+  root.style.setProperty("--card-foreground", base.cardForeground);
+  root.style.setProperty("--popover", base.popover);
+  root.style.setProperty("--popover-foreground", base.popoverForeground);
+  root.style.setProperty("--primary-foreground", base.primaryForeground);
+  root.style.setProperty("--secondary", base.secondary);
+  root.style.setProperty("--secondary-foreground", base.secondaryForeground);
+  root.style.setProperty("--muted", base.muted);
+  root.style.setProperty("--muted-foreground", base.mutedForeground);
+  root.style.setProperty("--border", base.border);
+  root.style.setProperty("--input", base.input);
+  root.style.setProperty("--sidebar-background", base.sidebarBackground);
+  root.style.setProperty("--sidebar-foreground", base.sidebarForeground);
+  root.style.setProperty("--sidebar-accent", base.sidebarAccent);
+  root.style.setProperty("--sidebar-accent-foreground", base.sidebarAccentForeground);
+  root.style.setProperty("--sidebar-border", base.sidebarBorder);
+
+  root.style.setProperty("--primary", preset.primary);
+  root.style.setProperty("--accent", preset.accent);
+  root.style.setProperty("--ring", preset.ring);
+  root.style.setProperty("--sidebar-primary", preset.sidebarPrimary);
+  root.style.setProperty("--sidebar-primary-foreground", base.primaryForeground);
+  root.style.setProperty("--sidebar-ring", preset.ring);
+  root.style.setProperty("--success", preset.primary);
+  root.style.setProperty("--success-foreground", base.primaryForeground);
+
+  if (colorMode === "dark") {
+    root.classList.add("dark");
+  } else {
+    root.classList.remove("dark");
+  }
+}
+
+export function resolvePreset(presetKey: string, customColor: string | null): ThemePreset {
+  return presetKey === "custom" && customColor
+    ? customColorToPreset(customColor)
+    : THEME_PRESETS.find((p) => p.key === presetKey) || THEME_PRESETS[0];
+}
+
 // ── Context ────────────────────────────────────────────────────
 interface ThemeContextType {
   currentPreset: ThemePreset;
@@ -124,52 +170,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const customColor = (brand as any)?.custom_primary_color || null;
   const colorMode: "dark" | "light" = (brand as any)?.color_mode === "light" ? "light" : "dark";
 
-  const preset: ThemePreset =
-    themePresetKey === "custom" && customColor
-      ? customColorToPreset(customColor)
-      : THEME_PRESETS.find((p) => p.key === themePresetKey) || THEME_PRESETS[0];
+  const preset = resolvePreset(themePresetKey, customColor);
 
-  // Apply CSS variables to :root
   useEffect(() => {
-    const root = document.documentElement;
-    const base = colorMode === "light" ? LIGHT_BASE : DARK_BASE;
-
-    // Base tokens
-    root.style.setProperty("--background", base.background);
-    root.style.setProperty("--foreground", base.foreground);
-    root.style.setProperty("--card", base.card);
-    root.style.setProperty("--card-foreground", base.cardForeground);
-    root.style.setProperty("--popover", base.popover);
-    root.style.setProperty("--popover-foreground", base.popoverForeground);
-    root.style.setProperty("--primary-foreground", base.primaryForeground);
-    root.style.setProperty("--secondary", base.secondary);
-    root.style.setProperty("--secondary-foreground", base.secondaryForeground);
-    root.style.setProperty("--muted", base.muted);
-    root.style.setProperty("--muted-foreground", base.mutedForeground);
-    root.style.setProperty("--border", base.border);
-    root.style.setProperty("--input", base.input);
-    root.style.setProperty("--sidebar-background", base.sidebarBackground);
-    root.style.setProperty("--sidebar-foreground", base.sidebarForeground);
-    root.style.setProperty("--sidebar-accent", base.sidebarAccent);
-    root.style.setProperty("--sidebar-accent-foreground", base.sidebarAccentForeground);
-    root.style.setProperty("--sidebar-border", base.sidebarBorder);
-
-    // Theme-color tokens
-    root.style.setProperty("--primary", preset.primary);
-    root.style.setProperty("--accent", preset.accent);
-    root.style.setProperty("--ring", preset.ring);
-    root.style.setProperty("--sidebar-primary", preset.sidebarPrimary);
-    root.style.setProperty("--sidebar-primary-foreground", base.primaryForeground);
-    root.style.setProperty("--sidebar-ring", preset.ring);
-    root.style.setProperty("--success", preset.primary);
-    root.style.setProperty("--success-foreground", base.primaryForeground);
-
-    // Toggle dark class for tailwind
-    if (colorMode === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    applyThemeToDOM(preset, colorMode);
   }, [preset, colorMode]);
 
   return (
