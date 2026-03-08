@@ -242,9 +242,11 @@ const Settings = () => {
           <CardContent className="space-y-4">
             <div className="flex items-center gap-6">
               <Avatar className="h-24 w-24 rounded-xl">
-                <AvatarImage src={currentLogo} alt="Logo" className="object-cover" />
-                <AvatarFallback className="rounded-xl text-2xl">
-                  {businessName.charAt(0).toUpperCase()}
+                {currentLogo ? (
+                  <AvatarImage src={currentLogo} alt="Logo" className="object-cover" />
+                ) : null}
+                <AvatarFallback className="rounded-xl text-2xl bg-primary/20 text-primary">
+                  {(businessName || "T").charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div className="space-y-2">
