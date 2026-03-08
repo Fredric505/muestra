@@ -495,8 +495,8 @@ const Dashboard = () => {
         </Card>
       )}
 
-      {/* Frequent Clients */}
-      {frequentClients.length > 0 && (
+      {/* Frequent Clients - Admin only */}
+      {isAdminOrSuper && frequentClients.length > 0 && (
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
