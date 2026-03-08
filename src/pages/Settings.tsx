@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useBrand } from "@/contexts/BrandContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -13,9 +14,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { getDateLocale } from "@/lib/dateLocale";
 
 const Settings = () => {
+  const { t, i18n } = useTranslation();
+  const dateLoc = getDateLocale(i18n.language);
   const { brand, updateBrand, uploadLogo, isLoading } = useBrand();
   const { workshop } = useAuth();
   const { toast } = useToast();
@@ -60,8 +63,8 @@ const Settings = () => {
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
         toast({
-          title: "Archivo muy grande",
-          description: "El logo debe ser menor a 2MB",
+          title: t("common.error"),
+          description: t("settings.fileTooLarge"),
           variant: "destructive",
         });
         return;
@@ -79,8 +82,8 @@ const Settings = () => {
   const handleSave = async () => {
     if (!businessName.trim()) {
       toast({
-        title: "Error",
-        description: "El nombre del negocio es obligatorio",
+        title: t("common.error"),
+        description: t("settings.businessNameRequired"),
         variant: "destructive",
       });
       return;
@@ -104,8 +107,8 @@ const Settings = () => {
       } as any);
       
       toast({
-        title: "Configuración guardada",
-        description: "Los cambios se aplicarán en toda la aplicación",
+        title: t("settings.settingsSaved"),
+        description: t("settings.settingsSavedDesc"),
       });
       
       setLogoFile(null);
@@ -113,8 +116,8 @@ const Settings = () => {
     } catch (error) {
       console.error("Error saving settings:", error);
       toast({
-        title: "Error",
-        description: "No se pudo guardar la configuración",
+        title: t("common.error"),
+        description: t("settings.errorSaving"),
         variant: "destructive",
       });
     } finally {
@@ -127,11 +130,11 @@ const Settings = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
-        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Activo</Badge>;
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">{t("settings.active")}</Badge>;
       case "trial":
-        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">Prueba</Badge>;
+        return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">{t("settings.trial")}</Badge>;
       case "expired":
-        return <Badge variant="destructive">Expirado</Badge>;
+        return <Badge variant="destructive">{t("settings.expired")}</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -140,7 +143,7 @@ const Settings = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-pulse text-muted-foreground">Cargando...</div>
+        <div className="animate-pulse text-muted-foreground">{t("common.loading")}</div>
       </div>
     );
   }
@@ -150,10 +153,10 @@ const Settings = () => {
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-foreground flex items-center gap-2">
           <SettingsIcon className="h-7 w-7 text-primary" />
-          Configuración
+          {t("settings.title")}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Personaliza el nombre y logo de tu negocio
+          {t("settings.subtitle")}
         </p>
       </div>
 
@@ -163,37 +166,37 @@ const Settings = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CreditCard className="h-5 w-5 text-primary" />
-              Tu Plan
+              {t("settings.yourPlan")}
             </CardTitle>
             <CardDescription>
-              Información de tu suscripción actual
+              {t("settings.planInfo")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Plan</p>
+                <p className="text-xs text-muted-foreground">{t("settings.planName")}</p>
                 <p className="font-semibold text-foreground">{plan?.name || "—"}</p>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Estado</p>
+                <p className="text-xs text-muted-foreground">{t("settings.planStatus")}</p>
                 {getStatusBadge(workshop.subscription_status)}
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground">Máx. Empleados</p>
-                <p className="font-semibold text-foreground">{plan?.max_employees ?? "Ilimitado"}</p>
+                <p className="text-xs text-muted-foreground">{t("settings.maxEmployees")}</p>
+                <p className="font-semibold text-foreground">{plan?.max_employees ?? t("settings.unlimited")}</p>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <CalendarClock className="h-3.5 w-3.5" />
-                  {workshop.trial_ends_at ? "Prueba expira" : "Suscripción expira"}
+                  {workshop.trial_ends_at ? t("settings.trialExpires") : t("settings.subscriptionExpires")}
                 </p>
                 <p className="font-semibold text-foreground">
                   {workshop.trial_ends_at
-                    ? format(new Date(workshop.trial_ends_at), "dd MMM yyyy", { locale: es })
+                    ? format(new Date(workshop.trial_ends_at), "dd MMM yyyy", { locale: dateLoc })
                     : workshop.subscription_ends_at
-                    ? format(new Date(workshop.subscription_ends_at), "dd MMM yyyy", { locale: es })
-                    : "Sin fecha de expiración"}
+                    ? format(new Date(workshop.subscription_ends_at), "dd MMM yyyy", { locale: dateLoc })
+                    : t("settings.noExpDate")}
                 </p>
               </div>
             </div>
@@ -217,15 +220,15 @@ const Settings = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building2 className="h-5 w-5 text-primary" />
-              Identidad del Negocio
+              {t("settings.businessIdentity")}
             </CardTitle>
             <CardDescription>
-              Estos datos aparecerán en toda la aplicación
+              {t("settings.businessIdentityDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="business-name">Nombre del Negocio</Label>
+              <Label htmlFor="business-name">{t("settings.businessName")}</Label>
               <Input
                 id="business-name"
                 value={businessName}
@@ -234,7 +237,7 @@ const Settings = () => {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="tagline">Eslogan / Identificador</Label>
+              <Label htmlFor="tagline">{t("settings.tagline")}</Label>
               <Input
                 id="tagline"
                 value={tagline}
@@ -242,7 +245,7 @@ const Settings = () => {
                 placeholder="Ej: Servicio técnico profesional"
               />
               <p className="text-xs text-muted-foreground">
-                Aparece en etiquetas impresas y mensajes de WhatsApp
+                {t("settings.taglineHint")}
               </p>
             </div>
           </CardContent>
@@ -253,10 +256,10 @@ const Settings = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Image className="h-5 w-5 text-primary" />
-              Logo
+              {t("settings.logo")}
             </CardTitle>
             <CardDescription>
-              Sube el logo de tu negocio (máx. 2MB)
+              {t("settings.logoDesc")}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -282,15 +285,15 @@ const Settings = () => {
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Upload className="h-4 w-4 mr-2" />
-                  Subir Logo
+                  {t("settings.uploadLogo")}
                 </Button>
                 {logoPreview && (
-                  <p className="text-xs text-success">Nueva imagen seleccionada</p>
+                  <p className="text-xs text-success">{t("settings.newImageSelected")}</p>
                 )}
               </div>
             </div>
             <p className="text-xs text-muted-foreground">
-              Formatos: JPG, PNG, WEBP. Recomendado: imagen cuadrada.
+              {t("settings.logoFormats")}
             </p>
           </CardContent>
         </Card>
@@ -299,9 +302,9 @@ const Settings = () => {
       {/* Preview */}
       <Card className="glass-card">
         <CardHeader>
-          <CardTitle>Vista Previa</CardTitle>
+          <CardTitle>{t("settings.preview")}</CardTitle>
           <CardDescription>
-            Así se verá tu marca en la aplicación
+            {t("settings.previewDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -314,8 +317,8 @@ const Settings = () => {
               </div>
             )}
             <div>
-              <h3 className="font-bold text-sidebar-foreground">{businessName || "Nombre del Negocio"}</h3>
-              <p className="text-xs text-muted-foreground">{tagline || "Eslogan"}</p>
+              <h3 className="font-bold text-sidebar-foreground">{businessName || t("settings.businessName")}</h3>
+              <p className="text-xs text-muted-foreground">{tagline || t("settings.tagline")}</p>
             </div>
           </div>
         </CardContent>
@@ -325,7 +328,7 @@ const Settings = () => {
       <div className="flex justify-end">
         <Button onClick={handleSave} disabled={isSaving} size="lg">
           <Save className="h-4 w-4 mr-2" />
-          {isSaving ? "Guardando..." : "Guardar Cambios"}
+          {isSaving ? t("common.saving") : t("settings.saveChanges")}
         </Button>
       </div>
     </div>
