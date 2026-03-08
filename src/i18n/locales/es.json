@@ -244,6 +244,23 @@
     "goToRepairs": "Ir a Reparaciones",
     "newRepairBtn": "Nueva Reparación"
   },
+  "repairTypeNames": {
+    "Cambio de Pantalla": "Cambio de Pantalla",
+    "Cambio de Batería": "Cambio de Batería",
+    "Cambio de Cámara": "Cambio de Cámara",
+    "Reparación de Puerto de Carga": "Reparación de Puerto de Carga",
+    "Cambio de Altavoz": "Cambio de Altavoz",
+    "Cambio de Micrófono": "Cambio de Micrófono",
+    "Cambio de Tapa Trasera": "Cambio de Tapa Trasera",
+    "Cambio de Conector Flex": "Cambio de Conector Flex",
+    "Reparación de Placa": "Reparación de Placa",
+    "Reparación de Botones": "Reparación de Botones",
+    "Desbloqueo de Software": "Desbloqueo de Software",
+    "Actualización de Software": "Actualización de Software",
+    "Limpieza Interna": "Limpieza Interna",
+    "Diagnóstico": "Diagnóstico",
+    "Otro": "Otro"
+  },
   "repairs": {
     "title": "Reparaciones",
     "subtitle": "Gestiona las reparaciones activas",

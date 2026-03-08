@@ -244,6 +244,23 @@
     "goToRepairs": "Aller aux Réparations",
     "newRepairBtn": "Nouvelle Réparation"
   },
+  "repairTypeNames": {
+    "Cambio de Pantalla": "Remplacement d'Écran",
+    "Cambio de Batería": "Remplacement de Batterie",
+    "Cambio de Cámara": "Remplacement de Caméra",
+    "Reparación de Puerto de Carga": "Réparation Port de Charge",
+    "Cambio de Altavoz": "Remplacement de Haut-parleur",
+    "Cambio de Micrófono": "Remplacement de Microphone",
+    "Cambio de Tapa Trasera": "Remplacement Coque Arrière",
+    "Cambio de Conector Flex": "Remplacement Connecteur Flex",
+    "Reparación de Placa": "Réparation de Carte",
+    "Reparación de Botones": "Réparation de Boutons",
+    "Desbloqueo de Software": "Déblocage Logiciel",
+    "Actualización de Software": "Mise à Jour Logiciel",
+    "Limpieza Interna": "Nettoyage Interne",
+    "Diagnóstico": "Diagnostic",
+    "Otro": "Autre"
+  },
   "repairs": {
     "title": "Réparations",
     "subtitle": "Gérez les réparations actives",
