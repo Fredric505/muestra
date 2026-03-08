@@ -82,12 +82,13 @@ export const useProducts = () => {
 
   const deleteProduct = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("products").delete().eq("id", id);
+      // Soft-delete: mark as inactive instead of deleting to avoid FK constraint errors from sale_items
+      const { error } = await supabase.from("products").update({ is_active: false }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
-      toast({ title: "Producto eliminado", description: "El producto ha sido eliminado" });
+      toast({ title: "Producto eliminado", description: "El producto ha sido eliminado del inventario" });
     },
     onError: (error) => {
       toast({ title: "Error", description: error.message, variant: "destructive" });

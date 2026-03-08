@@ -8,12 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Wrench, DollarSign, Clock, CheckCircle, TrendingUp, Package,
-  AlertCircle, Search, ShoppingBag, Image as ImageIcon, Plus,
+  AlertCircle, Search, ShoppingBag, Image as ImageIcon, Plus, Users, Star, BarChart3,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import QuickSaleDialog from "@/components/QuickSaleDialog";
-import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, startOfDay, endOfDay } from "date-fns";
+import { format, startOfMonth, endOfMonth, isWithinInterval, parseISO, startOfDay, endOfDay, subMonths } from "date-fns";
 import { es } from "date-fns/locale";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -140,6 +140,60 @@ const Dashboard = () => {
     const counts = repairs.reduce((acc, r) => { const t = r.repair_types?.name || "Otro"; acc[t] = (acc[t] || 0) + 1; return acc; }, {} as Record<string, number>);
     return Object.entries(counts).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count).slice(0, 5);
   }, [repairs, showRepairs]);
+
+  // Monthly stats (last 6 months)
+  const monthlyStatsData = useMemo(() => {
+    const months = Array.from({ length: 6 }, (_, i) => subMonths(new Date(), 5 - i));
+    return months.map(month => {
+      const ms = startOfMonth(month);
+      const me = endOfMonth(month);
+      const monthRepairs = showRepairs ? repairs.filter(r => r.completed_at && isWithinInterval(parseISO(r.completed_at), { start: ms, end: me })) : [];
+      const monthSalesItems = showSales ? sales.filter(s => s.status === "completed" && isWithinInterval(parseISO(s.sale_date), { start: ms, end: me })) : [];
+      return {
+        month: format(month, "MMM yy", { locale: es }),
+        Reparaciones: monthRepairs.length,
+        Ventas: monthSalesItems.length,
+        GananciaRep: monthRepairs.reduce((s, r) => s + ((r.final_price || r.estimated_price || 0) - (r.parts_cost || 0)), 0),
+        GananciaVen: monthSalesItems.reduce((s, sale) => s + (sale.total_amount - (sale.product_cost || 0)), 0),
+      };
+    });
+  }, [repairs, sales, showRepairs, showSales]);
+
+  // Frequent clients
+  const frequentClients = useMemo(() => {
+    const clientMap: Record<string, { name: string; phone: string; repairCount: number; saleCount: number; totalSpent: number; lastVisit: string }> = {};
+    
+    repairs.forEach(r => {
+      const key = r.customer_phone.replace(/\D/g, "");
+      if (!clientMap[key]) {
+        clientMap[key] = { name: r.customer_name, phone: r.customer_phone, repairCount: 0, saleCount: 0, totalSpent: 0, lastVisit: r.created_at };
+      }
+      clientMap[key].repairCount++;
+      clientMap[key].totalSpent += r.final_price || r.estimated_price || 0;
+      if (r.created_at > clientMap[key].lastVisit) {
+        clientMap[key].lastVisit = r.created_at;
+        clientMap[key].name = r.customer_name;
+      }
+    });
+
+    sales.forEach(s => {
+      if (!s.customer_phone) return;
+      const key = s.customer_phone.replace(/\D/g, "");
+      if (!clientMap[key]) {
+        clientMap[key] = { name: s.customer_name, phone: s.customer_phone, repairCount: 0, saleCount: 0, totalSpent: 0, lastVisit: s.sale_date };
+      }
+      clientMap[key].saleCount++;
+      clientMap[key].totalSpent += s.total_amount;
+      if (s.sale_date > clientMap[key].lastVisit) {
+        clientMap[key].lastVisit = s.sale_date;
+      }
+    });
+
+    return Object.values(clientMap)
+      .filter(c => (c.repairCount + c.saleCount) >= 2)
+      .sort((a, b) => (b.repairCount + b.saleCount) - (a.repairCount + a.saleCount))
+      .slice(0, 10);
+  }, [repairs, sales]);
 
   // Product search
   const filteredProducts = useMemo(() => {
@@ -386,6 +440,107 @@ const Dashboard = () => {
                   </div>
                 );
               })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Monthly Statistics */}
+      {isAdminOrSuper && monthlyStatsData.length > 0 && (
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Estadísticas Mensuales (Últimos 6 meses)
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={monthlyStatsData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(217, 33%, 22%)" />
+                <XAxis dataKey="month" stroke="hsl(215, 20%, 65%)" />
+                <YAxis stroke="hsl(215, 20%, 65%)" />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(222, 47%, 13%)", border: "1px solid hsl(217, 33%, 22%)", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(210, 40%, 98%)" }} />
+                {showRepairs && <Bar dataKey="Reparaciones" fill="hsl(199, 89%, 48%)" radius={[4, 4, 0, 0]} />}
+                {showSales && <Bar dataKey="Ventas" fill="hsl(262, 83%, 58%)" radius={[4, 4, 0, 0]} />}
+              </BarChart>
+            </ResponsiveContainer>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
+              {showRepairs && (
+                <>
+                  <div className="text-center p-2 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground">Total Reparaciones</p>
+                    <p className="text-lg font-bold text-foreground">{monthlyStatsData.reduce((s, m) => s + m.Reparaciones, 0)}</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground">Ganancia Rep.</p>
+                    <p className="text-lg font-bold text-success">{currencySymbol}{monthlyStatsData.reduce((s, m) => s + m.GananciaRep, 0).toFixed(2)}</p>
+                  </div>
+                </>
+              )}
+              {showSales && (
+                <>
+                  <div className="text-center p-2 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground">Total Ventas</p>
+                    <p className="text-lg font-bold text-foreground">{monthlyStatsData.reduce((s, m) => s + m.Ventas, 0)}</p>
+                  </div>
+                  <div className="text-center p-2 rounded-lg bg-secondary/50">
+                    <p className="text-xs text-muted-foreground">Ganancia Ven.</p>
+                    <p className="text-lg font-bold text-success">{currencySymbol}{monthlyStatsData.reduce((s, m) => s + m.GananciaVen, 0).toFixed(2)}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Frequent Clients */}
+      {frequentClients.length > 0 && (
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              Clientes Frecuentes
+              <Badge variant="secondary" className="ml-auto">{frequentClients.length}</Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {frequentClients.map((client, i) => (
+                <div key={client.phone} className="flex items-center justify-between p-3 rounded-lg bg-secondary/50">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold text-primary">
+                      {i + 1}
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground flex items-center gap-1">
+                        {client.name}
+                        {(client.repairCount + client.saleCount) >= 5 && <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" />}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {client.repairCount > 0 && `${client.repairCount} reparaciones`}
+                        {client.repairCount > 0 && client.saleCount > 0 && " · "}
+                        {client.saleCount > 0 && `${client.saleCount} compras`}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Última visita: {format(parseISO(client.lastVisit), "dd/MM/yyyy", { locale: es })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-success">{currencySymbol}{client.totalSpent.toFixed(2)}</p>
+                    <a
+                      href={`https://wa.me/${client.phone.replace(/\D/g, "")}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-green-400 hover:underline"
+                    >
+                      Contactar
+                    </a>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>

@@ -264,6 +264,10 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
   const queryClient = useQueryClient();
   const [editingWs, setEditingWs] = useState<any>(null);
   const [deletingWsId, setDeletingWsId] = useState<string | null>(null);
+  const [pausingWs, setPausingWs] = useState<any>(null);
+  const [pauseType, setPauseType] = useState<string>("suspension");
+  const [pauseReason, setPauseReason] = useState("");
+  const [pauseEstimatedResume, setPauseEstimatedResume] = useState("");
 
   const statusColors: Record<string, string> = {
     active: "bg-green-500/20 text-green-400",
@@ -303,22 +307,44 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
     },
   });
 
-  const togglePause = useMutation({
-    mutationFn: async ({ id, currentStatus }: { id: string; currentStatus: string }) => {
-      const newStatus = currentStatus === "paused" ? "active" : "paused";
-      const isActive = newStatus !== "paused";
+  const pauseWorkshop = useMutation({
+    mutationFn: async ({ id, type, reason, estimatedResume }: { id: string; type: string; reason: string; estimatedResume: string }) => {
       const { error } = await supabase.from("workshops").update({
-        subscription_status: newStatus,
-        is_active: isActive,
+        subscription_status: "paused",
+        is_active: false,
+        pause_type: type,
+        pause_reason: reason || null,
+        pause_estimated_resume: estimatedResume || null,
       }).eq("id", id);
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sa_workshops"] });
-      toast({ title: "Estado del taller actualizado" });
+      setPausingWs(null);
+      setPauseType("suspension");
+      setPauseReason("");
+      setPauseEstimatedResume("");
+      toast({ title: "Taller pausado correctamente" });
     },
     onError: (err: any) => {
       toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const unpauseWorkshop = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("workshops").update({
+        subscription_status: "active",
+        is_active: true,
+        pause_type: null,
+        pause_reason: null,
+        pause_estimated_resume: null,
+      }).eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sa_workshops"] });
+      toast({ title: "Taller reactivado" });
     },
   });
 
@@ -394,7 +420,13 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => togglePause.mutate({ id: ws.id, currentStatus: ws.subscription_status })}
+                        onClick={() => {
+                          if (ws.subscription_status === "paused") {
+                            unpauseWorkshop.mutate(ws.id);
+                          } else {
+                            setPausingWs(ws);
+                          }
+                        }}
                         title={ws.subscription_status === "paused" ? "Reactivar" : "Pausar"}
                       >
                         {ws.subscription_status === "paused" ? <Play className="h-4 w-4 text-green-400" /> : <Pause className="h-4 w-4 text-orange-400" />}
@@ -510,6 +542,63 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditingWs(null)}>Cancelar</Button>
             <Button onClick={() => updateWorkshop.mutate(editingWs)}>Guardar cambios</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Pause Workshop Dialog */}
+      <Dialog open={!!pausingWs} onOpenChange={(open) => { if (!open) { setPausingWs(null); setPauseType("suspension"); setPauseReason(""); setPauseEstimatedResume(""); } }}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-orange-400">⏸ Pausar Taller</DialogTitle>
+            <DialogDescription>
+              Selecciona el motivo de la pausa para "{pausingWs?.name}"
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Tipo de pausa</Label>
+              <Select value={pauseType} onValueChange={setPauseType}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="maintenance">🔧 Mantenimiento</SelectItem>
+                  <SelectItem value="suspension">⚠️ Suspensión temporal</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Motivo (visible para el usuario)</Label>
+              <Textarea
+                placeholder={pauseType === "maintenance" ? "Ej: Actualización del sistema, mejoras de rendimiento..." : "Ej: Falta de pago, revisión de cuenta..."}
+                value={pauseReason}
+                onChange={(e) => setPauseReason(e.target.value)}
+              />
+            </div>
+            {pauseType === "maintenance" && (
+              <div className="space-y-2">
+                <Label>Hora estimada de vuelta</Label>
+                <Input
+                  type="datetime-local"
+                  value={pauseEstimatedResume}
+                  onChange={(e) => setPauseEstimatedResume(e.target.value)}
+                />
+              </div>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setPausingWs(null)}>Cancelar</Button>
+            <Button
+              className="bg-orange-500 hover:bg-orange-600 text-white"
+              onClick={() => pausingWs && pauseWorkshop.mutate({
+                id: pausingWs.id,
+                type: pauseType,
+                reason: pauseReason,
+                estimatedResume: pauseEstimatedResume,
+              })}
+            >
+              <Pause className="h-4 w-4 mr-1.5" />
+              Pausar Taller
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

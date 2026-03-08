@@ -16,6 +16,9 @@ interface WorkshopInfo {
   email: string | null;
   logo_url: string | null;
   currency: string;
+  pause_type: string | null;
+  pause_reason: string | null;
+  pause_estimated_resume: string | null;
 }
 
 interface AuthContextType {
@@ -89,11 +92,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (profileData?.workshop_id) {
         const { data: wsData } = await supabase
           .from("workshops")
-          .select("id, name, subscription_status, is_active, trial_ends_at, subscription_ends_at, plan_id, phone, address, whatsapp, email, logo_url, currency")
+          .select("id, name, subscription_status, is_active, trial_ends_at, subscription_ends_at, plan_id, phone, address, whatsapp, email, logo_url, currency, pause_type, pause_reason, pause_estimated_resume")
           .eq("id", profileData.workshop_id)
           .maybeSingle();
         if (wsData) {
-          setWorkshop({ ...wsData, currency: wsData.currency || "USD" });
+          setWorkshop({ ...wsData, currency: wsData.currency || "USD" } as WorkshopInfo);
         }
       }
     } catch (error) {

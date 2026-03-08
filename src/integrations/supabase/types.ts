@@ -932,6 +932,9 @@ export type Database = {
           logo_url: string | null
           name: string
           owner_id: string
+          pause_estimated_resume: string | null
+          pause_reason: string | null
+          pause_type: string | null
           phone: string | null
           plan_id: string | null
           subscription_ends_at: string | null
@@ -950,6 +953,9 @@ export type Database = {
           logo_url?: string | null
           name: string
           owner_id: string
+          pause_estimated_resume?: string | null
+          pause_reason?: string | null
+          pause_type?: string | null
           phone?: string | null
           plan_id?: string | null
           subscription_ends_at?: string | null
@@ -968,6 +974,9 @@ export type Database = {
           logo_url?: string | null
           name?: string
           owner_id?: string
+          pause_estimated_resume?: string | null
+          pause_reason?: string | null
+          pause_type?: string | null
           phone?: string | null
           plan_id?: string | null
           subscription_ends_at?: string | null

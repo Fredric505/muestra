@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import { AccountBlockedScreen } from "@/components/AccountBlockedScreen";
 
 interface SubscriptionGateProps {
   children: React.ReactNode;
@@ -21,23 +22,46 @@ export const SubscriptionGate = ({ children }: SubscriptionGateProps) => {
   if (isSuperAdmin) return <>{children}</>;
 
   // Employees (non-admin) bypass payment gate — only owners pay
-  if (!isAdmin) return <>{children}</>;
+  if (!isAdmin) {
+    // But even employees need a workshop
+    if (!workshop) {
+      return <AccountBlockedScreen type="deleted" />;
+    }
+    if (workshop.subscription_status === "paused") {
+      return (
+        <AccountBlockedScreen
+          type="paused"
+          pauseType={workshop.pause_type}
+          pauseReason={workshop.pause_reason}
+          pauseEstimatedResume={workshop.pause_estimated_resume}
+        />
+      );
+    }
+    return <>{children}</>;
+  }
 
-  // Admin: wait for workshop data before deciding
+  // Admin with no workshop = deleted
   if (!workshop) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <AccountBlockedScreen type="deleted" />;
   }
 
   const status = workshop.subscription_status;
 
+  // Paused workshop
+  if (status === "paused") {
+    return (
+      <AccountBlockedScreen
+        type="paused"
+        pauseType={workshop.pause_type}
+        pauseReason={workshop.pause_reason}
+        pauseEstimatedResume={workshop.pause_estimated_resume}
+      />
+    );
+  }
+
   // Active paid subscription
   if (status === "active") {
     const subEnd = workshop.subscription_ends_at ? new Date(workshop.subscription_ends_at) : null;
-    // If no end date set, or end date is in the future, allow access
     if (!subEnd || subEnd > new Date()) return <>{children}</>;
   }
   
