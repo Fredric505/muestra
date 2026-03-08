@@ -89,7 +89,7 @@ export function ThemeSelector({
                     className="h-8 w-8 rounded-full shadow-md"
                     style={{ backgroundColor: bgColor }}
                   />
-                  <span className="text-xs font-medium text-foreground">{preset.label}</span>
+                  <span className="text-xs font-medium text-foreground">{t(`settings.color${preset.key.charAt(0).toUpperCase() + preset.key.slice(1)}`)}</span>
                 </button>
               );
             })}
