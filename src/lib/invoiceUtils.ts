@@ -77,9 +77,9 @@ export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
   tbody td:last-child { text-align: right; font-weight: 600; }
   tbody tr:nth-child(even) { background: #fafafa; }
   .totals { display: flex; justify-content: flex-end; margin: 10px 0 30px; }
-  .totals-box { min-width: 250px; }
-  .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 14px; }
-  .totals-row.total { border-top: 3px solid #222; padding-top: 10px; margin-top: 6px; font-size: 18px; font-weight: bold; }
+  .totals-box { min-width: ${invoiceSize === 'commercial' ? '180px' : '250px'}; }
+  .totals-row { display: flex; justify-content: space-between; padding: ${invoiceSize === 'commercial' ? '3px 0' : '6px 0'}; font-size: ${invoiceSize === 'commercial' ? '11px' : '14px'}; }
+  .totals-row.total { border-top: 3px solid #222; padding-top: ${invoiceSize === 'commercial' ? '6px' : '10px'}; margin-top: ${invoiceSize === 'commercial' ? '3px' : '6px'}; font-size: ${invoiceSize === 'commercial' ? '13px' : '18px'}; font-weight: bold; }
   .photos { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
   .photos img { max-width: 180px; max-height: 180px; border-radius: 8px; border: 1px solid #ddd; object-fit: cover; }
   .signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 50px; }
