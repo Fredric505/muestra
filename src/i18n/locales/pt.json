@@ -507,7 +507,17 @@
     "settingsSavedDesc": "As alterações serão aplicadas em toda a aplicação",
     "errorSaving": "Não foi possível salvar as configurações",
     "businessNameRequired": "O nome do negócio é obrigatório",
-    "fileTooLarge": "O logo deve ter menos de 2MB"
+    "fileTooLarge": "O logo deve ter menos de 2MB",
+    "themeTitle": "Tema do Painel",
+    "themeDesc": "Personalize as cores do seu painel. Todos os funcionários verão o mesmo tema.",
+    "darkMode": "Modo Escuro",
+    "lightMode": "Modo Claro",
+    "toggleModeDesc": "Alterne entre modo claro e escuro",
+    "colorTheme": "Tema de Cores",
+    "customColor": "Cor Personalizada",
+    "apply": "Aplicar",
+    "customColorHint": "Escolha qualquer cor e uma paleta será gerada automaticamente",
+    "livePreview": "Pré-visualização"
   },
   "exportPage": {
     "title": "Exportar Dados",

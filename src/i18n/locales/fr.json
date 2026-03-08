@@ -507,7 +507,17 @@
     "settingsSavedDesc": "Les modifications seront appliquées dans toute l'application",
     "errorSaving": "Impossible d'enregistrer les paramètres",
     "businessNameRequired": "Le nom de l'entreprise est requis",
-    "fileTooLarge": "Le logo doit faire moins de 2Mo"
+    "fileTooLarge": "Le logo doit faire moins de 2Mo",
+    "themeTitle": "Thème du Panneau",
+    "themeDesc": "Personnalisez les couleurs de votre panneau. Tous les employés verront le même thème.",
+    "darkMode": "Mode Sombre",
+    "lightMode": "Mode Clair",
+    "toggleModeDesc": "Basculer entre mode clair et sombre",
+    "colorTheme": "Thème de Couleurs",
+    "customColor": "Couleur Personnalisée",
+    "apply": "Appliquer",
+    "customColorHint": "Choisissez n'importe quelle couleur et une palette sera générée automatiquement",
+    "livePreview": "Aperçu"
   },
   "exportPage": {
     "title": "Exporter les Données",

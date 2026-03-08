@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ export function ThemeSelector({
   onCustomColorChange,
   onColorModeChange,
 }: ThemeSelectorProps) {
+  const { t } = useTranslation();
   const [customHex, setCustomHex] = useState(customPrimaryColor || "#3b82f6");
 
   return (
@@ -31,10 +33,10 @@ export function ThemeSelector({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Palette className="h-5 w-5 text-primary" />
-          Tema del Panel
+          {t("settings.themeTitle")}
         </CardTitle>
         <CardDescription>
-          Personaliza los colores de tu panel. Todos los empleados verán el mismo tema.
+          {t("settings.themeDesc")}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -43,10 +45,10 @@ export function ThemeSelector({
           <div className="space-y-0.5">
             <Label className="flex items-center gap-2">
               {colorMode === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-              Modo {colorMode === "dark" ? "Oscuro" : "Claro"}
+              {colorMode === "dark" ? t("settings.darkMode") : t("settings.lightMode")}
             </Label>
             <p className="text-xs text-muted-foreground">
-              Alterna entre modo claro y oscuro
+              {t("settings.toggleModeDesc")}
             </p>
           </div>
           <Switch
@@ -61,11 +63,10 @@ export function ThemeSelector({
 
         {/* Preset grid */}
         <div className="space-y-2">
-          <Label>Tema de Colores</Label>
+          <Label>{t("settings.colorTheme")}</Label>
           <div className="grid grid-cols-4 gap-3">
             {THEME_PRESETS.map((preset) => {
               const isActive = themePreset === preset.key;
-              // Parse primary HSL to render swatch
               const hslParts = preset.primary.replace(/%/g, "").split(/\s+/);
               const bgColor = `hsl(${hslParts[0]}, ${hslParts[1]}%, ${hslParts[2]}%)`;
 
@@ -97,7 +98,7 @@ export function ThemeSelector({
 
         {/* Custom color */}
         <div className="space-y-2">
-          <Label>Color Personalizado</Label>
+          <Label>{t("settings.customColor")}</Label>
           <div className="flex items-center gap-3">
             <input
               type="color"
@@ -126,17 +127,17 @@ export function ThemeSelector({
                   : "border-border hover:border-muted-foreground/40 text-foreground"
               )}
             >
-              Aplicar
+              {t("settings.apply")}
             </button>
           </div>
           <p className="text-xs text-muted-foreground">
-            Elige cualquier color y se generará una paleta automáticamente
+            {t("settings.customColorHint")}
           </p>
         </div>
 
         {/* Live preview strip */}
         <div className="space-y-2">
-          <Label>Vista Previa</Label>
+          <Label>{t("settings.livePreview")}</Label>
           <div className="flex gap-2 p-3 rounded-lg bg-card border border-border">
             {(() => {
               const active = themePreset === "custom" && customPrimaryColor
