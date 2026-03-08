@@ -341,7 +341,6 @@ const Sales = () => {
                 </div>
                 </>
               )}
-              )}
             </CardContent>
           </Card>
         </TabsContent>
