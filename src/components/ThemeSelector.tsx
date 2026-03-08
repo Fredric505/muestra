@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Palette, Sun, Moon } from "lucide-react";
-import { THEME_PRESETS, customColorToPreset } from "@/contexts/ThemeContext";
+import { THEME_PRESETS, customColorToPreset, applyThemeToDOM, resolvePreset } from "@/contexts/ThemeContext";
 import { cn } from "@/lib/utils";
 
 interface ThemeSelectorProps {
