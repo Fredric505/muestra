@@ -398,9 +398,74 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
     },
   });
 
+  const pauseAllWorkshops = useMutation({
+    mutationFn: async ({ reason, estimatedResume }: { reason: string; estimatedResume: string }) => {
+      const activeIds = workshops.filter(w => w.subscription_status !== "paused").map(w => w.id);
+      if (activeIds.length === 0) throw new Error("No hay talleres activos para pausar");
+      const { error } = await supabase.from("workshops").update({
+        subscription_status: "paused",
+        is_active: false,
+        pause_type: "maintenance",
+        pause_reason: reason || "Mantenimiento general de la plataforma",
+        pause_estimated_resume: estimatedResume || null,
+      }).in("id", activeIds);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sa_workshops"] });
+      setShowPauseAll(false);
+      setPauseAllReason("");
+      setPauseAllEstimatedResume("");
+      toast({ title: "Todos los talleres pausados por mantenimiento" });
+    },
+    onError: (err: any) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    },
+  });
+
+  const unpauseAllWorkshops = useMutation({
+    mutationFn: async () => {
+      const pausedIds = workshops.filter(w => w.subscription_status === "paused" && w.pause_type === "maintenance").map(w => w.id);
+      if (pausedIds.length === 0) throw new Error("No hay talleres en mantenimiento");
+      const { error } = await supabase.from("workshops").update({
+        subscription_status: "active",
+        is_active: true,
+        pause_type: null,
+        pause_reason: null,
+        pause_estimated_resume: null,
+      }).in("id", pausedIds);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sa_workshops"] });
+      toast({ title: "Todos los talleres reactivados" });
+    },
+  });
+
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-bold text-foreground">Talleres Registrados</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-2xl font-bold text-foreground">Talleres Registrados</h2>
+        <div className="flex gap-2">
+          {workshops.some(w => w.subscription_status === "paused" && w.pause_type === "maintenance") && (
+            <Button
+              variant="outline"
+              className="gap-2 border-green-500/30 text-green-400 hover:bg-green-500/10"
+              onClick={() => unpauseAllWorkshops.mutate()}
+            >
+              <Play className="h-4 w-4" />
+              Reactivar Todos
+            </Button>
+          )}
+          <Button
+            className="gap-2 bg-orange-500 hover:bg-orange-600 text-white"
+            onClick={() => setShowPauseAll(true)}
+          >
+            <Pause className="h-4 w-4" />
+            Pausar Todos (Mantenimiento)
+          </Button>
+        </div>
+      </div>
       <Card className="glass-card">
         <CardContent className="p-0">
           <Table>
