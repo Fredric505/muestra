@@ -213,6 +213,54 @@ const Dashboard = () => {
         <p className="text-sm text-muted-foreground">{format(new Date(), "EEEE, d 'de' MMMM 'de' yyyy", { locale: es })}</p>
       </div>
 
+      {/* Quick Access Shortcuts */}
+      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+        {showRepairs && (
+          <>
+            <button onClick={() => navigate("/panel/repairs/new")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
+              <PlusCircle className="h-5 w-5 text-primary" />
+              <span className="text-xs font-medium text-foreground">Nueva Rep.</span>
+            </button>
+            <button onClick={() => navigate("/panel/repairs")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
+              <Wrench className="h-5 w-5 text-primary" />
+              <span className="text-xs font-medium text-foreground">Reparaciones</span>
+            </button>
+            <button onClick={() => navigate("/panel/history")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
+              <Clock className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs font-medium text-foreground">Historial</span>
+            </button>
+            <button onClick={() => navigate("/panel/income")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
+              <DollarSign className="h-5 w-5 text-success" />
+              <span className="text-xs font-medium text-foreground">Ingresos</span>
+            </button>
+          </>
+        )}
+        {showSales && (
+          <>
+            <button onClick={() => navigate("/panel/sales/new")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
+              <ShoppingBag className="h-5 w-5 text-accent" />
+              <span className="text-xs font-medium text-foreground">Nueva Venta</span>
+            </button>
+            <button onClick={() => navigate("/panel/sales")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
+              <ShoppingBag className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs font-medium text-foreground">Ventas</span>
+            </button>
+          </>
+        )}
+        {isAdminOrSuper && (
+          <>
+            <button onClick={() => navigate("/panel/products")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
+              <Package className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs font-medium text-foreground">Inventario</span>
+            </button>
+            <button onClick={() => navigate("/panel/employees")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
+              <Users className="h-5 w-5 text-muted-foreground" />
+              <span className="text-xs font-medium text-foreground">Empleados</span>
+            </button>
+          </>
+        )}
+      </div>
+
       {/* Stats Cards */}
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         {showRepairs && repairStats && (
