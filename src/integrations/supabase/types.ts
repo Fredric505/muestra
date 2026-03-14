@@ -22,6 +22,7 @@ export type Database = {
           custom_primary_color: string | null
           id: string
           invoice_size: string
+          invoice_text_overrides: Json
           logo_url: string | null
           tagline: string | null
           theme_preset: string
@@ -35,6 +36,7 @@ export type Database = {
           custom_primary_color?: string | null
           id?: string
           invoice_size?: string
+          invoice_text_overrides?: Json
           logo_url?: string | null
           tagline?: string | null
           theme_preset?: string
@@ -48,6 +50,7 @@ export type Database = {
           custom_primary_color?: string | null
           id?: string
           invoice_size?: string
+          invoice_text_overrides?: Json
           logo_url?: string | null
           tagline?: string | null
           theme_preset?: string
