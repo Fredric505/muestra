@@ -1,7 +1,8 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { InvoiceTextOverrides, normalizeInvoiceTextOverrides } from "@/lib/invoiceTextOverrides";
 
 interface BrandSettings {
   id: string;
@@ -12,6 +13,7 @@ interface BrandSettings {
   custom_primary_color: string | null;
   color_mode: string;
   invoice_size: string;
+  invoice_text_overrides: InvoiceTextOverrides;
 }
 
 interface BrandContextType {
@@ -30,6 +32,7 @@ const defaultBrand: BrandSettings = {
   custom_primary_color: null,
   color_mode: "dark",
   invoice_size: "commercial",
+  invoice_text_overrides: {},
 };
 
 const BrandContext = createContext<BrandContextType | undefined>(undefined);
