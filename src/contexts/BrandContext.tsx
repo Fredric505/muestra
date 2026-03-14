@@ -65,7 +65,11 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
         return defaultBrand;
       }
       
-      return (data as BrandSettings) || defaultBrand;
+      if (!data) return defaultBrand;
+      return {
+        ...(data as BrandSettings),
+        invoice_text_overrides: normalizeInvoiceTextOverrides((data as any).invoice_text_overrides),
+      };
     },
     staleTime: 0,
     enabled: !!workshopId,
