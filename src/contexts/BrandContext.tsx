@@ -101,6 +101,8 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
             business_name: updates.business_name || "Mi Taller",
             tagline: updates.tagline || "",
             logo_url: updates.logo_url || null,
+            invoice_size: updates.invoice_size || "commercial",
+            invoice_text_overrides: normalizeInvoiceTextOverrides((updates as any).invoice_text_overrides),
           });
         if (error) throw error;
       }
