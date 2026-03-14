@@ -1,7 +1,8 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/contexts/AuthContext";
+import { InvoiceTextOverrides, normalizeInvoiceTextOverrides } from "@/lib/invoiceTextOverrides";
 
 interface BrandSettings {
   id: string;
@@ -12,6 +13,7 @@ interface BrandSettings {
   custom_primary_color: string | null;
   color_mode: string;
   invoice_size: string;
+  invoice_text_overrides: InvoiceTextOverrides;
 }
 
 interface BrandContextType {
@@ -30,6 +32,7 @@ const defaultBrand: BrandSettings = {
   custom_primary_color: null,
   color_mode: "dark",
   invoice_size: "commercial",
+  invoice_text_overrides: {},
 };
 
 const BrandContext = createContext<BrandContextType | undefined>(undefined);
@@ -62,7 +65,11 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
         return defaultBrand;
       }
       
-      return (data as BrandSettings) || defaultBrand;
+      if (!data) return defaultBrand;
+      return {
+        ...(data as BrandSettings),
+        invoice_text_overrides: normalizeInvoiceTextOverrides((data as any).invoice_text_overrides),
+      };
     },
     staleTime: 0,
     enabled: !!workshopId,
@@ -94,6 +101,8 @@ export const BrandProvider = ({ children }: { children: ReactNode }) => {
             business_name: updates.business_name || "Mi Taller",
             tagline: updates.tagline || "",
             logo_url: updates.logo_url || null,
+            invoice_size: updates.invoice_size || "commercial",
+            invoice_text_overrides: normalizeInvoiceTextOverrides((updates as any).invoice_text_overrides),
           });
         if (error) throw error;
       }
