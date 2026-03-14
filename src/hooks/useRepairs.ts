@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 
 export type RepairStatus = "received" | "in_progress" | "ready" | "delivered" | "failed";
 
-export type Currency = "NIO" | "USD";
+export type Currency = string;
 
 export interface Repair {
   id: string;
