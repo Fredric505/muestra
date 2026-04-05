@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBrand } from "@/contexts/BrandContext";
+import { getCurrencySymbol } from "@/lib/currency";
 import { useSales } from "@/hooks/useSales";
 import { useProducts, Product } from "@/hooks/useProducts";
 import { Button } from "@/components/ui/button";
@@ -44,7 +45,7 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
     }
   }, [open, initialProduct]);
 
-  const currencySymbol = workshop?.currency === "USD" ? "$" : (workshop?.currency || "C$");
+  const currencySymbol = getCurrencySymbol(workshop?.currency);
   const total = cart.reduce((s, item) => s + item.product.selling_price * item.quantity, 0);
 
   const addToCart = (product: Product) => {

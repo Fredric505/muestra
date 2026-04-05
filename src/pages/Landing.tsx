@@ -213,10 +213,10 @@ export function PricingSection() {
               <h3 className="text-xl font-bold mb-1">{planName}</h3>
               <p className="text-gray-400 text-sm mb-4">{planDesc}</p>
               <div className="mb-6">
-                <span className="text-4xl font-extrabold">{plan.currency === "USD" ? "$" : "C$"}{perMonth}</span>
+                <span className="text-4xl font-extrabold">{getCurrencySymbol(plan.currency)}{perMonth}</span>
                 <span className="text-gray-400 text-sm">{t("landing.perMonth")}</span>
                 {billingPeriod === "annual" && (
-                  <p className="text-xs text-gray-500 mt-1">{plan.currency === "USD" ? "$" : "C$"}{price} {t("landing.billedAnnually")}</p>
+                  <p className="text-xs text-gray-500 mt-1">{getCurrencySymbol(plan.currency)}{price} {t("landing.billedAnnually")}</p>
                 )}
               </div>
               <Link to="/register">
