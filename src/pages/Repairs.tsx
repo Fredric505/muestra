@@ -190,7 +190,7 @@ const Repairs = () => {
   }
 
   const currentRepair = repairs.find(r => r.id === selectedRepair);
-  const symbol = currentRepair ? currencySymbols[currentRepair.currency] : "C$";
+  const symbol = currentRepair ? getCurrencySymbol(currentRepair.currency) : "$";
   const netProfit = (parseFloat(finalPrice) || 0) - (parseFloat(partsCost) || 0);
 
   return (
@@ -262,7 +262,7 @@ const Repairs = () => {
                 {/* Mobile Cards View */}
                 <div className="sm:hidden space-y-2 p-3">
                   {activeRepairs.map((repair) => {
-                    const repairSymbol = currencySymbols[repair.currency];
+                    const repairSymbol = getCurrencySymbol(repair.currency);
                     const price = repair.final_price || repair.estimated_price;
                     const whatsappMessage = getWhatsAppMessage(repair, brand.business_name);
                     const phone = repair.customer_phone.replace(/\D/g, "");
@@ -319,7 +319,7 @@ const Repairs = () => {
                     </TableHeader>
                     <TableBody>
                       {activeRepairs.map((repair) => {
-                        const repairSymbol = currencySymbols[repair.currency];
+                        const repairSymbol = getCurrencySymbol(repair.currency);
                         const price = repair.final_price || repair.estimated_price;
                         const parts = repair.parts_cost || 0;
                         const net = price - parts;

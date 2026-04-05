@@ -52,7 +52,7 @@ const NewSale = () => {
     condition: "nuevo", warranty_days: 0, condition_notes: "", photo_file: null, photo_preview: null,
   }]);
 
-  const symbol = currencySymbols[currency];
+  const symbol = getCurrencySymbol(currency);
   const total = items.reduce((s, i) => s + i.unit_price * i.quantity, 0);
 
   const addItem = () => {

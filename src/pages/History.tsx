@@ -168,7 +168,7 @@ const History = () => {
                 </TableHeader>
                 <TableBody>
                   {completedRepairs.map((repair) => {
-                    const symbol = currencySymbols[repair.currency];
+                    const symbol = getCurrencySymbol(repair.currency);
                     const price = repair.final_price || repair.estimated_price;
                     const netProfit = price - (repair.parts_cost || 0);
                     const warrantyValid = repair.completed_at && repair.warranty_days ? isWarrantyValid(repair.completed_at, repair.warranty_days) : false;
@@ -245,7 +245,7 @@ const History = () => {
 
             <div className="md:hidden space-y-3">
               {completedRepairs.map((repair) => {
-                const symbol = currencySymbols[repair.currency];
+                const symbol = getCurrencySymbol(repair.currency);
                 const price = repair.final_price || repair.estimated_price;
                 const netProfit = price - (repair.parts_cost || 0);
                 const warrantyValid = repair.completed_at && repair.warranty_days ? isWarrantyValid(repair.completed_at, repair.warranty_days) : false;
