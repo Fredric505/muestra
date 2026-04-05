@@ -84,7 +84,7 @@ const Payment = () => {
       : plan.annual_price
     : 0;
   const currency = plan?.currency || "NIO";
-  const symbol = currency === "USD" ? "$" : "C$";
+  const symbol = getCurrencySymbol(currency);
 
   const hasPendingRequest = existingRequests?.some((r) => r.status === "pending");
 
@@ -337,7 +337,7 @@ const Payment = () => {
                     <span>{(req as any).plans?.name}</span>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium">{req.currency === "USD" ? "$" : "C$"}{req.amount}</p>
+                    <p className="font-medium">{getCurrencySymbol(req.currency)}{req.amount}</p>
                     <p className="text-xs text-muted-foreground capitalize">{req.status}</p>
                   </div>
                 </div>

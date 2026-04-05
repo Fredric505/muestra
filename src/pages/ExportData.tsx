@@ -78,8 +78,8 @@ const ExportData = () => {
               <td>${r.customer_phone}</td>
               <td>${r.device_brand} ${r.device_model}</td>
               <td>${t(`repairStatus.${r.status}`)}</td>
-              <td>${r.currency === "USD" ? "$" : "C$"}${r.estimated_price.toFixed(2)}</td>
-              <td>${r.currency === "USD" ? "$" : "C$"}${(r.parts_cost || 0).toFixed(2)}</td>
+              <td>${getCurrencySymbol(r.currency)}${r.estimated_price.toFixed(2)}</td>
+              <td>${getCurrencySymbol(r.currency)}${(r.parts_cost || 0).toFixed(2)}</td>
               <td>${r.warranty_days || 0} ${t("common.days")}</td>
               <td>${format(new Date(r.created_at), "dd/MM/yyyy", { locale: dateLoc })}</td>
             </tr>`).join('')}</tbody>
@@ -97,9 +97,9 @@ const ExportData = () => {
               <td>${i + 1}</td>
               <td>${s.customer_name}</td>
               <td>${s.sale_items?.map(item => item.product_name).join(", ") || "—"}</td>
-              <td>${s.currency === "USD" ? "$" : "C$"}${s.total_amount.toFixed(2)}</td>
-              <td>${s.product_cost != null ? `C$${s.product_cost.toFixed(2)}` : "—"}</td>
-              <td>${s.product_cost != null ? `C$${(s.total_amount - s.product_cost).toFixed(2)}` : "—"}</td>
+              <td>${getCurrencySymbol(s.currency)}${s.total_amount.toFixed(2)}</td>
+              <td>${s.product_cost != null ? `${getCurrencySymbol(s.currency)}${s.product_cost.toFixed(2)}` : "—"}</td>
+              <td>${s.product_cost != null ? `${getCurrencySymbol(s.currency)}${(s.total_amount - s.product_cost).toFixed(2)}` : "—"}</td>
               <td>${s.status === "completed" ? t("salesPage.completed") : t("salesPage.pending")}</td>
               <td>${format(new Date(s.sale_date), "dd/MM/yyyy", { locale: dateLoc })}</td>
             </tr>`).join('')}</tbody>

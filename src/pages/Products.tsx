@@ -231,7 +231,7 @@ const Products = () => {
                         </TableCell>
                         <TableCell><Badge variant="secondary">{p.category === "celular" ? `📱 ${t("productsPage.phone")}` : `🔌 ${t("productsPage.accessory")}`}</Badge></TableCell>
                         <TableCell><Badge variant={p.condition === "nuevo" ? "default" : "outline"}>{p.condition === "nuevo" ? t("common.new") : t("common.used")}</Badge></TableCell>
-                        <TableCell className="text-right font-medium">{p.currency === "USD" ? "$" : "C$"}{p.selling_price.toFixed(2)}</TableCell>
+                        <TableCell className="text-right font-medium">{getCurrencySymbol(p.currency)}{p.selling_price.toFixed(2)}</TableCell>
                         <TableCell className="text-right"><Badge variant={p.stock > 0 ? "secondary" : "destructive"}>{p.stock}</Badge></TableCell>
                         <TableCell>{p.warranty_days} {t("common.days")}</TableCell>
                         <TableCell className="text-right">
@@ -266,7 +266,7 @@ const Products = () => {
                           <Badge variant={p.condition === "nuevo" ? "default" : "outline"} className="text-xs">{p.condition === "nuevo" ? t("common.new") : t("common.used")}</Badge>
                         </div>
                       </div>
-                      <p className="font-bold text-foreground whitespace-nowrap">{p.currency === "USD" ? "$" : "C$"}{p.selling_price.toFixed(2)}</p>
+                      <p className="font-bold text-foreground whitespace-nowrap">{getCurrencySymbol(p.currency)}{p.selling_price.toFixed(2)}</p>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3 text-sm">
