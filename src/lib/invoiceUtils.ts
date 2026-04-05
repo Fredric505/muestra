@@ -1,5 +1,7 @@
 import { format } from "date-fns";
 import type { Locale } from "date-fns";
+import { getCurrencySymbol } from "@/lib/currency";
+import { InvoiceTextOverrides, resolveInvoiceText } from "@/lib/invoiceTextOverrides";
 
 type TFunction = (key: string, opts?: any) => string;
 
@@ -36,13 +38,9 @@ interface WorkshopInfo {
   currency?: string;
 }
 
-const getCurrencySymbol = (currency: string) => {
-  const map: Record<string, string> = {
-    USD: "$", NIO: "C$", MXN: "$", COP: "$", ARS: "$", PEN: "S/", CRC: "₡",
-    GTQ: "Q", HNL: "L", PAB: "B/.", DOP: "RD$", BOB: "Bs", EUR: "€",
-  };
-  return map[currency] || currency;
-};
+// Use the shared getCurrencySymbol from currency.ts
+// (kept as local alias for backward compat in template strings)
+const getSymbol = (currency: string) => getCurrencySymbol(currency);
 
 /** Unified invoice for phones/repairs — supports letter, commercial (22×14.3cm), and ticket sizes */
 export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial') => {
