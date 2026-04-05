@@ -15,6 +15,7 @@ import {
 import { FileDown, Shield, FileText, Wrench, ShoppingBag, Users } from "lucide-react";
 import { format } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
+import { getCurrencySymbol } from "@/lib/currency";
 
 const ExportData = () => {
   const { t, i18n } = useTranslation();

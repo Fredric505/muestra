@@ -4,6 +4,7 @@ import { useSales } from "@/hooks/useSales";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBrand } from "@/contexts/BrandContext";
 import { useEmployees } from "@/hooks/useEmployees";
+import { getCurrencySymbol } from "@/lib/currency";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -39,7 +40,7 @@ const Sales = () => {
   const [productCost, setProductCost] = useState("");
   const [adminNotes, setAdminNotes] = useState("");
 
-  const currencySymbol = workshop?.currency === "USD" ? "$" : (workshop?.currency || "C$");
+  const currencySymbol = getCurrencySymbol(workshop?.currency);
 
   const myEmployee = useMemo(() => {
     if (isAdmin) return null;

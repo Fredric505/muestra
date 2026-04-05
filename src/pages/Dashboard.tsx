@@ -3,6 +3,7 @@ import { useSales } from "@/hooks/useSales";
 import { useProducts, Product } from "@/hooks/useProducts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslation } from "react-i18next";
+import { getCurrencySymbol } from "@/lib/currency";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -55,7 +56,7 @@ const Dashboard = () => {
     }
   };
 
-  const currencySymbol = workshop?.currency === "USD" ? "$" : (workshop?.currency || "C$");
+  const currencySymbol = getCurrencySymbol(workshop?.currency);
   const isAdminOrSuper = isAdmin;
   const showRepairs = isAdminOrSuper || employeeType === "technician";
   const showSales = isAdminOrSuper || employeeType === "seller";
