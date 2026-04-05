@@ -128,7 +128,7 @@ const QuickSaleDialog = ({ open, onOpenChange, initialProduct }: QuickSaleDialog
           device_photo_url: null,
         })),
       };
-      printTicketInvoice(saleForPrint, brand, workshop, t, dateLoc);
+      printTicketInvoice(saleForPrint, brand, workshop, t, dateLoc, (brand as any).invoice_text_overrides);
 
       toast({ title: t("quickSale.saleRegistered"), description: t("quickSale.stockUpdated") });
       setCart([]);
