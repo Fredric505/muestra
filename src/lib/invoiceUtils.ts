@@ -172,8 +172,8 @@ ${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warrant
 };
 
 /** Small ticket/receipt for accessories — supermarket style */
-export const printTicketInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale) => {
-  const symbol = getCurrencySymbol(sale.currency);
+export const printTicketInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, textOverrides?: InvoiceTextOverrides) => {
+  const symbol = getSymbol(sale.currency);
   const items = sale.sale_items || [];
   const w = window.open('', '_blank', 'width=400,height=600');
   if (!w) return;
