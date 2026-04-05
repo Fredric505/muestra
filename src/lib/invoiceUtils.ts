@@ -103,7 +103,7 @@ export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
     </div>
   </div>
   <div class="header-right">
-    <div class="inv-num">${t("invoice.invoiceTitle")}</div>
+    <div class="inv-num">${resolveInvoiceText(textOverrides, "sale_invoice_title", t("invoice.invoiceTitle"))}</div>
     <div style="font-size:16px; font-weight:bold; margin:4px 0;">#${sale.id.slice(0, 8).toUpperCase()}</div>
     <div>${t("invoice.date")}: ${format(new Date(sale.sale_date), "dd/MM/yyyy", { locale: dateLoc })}</div>
   </div>
@@ -151,7 +151,7 @@ ${items.some(i => i.device_photo_url) ? `<div class="section"><div class="sectio
   </div>
 </div>
 
-${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warranty-box"><strong>${t("invoice.warrantyTitle")}</strong><br>${t("invoice.warrantyProductNote")}</div>` : ''}
+${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warranty-box"><strong>${t("invoice.warrantyTitle")}</strong><br>${resolveInvoiceText(textOverrides, "sale_warranty_note", t("invoice.warrantyProductNote"))}</div>` : ''}
 
 <div class="signatures">
   <div class="sig-box"><div class="sig-line"><div class="sig-label">${t("invoice.clientSignature")}</div><div class="sig-label">${sale.customer_name}</div></div></div>
@@ -162,7 +162,7 @@ ${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warrant
 
 <div class="footer">
   <p>${brand.business_name} · ${t("invoice.thankPurchase")}</p>
-  <p>${t("invoice.legalNote")}</p>
+  <p>${resolveInvoiceText(textOverrides, "footer_note", t("invoice.legalNote"))}</p>
 </div>
 
 </body></html>`);
