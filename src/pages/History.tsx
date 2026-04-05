@@ -25,8 +25,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval, addDays, isBefore } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
-
-const currencySymbols: Record<Currency, string> = { NIO: "C$", USD: "$" };
+import { getCurrencySymbol } from "@/lib/currency";
 
 const getHistoryWhatsAppMessage = (repair: Repair, businessName: string, t: (key: string, opts?: any) => string): string => {
   if (repair.status === "failed") {
@@ -169,7 +168,7 @@ const History = () => {
                 </TableHeader>
                 <TableBody>
                   {completedRepairs.map((repair) => {
-                    const symbol = currencySymbols[repair.currency];
+                    const symbol = getCurrencySymbol(repair.currency);
                     const price = repair.final_price || repair.estimated_price;
                     const netProfit = price - (repair.parts_cost || 0);
                     const warrantyValid = repair.completed_at && repair.warranty_days ? isWarrantyValid(repair.completed_at, repair.warranty_days) : false;
@@ -246,7 +245,7 @@ const History = () => {
 
             <div className="md:hidden space-y-3">
               {completedRepairs.map((repair) => {
-                const symbol = currencySymbols[repair.currency];
+                const symbol = getCurrencySymbol(repair.currency);
                 const price = repair.final_price || repair.estimated_price;
                 const netProfit = price - (repair.parts_cost || 0);
                 const warrantyValid = repair.completed_at && repair.warranty_days ? isWarrantyValid(repair.completed_at, repair.warranty_days) : false;

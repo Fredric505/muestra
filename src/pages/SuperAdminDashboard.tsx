@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { getCurrencySymbol } from "@/lib/currency";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -794,8 +795,8 @@ function PlansTab({ plans }: { plans: any[] }) {
                 <Badge className="bg-green-500/20 text-green-400">Activo</Badge>
               </div>
               <div>
-                <span className="text-3xl font-extrabold">{plan.currency === "USD" ? "$" : "C$"}{plan.monthly_price}</span>
-                <span className="text-sm text-muted-foreground ml-1">{plan.currency || "NIO"}/mes</span>
+                <span className="text-3xl font-extrabold">{getCurrencySymbol(plan.currency)}{plan.monthly_price}</span>
+                <span className="text-sm text-muted-foreground ml-1">{plan.currency || "USD"}/mes</span>
               </div>
               <p className="text-sm text-muted-foreground">{plan.description}</p>
               <p className="text-xs text-muted-foreground">👥 Máx. empleados: {plan.max_employees || 5}</p>
@@ -843,18 +844,31 @@ function PlansTab({ plans }: { plans: any[] }) {
                 <Select value={editingPlan.currency || "NIO"} onValueChange={(v) => setEditingPlan({ ...editingPlan, currency: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="NIO">Córdobas (C$)</SelectItem>
-                    <SelectItem value="USD">Dólares ($)</SelectItem>
+                    <SelectItem value="USD">USD ($)</SelectItem>
+                    <SelectItem value="NIO">NIO (C$)</SelectItem>
+                    <SelectItem value="MXN">MXN ($)</SelectItem>
+                    <SelectItem value="COP">COP ($)</SelectItem>
+                    <SelectItem value="GTQ">GTQ (Q)</SelectItem>
+                    <SelectItem value="EUR">EUR (€)</SelectItem>
+                    <SelectItem value="HNL">HNL (L)</SelectItem>
+                    <SelectItem value="CRC">CRC (₡)</SelectItem>
+                    <SelectItem value="PEN">PEN (S/)</SelectItem>
+                    <SelectItem value="BRL">BRL (R$)</SelectItem>
+                    <SelectItem value="ARS">ARS ($)</SelectItem>
+                    <SelectItem value="DOP">DOP (RD$)</SelectItem>
+                    <SelectItem value="BOB">BOB (Bs)</SelectItem>
+                    <SelectItem value="PAB">PAB (B/.)</SelectItem>
+                    <SelectItem value="CLP">CLP ($)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <Label>Precio mensual ({editingPlan.currency === "USD" ? "$" : "C$"})</Label>
+                  <Label>Precio mensual ({getCurrencySymbol(editingPlan.currency)})</Label>
                   <Input type="number" value={editingPlan.monthly_price} onChange={(e) => setEditingPlan({ ...editingPlan, monthly_price: parseFloat(e.target.value) || 0 })} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Precio anual ({editingPlan.currency === "USD" ? "$" : "C$"})</Label>
+                  <Label>Precio anual ({getCurrencySymbol(editingPlan.currency)})</Label>
                   <Input type="number" value={editingPlan.annual_price} onChange={(e) => setEditingPlan({ ...editingPlan, annual_price: parseFloat(e.target.value) || 0 })} />
                 </div>
               </div>

@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useRepairs, Currency } from "@/hooks/useRepairs";
+import { useAuth } from "@/contexts/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -20,8 +21,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, Legend,
 } from "recharts";
-
-const currencySymbols: Record<Currency, string> = { NIO: "C$", USD: "$" };
+import { getCurrencySymbol } from "@/lib/currency";
 
 const Income = () => {
   const { t, i18n } = useTranslation();
@@ -303,7 +303,7 @@ const Income = () => {
               </TableHeader>
               <TableBody>
                 {monthData.typeBreakdown.map((type, idx) => {
-                  const symbol = currencySymbols[type.currency as Currency];
+                  const symbol = getCurrencySymbol(type.currency);
                   return (
                     <TableRow key={idx}>
                       <TableCell className="font-medium">{type.name}</TableCell>
@@ -319,7 +319,7 @@ const Income = () => {
             </div>
             <div className="md:hidden space-y-3">
               {monthData.typeBreakdown.map((type, idx) => {
-                const symbol = currencySymbols[type.currency as Currency];
+                const symbol = getCurrencySymbol(type.currency);
                 return (
                   <div key={idx} className="border border-border rounded-lg p-3 flex items-center justify-between">
                     <div>

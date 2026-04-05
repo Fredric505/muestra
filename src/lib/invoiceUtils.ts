@@ -1,5 +1,7 @@
 import { format } from "date-fns";
 import type { Locale } from "date-fns";
+import { getCurrencySymbol } from "@/lib/currency";
+import { InvoiceTextOverrides, resolveInvoiceText } from "@/lib/invoiceTextOverrides";
 
 type TFunction = (key: string, opts?: any) => string;
 
@@ -36,17 +38,13 @@ interface WorkshopInfo {
   currency?: string;
 }
 
-const getCurrencySymbol = (currency: string) => {
-  const map: Record<string, string> = {
-    USD: "$", NIO: "C$", MXN: "$", COP: "$", ARS: "$", PEN: "S/", CRC: "₡",
-    GTQ: "Q", HNL: "L", PAB: "B/.", DOP: "RD$", BOB: "Bs", EUR: "€",
-  };
-  return map[currency] || currency;
-};
+// Use the shared getCurrencySymbol from currency.ts
+// (kept as local alias for backward compat in template strings)
+const getSymbol = (currency: string) => getCurrencySymbol(currency);
 
 /** Unified invoice for phones/repairs — supports letter, commercial (22×14.3cm), and ticket sizes */
-export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial') => {
-  const symbol = getCurrencySymbol(sale.currency);
+export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial', textOverrides?: InvoiceTextOverrides) => {
+  const symbol = getSymbol(sale.currency);
   const items = sale.sale_items || [];
   const w = window.open('', '_blank', 'width=900,height=700');
   if (!w) return;
@@ -105,7 +103,7 @@ export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
     </div>
   </div>
   <div class="header-right">
-    <div class="inv-num">${t("invoice.invoiceTitle")}</div>
+    <div class="inv-num">${resolveInvoiceText(textOverrides, "sale_invoice_title", t("invoice.invoiceTitle"))}</div>
     <div style="font-size:16px; font-weight:bold; margin:4px 0;">#${sale.id.slice(0, 8).toUpperCase()}</div>
     <div>${t("invoice.date")}: ${format(new Date(sale.sale_date), "dd/MM/yyyy", { locale: dateLoc })}</div>
   </div>
@@ -153,7 +151,7 @@ ${items.some(i => i.device_photo_url) ? `<div class="section"><div class="sectio
   </div>
 </div>
 
-${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warranty-box"><strong>${t("invoice.warrantyTitle")}</strong><br>${t("invoice.warrantyProductNote")}</div>` : ''}
+${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warranty-box"><strong>${t("invoice.warrantyTitle")}</strong><br>${resolveInvoiceText(textOverrides, "sale_warranty_note", t("invoice.warrantyProductNote"))}</div>` : ''}
 
 <div class="signatures">
   <div class="sig-box"><div class="sig-line"><div class="sig-label">${t("invoice.clientSignature")}</div><div class="sig-label">${sale.customer_name}</div></div></div>
@@ -164,7 +162,7 @@ ${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warrant
 
 <div class="footer">
   <p>${brand.business_name} · ${t("invoice.thankPurchase")}</p>
-  <p>${t("invoice.legalNote")}</p>
+  <p>${resolveInvoiceText(textOverrides, "footer_note", t("invoice.legalNote"))}</p>
 </div>
 
 </body></html>`);
@@ -174,8 +172,8 @@ ${items.some(i => i.warranty_days && i.warranty_days > 0) ? `<div class="warrant
 };
 
 /** Small ticket/receipt for accessories — supermarket style */
-export const printTicketInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale) => {
-  const symbol = getCurrencySymbol(sale.currency);
+export const printTicketInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, textOverrides?: InvoiceTextOverrides) => {
+  const symbol = getSymbol(sale.currency);
   const items = sale.sale_items || [];
   const w = window.open('', '_blank', 'width=400,height=600');
   if (!w) return;
@@ -211,7 +209,7 @@ export const printTicketInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
 <div class="divider"></div>
 
 <div class="center" style="margin-bottom:6px;">
-  <div class="bold">${t("invoice.ticket")} #${sale.id.slice(0, 8).toUpperCase()}</div>
+  <div class="bold">${resolveInvoiceText(textOverrides, "quick_ticket_title", t("invoice.ticket"))} #${sale.id.slice(0, 8).toUpperCase()}</div>
   <div style="font-size:10px;">${format(new Date(sale.sale_date), "dd/MM/yyyy HH:mm", { locale: dateLoc })}</div>
 </div>
 
@@ -249,8 +247,8 @@ ${items.map(item => `<div class="item">
 };
 
 /** Invoice for repairs — supports letter, commercial (22×14.3cm) sizes */
-export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial') => {
-  const symbol = getCurrencySymbol(repair.currency || workshop?.currency || "USD");
+export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial', textOverrides?: InvoiceTextOverrides) => {
+  const symbol = getSymbol(repair.currency || workshop?.currency || "USD");
   const w = window.open('', '_blank', 'width=900,height=700');
   if (!w) return;
 
@@ -302,7 +300,7 @@ export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: Work
     </div>
   </div>
   <div class="header-right">
-    <div class="inv-num">${t("invoice.serviceOrder")}</div>
+    <div class="inv-num">${resolveInvoiceText(textOverrides, "repair_invoice_title", t("invoice.serviceOrder"))}</div>
     <div style="font-size:16px; font-weight:bold; margin:4px 0;">#${repair.id.slice(0, 8).toUpperCase()}</div>
     <div style="font-size:12px; color:#555;">${t("invoice.date")}: ${format(new Date(repair.created_at), "dd/MM/yyyy", { locale: dateLoc })}</div>
   </div>
@@ -341,7 +339,7 @@ ${repair.repair_description ? `<div class="info-box" style="margin-bottom:16px;"
 
 ${repair.delivery_date ? `<div class="info-box" style="margin-bottom:16px;"><div class="section-title">${t("invoice.estimatedDelivery")}</div><p>${format(new Date(repair.delivery_date), "PPP", { locale: dateLoc })}${repair.delivery_time ? ` ${t("invoice.atTime")} ${repair.delivery_time}` : ''}</p></div>` : ''}
 
-<div class="warranty-box"><strong>${t("invoice.warrantyTitle")}: ${repair.warranty_days || 0} ${t("invoice.days").toUpperCase()}</strong><br>${t("invoice.warrantyRepairNote")}</div>
+<div class="warranty-box"><strong>${t("invoice.warrantyTitle")}: ${repair.warranty_days || 0} ${t("invoice.days").toUpperCase()}</strong><br>${resolveInvoiceText(textOverrides, "repair_warranty_note", t("invoice.warrantyRepairNote"))}</div>
 
 <div class="signatures">
   <div class="sig-box"><div class="sig-line"><div class="sig-label">${t("invoice.clientSignature")}</div><div class="sig-label">${repair.customer_name}</div></div></div>
@@ -352,7 +350,7 @@ ${repair.delivery_date ? `<div class="info-box" style="margin-bottom:16px;"><div
 
 <div class="footer">
   <p>${brand.business_name} · ${t("invoice.professionalService")}</p>
-  <p>${t("invoice.keepAsWarranty")}</p>
+  <p>${resolveInvoiceText(textOverrides, "footer_note", t("invoice.keepAsWarranty"))}</p>
 </div>
 
 </body></html>`);

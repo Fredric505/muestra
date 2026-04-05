@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Smartphone, ArrowLeft, Building2, Phone, Mail, MapPin, User, Lock, MessageSquare as MessageSquareIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { getCurrencySymbol } from "@/lib/currency";
 
 const currencies = ["USD", "NIO", "HNL", "GTQ", "CRC", "PAB", "MXN", "COP", "PEN", "ARS", "CLP", "BRL", "EUR"];
 
@@ -235,7 +236,7 @@ const Register = () => {
                     <SelectContent>
                       {plans?.map((plan) => (
                         <SelectItem key={plan.id} value={plan.id}>
-                          {plan.name} - {(plan as any).currency === "USD" ? "$" : "C$"}{plan.monthly_price}/{t("common.month")}
+                          {plan.name} - {getCurrencySymbol((plan as any).currency)}{plan.monthly_price}/{t("common.month")}
                           {plan.has_free_trial && ` (${plan.trial_days} ${t("common.days")} ${t("landing.freeTrial").toLowerCase()})`}
                         </SelectItem>
                       ))}

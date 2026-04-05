@@ -16,9 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, User, Phone, ShoppingBag, Plus, Trash2, Camera, ImageIcon, Printer, Save, Coins } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { getCurrencySymbol } from "@/lib/currency";
 
-type Currency = "NIO" | "USD";
-const currencySymbols: Record<Currency, string> = { NIO: "C$", USD: "$" };
+type Currency = string;
 
 interface SaleItemForm {
   product_id: string; product_name: string; quantity: number; unit_price: number;
@@ -38,7 +38,7 @@ const NewSale = () => {
 
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [currency, setCurrency] = useState<Currency>("NIO");
+  const [currency, setCurrency] = useState<Currency>(workshop?.currency || "USD");
   const [sellerId, setSellerId] = useState("");
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -52,7 +52,7 @@ const NewSale = () => {
     condition: "nuevo", warranty_days: 0, condition_notes: "", photo_file: null, photo_preview: null,
   }]);
 
-  const symbol = currencySymbols[currency];
+  const symbol = getCurrencySymbol(currency);
   const total = items.reduce((s, i) => s + i.unit_price * i.quantity, 0);
 
   const addItem = () => {
@@ -138,7 +138,8 @@ const NewSale = () => {
       })),
     };
     const hasDevices = savedSale.items.some((i: SaleItemForm) => i.condition === "usado" || i.warranty_days > 30);
-    if (hasDevices) { printLetterInvoice(saleForPrint, brand, workshop, t, dateLoc, (brand as any).invoice_size || 'commercial'); } else { printTicketInvoice(saleForPrint, brand, workshop, t, dateLoc); }
+    const textOverrides = (brand as any).invoice_text_overrides;
+    if (hasDevices) { printLetterInvoice(saleForPrint, brand, workshop, t, dateLoc, (brand as any).invoice_size || 'commercial', textOverrides); } else { printTicketInvoice(saleForPrint, brand, workshop, t, dateLoc, textOverrides); }
   };
 
   const availableProducts = products.filter(p => p.is_active && p.stock > 0);
