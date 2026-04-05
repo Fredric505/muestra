@@ -247,8 +247,8 @@ ${items.map(item => `<div class="item">
 };
 
 /** Invoice for repairs — supports letter, commercial (22×14.3cm) sizes */
-export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial') => {
-  const symbol = getCurrencySymbol(repair.currency || workshop?.currency || "USD");
+export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial', textOverrides?: InvoiceTextOverrides) => {
+  const symbol = getSymbol(repair.currency || workshop?.currency || "USD");
   const w = window.open('', '_blank', 'width=900,height=700');
   if (!w) return;
 
