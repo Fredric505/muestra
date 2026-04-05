@@ -209,7 +209,7 @@ export const printTicketInvoice = (sale: SaleForInvoice, brand: BrandInfo, works
 <div class="divider"></div>
 
 <div class="center" style="margin-bottom:6px;">
-  <div class="bold">${t("invoice.ticket")} #${sale.id.slice(0, 8).toUpperCase()}</div>
+  <div class="bold">${resolveInvoiceText(textOverrides, "quick_ticket_title", t("invoice.ticket"))} #${sale.id.slice(0, 8).toUpperCase()}</div>
   <div style="font-size:10px;">${format(new Date(sale.sale_date), "dd/MM/yyyy HH:mm", { locale: dateLoc })}</div>
 </div>
 
