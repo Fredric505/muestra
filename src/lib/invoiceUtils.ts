@@ -43,8 +43,8 @@ interface WorkshopInfo {
 const getSymbol = (currency: string) => getCurrencySymbol(currency);
 
 /** Unified invoice for phones/repairs — supports letter, commercial (22×14.3cm), and ticket sizes */
-export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial') => {
-  const symbol = getCurrencySymbol(sale.currency);
+export const printLetterInvoice = (sale: SaleForInvoice, brand: BrandInfo, workshop: WorkshopInfo | null, t: TFunction, dateLoc: Locale, invoiceSize: string = 'commercial', textOverrides?: InvoiceTextOverrides) => {
+  const symbol = getSymbol(sale.currency);
   const items = sale.sale_items || [];
   const w = window.open('', '_blank', 'width=900,height=700');
   if (!w) return;
