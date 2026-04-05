@@ -23,12 +23,6 @@ interface RepairTicketProps {
   };
 }
 
-const currencySymbols: Record<string, string> = {
-  NIO: "C$",
-  USD: "$",
-};
-
-// Keep for backward compat but prefer getCurrencySymbol
 
 export const RepairTicket = forwardRef<HTMLDivElement, RepairTicketProps>(
   ({ repair }, ref) => {
