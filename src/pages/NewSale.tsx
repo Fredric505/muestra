@@ -38,7 +38,7 @@ const NewSale = () => {
 
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [currency, setCurrency] = useState<Currency>("NIO");
+  const [currency, setCurrency] = useState<Currency>(workshop?.currency || "USD");
   const [sellerId, setSellerId] = useState("");
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
