@@ -300,7 +300,7 @@ export const printRepairInvoice = (repair: any, brand: BrandInfo, workshop: Work
     </div>
   </div>
   <div class="header-right">
-    <div class="inv-num">${t("invoice.serviceOrder")}</div>
+    <div class="inv-num">${resolveInvoiceText(textOverrides, "repair_invoice_title", t("invoice.serviceOrder"))}</div>
     <div style="font-size:16px; font-weight:bold; margin:4px 0;">#${repair.id.slice(0, 8).toUpperCase()}</div>
     <div style="font-size:12px; color:#555;">${t("invoice.date")}: ${format(new Date(repair.created_at), "dd/MM/yyyy", { locale: dateLoc })}</div>
   </div>
@@ -339,7 +339,7 @@ ${repair.repair_description ? `<div class="info-box" style="margin-bottom:16px;"
 
 ${repair.delivery_date ? `<div class="info-box" style="margin-bottom:16px;"><div class="section-title">${t("invoice.estimatedDelivery")}</div><p>${format(new Date(repair.delivery_date), "PPP", { locale: dateLoc })}${repair.delivery_time ? ` ${t("invoice.atTime")} ${repair.delivery_time}` : ''}</p></div>` : ''}
 
-<div class="warranty-box"><strong>${t("invoice.warrantyTitle")}: ${repair.warranty_days || 0} ${t("invoice.days").toUpperCase()}</strong><br>${t("invoice.warrantyRepairNote")}</div>
+<div class="warranty-box"><strong>${t("invoice.warrantyTitle")}: ${repair.warranty_days || 0} ${t("invoice.days").toUpperCase()}</strong><br>${resolveInvoiceText(textOverrides, "repair_warranty_note", t("invoice.warrantyRepairNote"))}</div>
 
 <div class="signatures">
   <div class="sig-box"><div class="sig-line"><div class="sig-label">${t("invoice.clientSignature")}</div><div class="sig-label">${repair.customer_name}</div></div></div>
@@ -350,7 +350,7 @@ ${repair.delivery_date ? `<div class="info-box" style="margin-bottom:16px;"><div
 
 <div class="footer">
   <p>${brand.business_name} · ${t("invoice.professionalService")}</p>
-  <p>${t("invoice.keepAsWarranty")}</p>
+  <p>${resolveInvoiceText(textOverrides, "footer_note", t("invoice.keepAsWarranty"))}</p>
 </div>
 
 </body></html>`);
