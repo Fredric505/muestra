@@ -16,9 +16,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ArrowLeft, User, Phone, ShoppingBag, Plus, Trash2, Camera, ImageIcon, Printer, Save, Coins } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { getCurrencySymbol } from "@/lib/currency";
 
-type Currency = "NIO" | "USD";
-const currencySymbols: Record<Currency, string> = { NIO: "C$", USD: "$" };
+type Currency = string;
 
 interface SaleItemForm {
   product_id: string; product_name: string; quantity: number; unit_price: number;

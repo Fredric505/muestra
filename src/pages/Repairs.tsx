@@ -36,8 +36,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { format, parseISO } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
 import { RepairProgressView, getWhatsAppMessage } from "@/components/RepairProgressView";
-
-const currencySymbols: Record<Currency, string> = { NIO: "C$", USD: "$" };
+import { getCurrencySymbol } from "@/lib/currency";
 
 const nextStatus: Record<RepairStatus, RepairStatus | null> = {
   received: "in_progress", in_progress: "ready", ready: "delivered", delivered: null, failed: null,

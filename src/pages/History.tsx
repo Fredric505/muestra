@@ -25,8 +25,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { format, parseISO, startOfMonth, endOfMonth, isWithinInterval, addDays, isBefore } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
-
-const currencySymbols: Record<Currency, string> = { NIO: "C$", USD: "$" };
+import { getCurrencySymbol } from "@/lib/currency";
 
 const getHistoryWhatsAppMessage = (repair: Repair, businessName: string, t: (key: string, opts?: any) => string): string => {
   if (repair.status === "failed") {
