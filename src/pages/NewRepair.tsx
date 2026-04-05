@@ -104,7 +104,7 @@ const NewRepair = () => {
 
   const handlePrintInvoice = () => {
     if (!savedRepair) return;
-    const repairSymbol = currencySymbols[savedRepair.currency as Currency] || "C$";
+    const repairSymbol = getCurrencySymbol(savedRepair.currency);
     const price = savedRepair.estimated_price || 0;
     const deposit = savedRepair.deposit || 0;
     const remaining = price - deposit;

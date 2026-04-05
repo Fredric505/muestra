@@ -303,7 +303,7 @@ const Income = () => {
               </TableHeader>
               <TableBody>
                 {monthData.typeBreakdown.map((type, idx) => {
-                  const symbol = currencySymbols[type.currency as Currency];
+                  const symbol = getCurrencySymbol(type.currency);
                   return (
                     <TableRow key={idx}>
                       <TableCell className="font-medium">{type.name}</TableCell>
@@ -319,7 +319,7 @@ const Income = () => {
             </div>
             <div className="md:hidden space-y-3">
               {monthData.typeBreakdown.map((type, idx) => {
-                const symbol = currencySymbols[type.currency as Currency];
+                const symbol = getCurrencySymbol(type.currency);
                 return (
                   <div key={idx} className="border border-border rounded-lg p-3 flex items-center justify-between">
                     <div>

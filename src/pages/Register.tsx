@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Smartphone, ArrowLeft, Building2, Phone, Mail, MapPin, User, Lock, MessageSquare as MessageSquareIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { getCurrencySymbol } from "@/lib/currency";
 
 const currencies = ["USD", "NIO", "HNL", "GTQ", "CRC", "PAB", "MXN", "COP", "PEN", "ARS", "CLP", "BRL", "EUR"];
 

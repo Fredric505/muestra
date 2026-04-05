@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
+import { getCurrencySymbol } from "@/lib/currency";
 
 const Landing = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
