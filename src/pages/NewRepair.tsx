@@ -15,8 +15,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Smartphone, User, Phone, Calendar, Clock, DollarSign, FileText, Wrench, Save, ArrowLeft, Package, Coins, Shield, Printer, Tag, Camera, ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { RepairLabel } from "@/components/RepairLabel";
-
-const currencySymbols: Record<Currency, string> = { NIO: "C$", USD: "$" };
+import { getCurrencySymbol } from "@/lib/currency";
 
 const NewRepair = () => {
   const { t } = useTranslation();
@@ -28,7 +27,7 @@ const NewRepair = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [estimatedPrice, setEstimatedPrice] = useState(0);
   const [partsCost, setPartsCost] = useState(0);
-  const [currency, setCurrency] = useState<Currency>("NIO");
+  const [currency, setCurrency] = useState<Currency>(workshop?.currency || "USD");
   const [warrantyDays, setWarrantyDays] = useState(30);
   const [showPrintDialog, setShowPrintDialog] = useState(false);
   const [savedRepair, setSavedRepair] = useState<any>(null);
@@ -37,7 +36,7 @@ const NewRepair = () => {
   const [devicePhotoPreview, setDevicePhotoPreview] = useState<string | null>(null);
 
   const netProfit = estimatedPrice - partsCost;
-  const symbol = currencySymbols[currency];
+  const symbol = getCurrencySymbol(currency);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

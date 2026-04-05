@@ -2,6 +2,7 @@ import { forwardRef } from "react";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { getDateLocale } from "@/lib/dateLocale";
+import { getCurrencySymbol } from "@/lib/currency";
 
 interface RepairTicketProps {
   repair: {
@@ -27,11 +28,13 @@ const currencySymbols: Record<string, string> = {
   USD: "$",
 };
 
+// Keep for backward compat but prefer getCurrencySymbol
+
 export const RepairTicket = forwardRef<HTMLDivElement, RepairTicketProps>(
   ({ repair }, ref) => {
     const { t, i18n } = useTranslation();
     const dateLoc = getDateLocale(i18n.language);
-    const symbol = currencySymbols[repair.currency] || "C$";
+    const symbol = getCurrencySymbol(repair.currency);
     const ticketNumber = repair.id.slice(-8).toUpperCase();
 
     return (
