@@ -188,13 +188,10 @@ const NewSale = () => {
             )}
             <div className="space-y-2">
               <Label>{t("common.currency")}</Label>
-              <Select value={currency} onValueChange={v => setCurrency(v as Currency)}>
-                <SelectTrigger><Coins className="h-4 w-4 mr-2" /><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="NIO">C$ Córdobas</SelectItem>
-                  <SelectItem value="USD">$ Dólares</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2 h-10 px-3 rounded-md border border-input bg-muted/50">
+                <Coins className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm font-medium">{symbol} {currency}</span>
+              </div>
             </div>
           </CardContent>
         </Card>
