@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useEmployees } from "@/hooks/useEmployees";
+import { getCurrencySymbol } from "@/lib/currency";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,9 +22,10 @@ import { getDateLocale } from "@/lib/dateLocale";
 const Employees = () => {
   const { t, i18n } = useTranslation();
   const dateLoc = getDateLocale(i18n.language);
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, workshop } = useAuth();
   const { toast } = useToast();
   const { employees, loans, earnings, isLoading, createEmployee, deleteEmployee, createLoan, markLoanPaid, calculateBiweeklyEarnings, refetch } = useEmployees();
+  const sym = getCurrencySymbol(workshop?.currency);
 
   const [employeeName, setEmployeeName] = useState("");
   const [employeeEmail, setEmployeeEmail] = useState("");
