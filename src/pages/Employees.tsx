@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useEmployees } from "@/hooks/useEmployees";
+import { getCurrencySymbol } from "@/lib/currency";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,9 +22,10 @@ import { getDateLocale } from "@/lib/dateLocale";
 const Employees = () => {
   const { t, i18n } = useTranslation();
   const dateLoc = getDateLocale(i18n.language);
-  const { isAdmin, user } = useAuth();
+  const { isAdmin, user, workshop } = useAuth();
   const { toast } = useToast();
   const { employees, loans, earnings, isLoading, createEmployee, deleteEmployee, createLoan, markLoanPaid, calculateBiweeklyEarnings, refetch } = useEmployees();
+  const sym = getCurrencySymbol(workshop?.currency);
 
   const [employeeName, setEmployeeName] = useState("");
   const [employeeEmail, setEmployeeEmail] = useState("");
@@ -212,7 +214,7 @@ const Employees = () => {
                           <TableCell className="font-medium">{employee.profiles?.full_name || "—"}</TableCell>
                           <TableCell><Badge variant={empType === "seller" ? "outline" : "secondary"}>{empType === "seller" ? t("employeesPage.seller") : t("employeesPage.technician")}</Badge></TableCell>
                           <TableCell><Badge variant="secondary" className="bg-primary/20 text-primary">{employee.monthly_commission_rate}%</Badge></TableCell>
-                          <TableCell>${employee.base_salary?.toFixed(2) || "0.00"}</TableCell>
+                          <TableCell>{sym}{employee.base_salary?.toFixed(2) || "0.00"}</TableCell>
                           <TableCell><Badge variant="outline" className="text-xs">{compType === "both" ? t("employeesPage.salaryAndCommission") : compType === "fixed" ? t("employeesPage.fixedOnly") : t("employeesPage.commissionOnly")}</Badge></TableCell>
                           <TableCell>{format(parseISO(employee.hired_at), "dd MMM yyyy", { locale: dateLoc })}</TableCell>
                           <TableCell><Badge variant={employee.is_active ? "default" : "secondary"}>{employee.is_active ? t("employeesPage.active") : t("employeesPage.inactive")}</Badge></TableCell>
@@ -246,7 +248,7 @@ const Employees = () => {
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-sm">
                           <div><span className="text-muted-foreground">{t("employeesPage.commission")}: </span><span className="text-primary font-medium">{employee.monthly_commission_rate}%</span></div>
-                          <div><span className="text-muted-foreground">{t("employeesPage.salary")}: </span><span>${employee.base_salary?.toFixed(2) || "0.00"}</span></div>
+                          <div><span className="text-muted-foreground">{t("employeesPage.salary")}: </span><span>{sym}{employee.base_salary?.toFixed(2) || "0.00"}</span></div>
                         </div>
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
                           <span>{compType === "both" ? t("employeesPage.salaryAndCommission") : compType === "fixed" ? t("employeesPage.fixedOnly") : t("employeesPage.commissionOnly")}</span>
@@ -295,11 +297,11 @@ const Employees = () => {
                         <TableRow key={employee.id}>
                           <TableCell className="font-medium">{employee.profiles?.full_name || "—"}</TableCell>
                           <TableCell className="text-right">{d.repairsCount}</TableCell>
-                          <TableCell className="text-right">${d.totalNetProfit.toFixed(2)}</TableCell>
-                          <TableCell className="text-right text-success">+${d.totalCommission.toFixed(2)}</TableCell>
-                          <TableCell className="text-right">${d.baseSalary.toFixed(2)}</TableCell>
-                          <TableCell className="text-right text-destructive">-${d.totalLoans.toFixed(2)}</TableCell>
-                          <TableCell className="text-right font-bold text-primary">${d.netPay.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">{sym}{d.totalNetProfit.toFixed(2)}</TableCell>
+                          <TableCell className="text-right text-success">+{sym}{d.totalCommission.toFixed(2)}</TableCell>
+                          <TableCell className="text-right">{sym}{d.baseSalary.toFixed(2)}</TableCell>
+                          <TableCell className="text-right text-destructive">-{sym}{d.totalLoans.toFixed(2)}</TableCell>
+                          <TableCell className="text-right font-bold text-primary">{sym}{d.netPay.toFixed(2)}</TableCell>
                         </TableRow>
                       );
                     })}
@@ -311,11 +313,11 @@ const Employees = () => {
                     const d = calculateBiweeklyEarnings(employee.id, biweeklyStart, biweeklyEnd);
                     return (
                       <div key={employee.id} className="border border-border rounded-lg p-3 space-y-2">
-                        <div className="flex items-center justify-between"><p className="font-medium text-foreground">{employee.profiles?.full_name || "—"}</p><p className="font-bold text-primary">${d.netPay.toFixed(2)}</p></div>
+                        <div className="flex items-center justify-between"><p className="font-medium text-foreground">{employee.profiles?.full_name || "—"}</p><p className="font-bold text-primary">{sym}{d.netPay.toFixed(2)}</p></div>
                         <div className="grid grid-cols-3 gap-2 text-xs">
                           <div><span className="text-muted-foreground">{t("incomePage.repairs")}</span><p className="font-medium">{d.repairsCount}</p></div>
-                          <div><span className="text-muted-foreground">{t("employeesPage.commission")}</span><p className="font-medium text-success">+${d.totalCommission.toFixed(2)}</p></div>
-                          <div><span className="text-muted-foreground">{t("employeesPage.tabLoans")}</span><p className="font-medium text-destructive">-${d.totalLoans.toFixed(2)}</p></div>
+                          <div><span className="text-muted-foreground">{t("employeesPage.commission")}</span><p className="font-medium text-success">+{sym}{d.totalCommission.toFixed(2)}</p></div>
+                          <div><span className="text-muted-foreground">{t("employeesPage.tabLoans")}</span><p className="font-medium text-destructive">-{sym}{d.totalLoans.toFixed(2)}</p></div>
                         </div>
                       </div>
                     );
@@ -349,7 +351,7 @@ const Employees = () => {
                           <TableCell className="font-medium">{employee?.profiles?.full_name || "—"}</TableCell>
                           <TableCell>{loan.description || t("employeesPage.noDescription")}</TableCell>
                           <TableCell>{format(parseISO(loan.loan_date), "dd MMM yyyy", { locale: dateLoc })}</TableCell>
-                          <TableCell className="text-right text-destructive font-medium">${loan.amount.toFixed(2)}</TableCell>
+                          <TableCell className="text-right text-destructive font-medium">{sym}{loan.amount.toFixed(2)}</TableCell>
                           <TableCell className="text-right"><Button variant="outline" size="sm" onClick={() => handleMarkLoanPaid(loan.id)}><Check className="h-4 w-4 mr-1" />{t("employeesPage.markAsPaid")}</Button></TableCell>
                         </TableRow>
                       );
@@ -364,7 +366,7 @@ const Employees = () => {
                       <div key={loan.id} className="border border-border rounded-lg p-3 space-y-2">
                         <div className="flex items-start justify-between">
                           <div><p className="font-medium text-foreground">{employee?.profiles?.full_name || "—"}</p><p className="text-xs text-muted-foreground">{loan.description || t("employeesPage.noDescription")}</p></div>
-                          <p className="font-bold text-destructive">${loan.amount.toFixed(2)}</p>
+                          <p className="font-bold text-destructive">{sym}{loan.amount.toFixed(2)}</p>
                         </div>
                         <div className="flex items-center justify-between">
                           <span className="text-xs text-muted-foreground">{format(parseISO(loan.loan_date), "dd/MM/yy", { locale: dateLoc })}</span>
