@@ -51,7 +51,9 @@
     "remove": "Quitar",
     "select": "Seleccionar",
     "optional": "opcional",
-    "required": "requerido"
+    "required": "requerido",
+    "amount": "Monto",
+    "noDescription": "Sin descripción"
   },
   "nav": {
     "dashboard": "Dashboard",
