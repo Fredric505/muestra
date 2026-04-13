@@ -117,7 +117,7 @@ const ExportData = () => {
               <td>${e.profiles?.full_name || "—"}</td>
               <td>${(e as any).employee_type === "seller" ? t("employeesPage.seller") : t("employeesPage.technician")}</td>
               <td>${e.monthly_commission_rate}%</td>
-              <td>C$${(e.base_salary || 0).toFixed(2)}</td>
+              <td>${getCurrencySymbol(workshop?.currency)}${(e.base_salary || 0).toFixed(2)}</td>
               <td>${format(new Date(e.hired_at), "dd/MM/yyyy", { locale: dateLoc })}</td>
               <td>${e.is_active ? t("employeesPage.active") : t("employeesPage.inactive")}</td>
             </tr>`).join('')}</tbody>
@@ -135,10 +135,10 @@ const ExportData = () => {
               return `<tr>
                 <td>${i + 1}</td>
                 <td>${emp?.profiles?.full_name || "—"}</td>
-                <td>C$${e.gross_income.toFixed(2)}</td>
-                <td>C$${e.parts_cost.toFixed(2)}</td>
-                <td>C$${e.net_profit.toFixed(2)}</td>
-                <td>C$${e.commission_earned.toFixed(2)}</td>
+                <td>${getCurrencySymbol(workshop?.currency)}${e.gross_income.toFixed(2)}</td>
+                <td>${getCurrencySymbol(workshop?.currency)}${e.parts_cost.toFixed(2)}</td>
+                <td>${getCurrencySymbol(workshop?.currency)}${e.net_profit.toFixed(2)}</td>
+                <td>${getCurrencySymbol(workshop?.currency)}${e.commission_earned.toFixed(2)}</td>
                 <td>${format(new Date(e.earnings_date), "dd/MM/yyyy", { locale: dateLoc })}</td>
               </tr>`;
             }).join('')}</tbody>
@@ -157,7 +157,7 @@ const ExportData = () => {
               return `<tr>
                 <td>${i + 1}</td>
                 <td>${emp?.profiles?.full_name || "—"}</td>
-                <td>C$${l.amount.toFixed(2)}</td>
+                <td>${getCurrencySymbol(workshop?.currency)}${l.amount.toFixed(2)}</td>
                 <td>${l.description || "—"}</td>
                 <td>${l.is_paid ? t("employeesPage.paid") : t("salesPage.pending")}</td>
                 <td>${format(new Date(l.loan_date), "dd/MM/yyyy", { locale: dateLoc })}</td>
