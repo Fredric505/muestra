@@ -167,7 +167,7 @@ export const useTheme = () => useContext(ThemeContext);
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const { brand } = useBrand();
 
-  const themePresetKey = (brand as any)?.theme_preset || "green";
+  const themePresetKey = (brand as any)?.theme_preset || "indigo";
   const customColor = (brand as any)?.custom_primary_color || null;
   const colorMode: "dark" | "light" = (brand as any)?.color_mode === "light" ? "light" : "dark";
 
