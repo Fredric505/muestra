@@ -207,10 +207,19 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-foreground">{t("dashboard.title")}</h1>
-        <p className="text-sm text-muted-foreground">{format(new Date(), "EEEE, d MMMM yyyy", { locale: dateLoc })}</p>
+      <div className="relative overflow-hidden rounded-2xl border border-border/60 glass-card p-5 sm:p-7">
+        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/20 blur-3xl pointer-events-none" />
+        <div className="relative flex items-center gap-3">
+          <div className="h-12 w-12 rounded-2xl gradient-primary flex items-center justify-center shadow-glow">
+            <BarChart3 className="h-6 w-6 text-primary-foreground" />
+          </div>
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold font-display text-foreground leading-tight">{t("dashboard.title")}</h1>
+            <p className="text-sm text-muted-foreground capitalize">{format(new Date(), "EEEE, d MMMM yyyy", { locale: dateLoc })}</p>
+          </div>
+        </div>
       </div>
+
 
       {/* Quick Access Shortcuts */}
       <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
