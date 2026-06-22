@@ -9,19 +9,19 @@ export const AccountRemovedScreen = () => {
   const { signOut } = useAuth();
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[hsl(222,47%,7%)] p-4">
-      <Card className="max-w-md w-full bg-white/[0.03] border-yellow-500/30">
+    <div className="min-h-screen flex items-center justify-center bg-background relative overflow-hidden p-4">
+      <Card className="max-w-md w-full glass-card border-yellow-500/30">
         <CardHeader className="text-center pb-2">
           <div className="mx-auto w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center mb-4">
             <UserX className="h-8 w-8 text-yellow-400" />
           </div>
-          <CardTitle className="text-xl text-white">Sin Taller Asignado</CardTitle>
+          <CardTitle className="text-xl text-foreground">Sin Taller Asignado</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4 text-center">
-          <p className="text-gray-400 text-sm leading-relaxed">
+          <p className="text-muted-foreground text-sm leading-relaxed">
             Tu cuenta ya no está vinculada a ningún taller. Es posible que el administrador te haya dado de baja.
           </p>
-          <p className="text-gray-500 text-xs">
+          <p className="text-muted-foreground text-xs">
             Si crees que es un error, contacta al administrador de tu taller. También puedes registrar tu propio taller.
           </p>
           <div className="flex flex-col gap-2 pt-2">
@@ -31,7 +31,7 @@ export const AccountRemovedScreen = () => {
                 Registrar mi propio taller
               </Button>
             </Link>
-            <Button variant="outline" className="w-full gap-2 text-gray-400 border-white/10 hover:bg-white/5" onClick={signOut}>
+            <Button variant="outline" className="w-full gap-2 text-muted-foreground border-border hover:bg-muted/40" onClick={signOut}>
               <LogOut className="h-4 w-4" />
               Cerrar Sesión
             </Button>

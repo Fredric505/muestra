@@ -132,23 +132,31 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[hsl(222,47%,7%)] text-white flex items-center justify-center p-4">
-      <div className="w-full max-w-lg">
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/15 blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-accent/15 blur-3xl" />
+      </div>
+      <div className="w-full max-w-lg relative z-10 animate-scale-in">
+        <div className="flex items-center gap-2 mb-8 justify-between">
           <div className="flex items-center gap-2">
-            <Link to="/" className="text-gray-400 hover:text-white transition-colors">
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-5 w-5" />
             </Link>
-            <Smartphone className="h-6 w-6 text-cyan-400" />
-            <span className="text-lg font-bold">RepairControl</span>
+            <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
+              <Smartphone className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-bold font-display">RepairControl</span>
           </div>
           <LanguageSelector variant="ghost" />
         </div>
 
-        <Card className="bg-white/[0.03] border-white/10">
+
+
+        <Card className="glass-card">
           <CardHeader>
             <CardTitle className="text-2xl">{t("auth.registerTitle")}</CardTitle>
-            <CardDescription className="text-gray-400">
+            <CardDescription className="text-muted-foreground">
               {t("auth.registerSubtitle")}
             </CardDescription>
           </CardHeader>
@@ -158,15 +166,15 @@ const Register = () => {
                 <div className="space-y-2">
                   <Label htmlFor="full_name">{t("auth.fullName")}</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input id="full_name" name="full_name" placeholder={t("auth.fullName")} className="pl-10 bg-white/5 border-white/10" required />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="full_name" name="full_name" placeholder={t("auth.fullName")} className="pl-10" required />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="workshop_name">{t("auth.workshopName")}</Label>
                   <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input id="workshop_name" name="workshop_name" placeholder={t("auth.workshopName")} className="pl-10 bg-white/5 border-white/10" required />
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="workshop_name" name="workshop_name" placeholder={t("auth.workshopName")} className="pl-10" required />
                   </div>
                 </div>
               </div>
@@ -174,16 +182,16 @@ const Register = () => {
               <div className="space-y-2">
                 <Label htmlFor="email">{t("common.email")}</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                  <Input id="email" name="email" type="email" placeholder="tu@email.com" className="pl-10 bg-white/5 border-white/10" required />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input id="email" name="email" type="email" placeholder="tu@email.com" className="pl-10" required />
                 </div>
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="password">{t("common.password")}</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                  <Input id="password" name="password" type="password" placeholder={t("auth.minPasswordChars")} className="pl-10 bg-white/5 border-white/10" required minLength={6} />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input id="password" name="password" type="password" placeholder={t("auth.minPasswordChars")} className="pl-10" required minLength={6} />
                 </div>
               </div>
 
@@ -191,15 +199,15 @@ const Register = () => {
                 <div className="space-y-2">
                   <Label htmlFor="phone">{t("common.phone")}</Label>
                   <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input id="phone" name="phone" placeholder="+505 1234 5678" className="pl-10 bg-white/5 border-white/10" />
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="phone" name="phone" placeholder="+505 1234 5678" className="pl-10" />
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="whatsapp">{t("auth.whatsapp")}</Label>
                   <div className="relative">
-                    <MessageSquareIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                    <Input id="whatsapp" name="whatsapp" placeholder="+505 1234 5678" className="pl-10 bg-white/5 border-white/10" />
+                    <MessageSquareIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input id="whatsapp" name="whatsapp" placeholder="+505 1234 5678" className="pl-10" />
                   </div>
                 </div>
               </div>
@@ -207,8 +215,8 @@ const Register = () => {
               <div className="space-y-2">
                 <Label htmlFor="address">{t("auth.addressOptional")}</Label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-                  <Input id="address" name="address" placeholder={t("auth.address")} className="pl-10 bg-white/5 border-white/10" />
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input id="address" name="address" placeholder={t("auth.address")} className="pl-10" />
                 </div>
               </div>
 
@@ -216,7 +224,7 @@ const Register = () => {
                 <div className="space-y-2">
                   <Label>{t("auth.workshopCurrency")}</Label>
                   <Select value={selectedCurrency} onValueChange={setSelectedCurrency} required>
-                    <SelectTrigger className="bg-white/5 border-white/10">
+                    <SelectTrigger className="">
                       <SelectValue placeholder={t("auth.selectCurrency")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -230,7 +238,7 @@ const Register = () => {
                 <div className="space-y-2">
                   <Label>{t("auth.plan")}</Label>
                   <Select value={selectedPlanId} onValueChange={setSelectedPlanId}>
-                    <SelectTrigger className="bg-white/5 border-white/10">
+                    <SelectTrigger className="">
                       <SelectValue placeholder={t("auth.selectPlan")} />
                     </SelectTrigger>
                     <SelectContent>
@@ -245,13 +253,13 @@ const Register = () => {
                 </div>
               </div>
 
-              <Button type="submit" disabled={isSubmitting} className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-full">
+              <Button type="submit" disabled={isSubmitting} className="w-full gradient-primary text-primary-foreground font-semibold hover-lift">
                 {isSubmitting ? t("auth.creatingAccount") : t("auth.createAccount")}
               </Button>
 
-              <p className="text-center text-sm text-gray-400">
+              <p className="text-center text-sm text-muted-foreground">
                 {t("auth.hasAccount")}{" "}
-                <Link to="/login" className="text-cyan-400 hover:underline">
+                <Link to="/login" className="text-primary hover:underline">
                   {t("auth.signIn")}
                 </Link>
               </p>

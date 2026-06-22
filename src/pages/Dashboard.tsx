@@ -264,7 +264,7 @@ const Dashboard = () => {
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
         {showRepairs && repairStats && (
           <>
-            <Card className="glass-card">
+            <Card className="glass-card hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
                 <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{t("dashboard.repairProfitToday")}</CardTitle>
                 <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -274,7 +274,7 @@ const Dashboard = () => {
                 <p className="text-xs text-muted-foreground">{t("dashboard.registeredToday", { count: repairStats.todayCount })}</p>
               </CardContent>
             </Card>
-            <Card className="glass-card">
+            <Card className="glass-card hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
                 <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{t("dashboard.pending")}</CardTitle>
                 <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />
@@ -288,7 +288,7 @@ const Dashboard = () => {
         )}
         {showSales && salesStats && (
           <>
-            <Card className="glass-card">
+            <Card className="glass-card hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
                 <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{t("dashboard.salesOfMonth")}</CardTitle>
                 <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
@@ -298,7 +298,7 @@ const Dashboard = () => {
                 <p className="text-xs text-muted-foreground">{t("dashboard.completedSales", { count: salesStats.totalSalesMonth })}</p>
               </CardContent>
             </Card>
-            <Card className="glass-card">
+            <Card className="glass-card hover-lift">
               <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
                 <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{isAdminOrSuper ? t("dashboard.salesProfitMonth") : t("dashboard.pendingSales")}</CardTitle>
                 {isAdminOrSuper ? <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-success" /> : <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-warning" />}
@@ -315,7 +315,7 @@ const Dashboard = () => {
           </>
         )}
         {showRepairs && repairStats && (
-          <Card className="glass-card">
+          <Card className="glass-card hover-lift">
             <CardHeader className="flex flex-row items-center justify-between pb-2 p-3 sm:p-6">
               <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground">{t("dashboard.readyForDelivery")}</CardTitle>
               <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-success" />
@@ -330,7 +330,7 @@ const Dashboard = () => {
 
       {/* Product Quick Search */}
       {showSales && (
-        <Card className="glass-card">
+        <Card className="glass-card hover-lift">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Search className="h-5 w-5 text-primary" />
@@ -388,7 +388,7 @@ const Dashboard = () => {
 
       {/* Charts */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="glass-card">
+        <Card className="glass-card hover-lift">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-primary" />
@@ -424,7 +424,7 @@ const Dashboard = () => {
         </Card>
 
         {showRepairs && (
-          <Card className="glass-card">
+          <Card className="glass-card hover-lift">
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2"><Package className="h-5 w-5 text-accent" />{t("dashboard.repairsByStatus")}</CardTitle>
             </CardHeader>
@@ -447,7 +447,7 @@ const Dashboard = () => {
 
       {/* Repair Types */}
       {showRepairs && repairTypeData.length > 0 && (
-        <Card className="glass-card">
+        <Card className="glass-card hover-lift">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2"><Wrench className="h-5 w-5 text-primary" />{t("dashboard.repairsByType")}</CardTitle>
           </CardHeader>
@@ -494,7 +494,7 @@ const Dashboard = () => {
 
       {/* Monthly Statistics */}
       {isAdminOrSuper && monthlyStatsData.length > 0 && (
-        <Card className="glass-card">
+        <Card className="glass-card hover-lift">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <BarChart3 className="h-5 w-5 text-primary" />
@@ -544,7 +544,7 @@ const Dashboard = () => {
 
       {/* Frequent Clients */}
       {isAdminOrSuper && frequentClients.length > 0 && (
-        <Card className="glass-card">
+        <Card className="glass-card hover-lift">
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <Users className="h-5 w-5 text-primary" />
