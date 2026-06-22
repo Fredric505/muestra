@@ -34,6 +34,8 @@ export interface Repair {
   failure_reason?: string;
   device_photo_received?: string;
   device_photo_delivered?: string;
+  device_unlock_type?: string;
+  device_unlock_value?: string;
   repair_types?: { name: string };
 }
 

@@ -689,6 +689,8 @@ export type Database = {
           device_model: string
           device_photo_delivered: string | null
           device_photo_received: string | null
+          device_unlock_type: string | null
+          device_unlock_value: string | null
           estimated_price: number
           failure_reason: string | null
           final_price: number | null
@@ -718,6 +720,8 @@ export type Database = {
           device_model: string
           device_photo_delivered?: string | null
           device_photo_received?: string | null
+          device_unlock_type?: string | null
+          device_unlock_value?: string | null
           estimated_price?: number
           failure_reason?: string | null
           final_price?: number | null
@@ -747,6 +751,8 @@ export type Database = {
           device_model?: string
           device_photo_delivered?: string | null
           device_photo_received?: string | null
+          device_unlock_type?: string | null
+          device_unlock_value?: string | null
           estimated_price?: number
           failure_reason?: string | null
           final_price?: number | null
