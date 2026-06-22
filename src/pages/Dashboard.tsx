@@ -34,7 +34,7 @@ const Dashboard = () => {
   };
   const statusColors: Record<string, string> = {
     received: "hsl(38, 92%, 50%)", in_progress: "hsl(199, 89%, 48%)",
-    ready: "hsl(142, 71%, 45%)", delivered: "hsl(262, 83%, 58%)",
+    ready: "hsl(var(--primary))", delivered: "hsl(var(--accent))",
   };
 
   const { isAdmin, employeeType, workshop } = useAuth();
@@ -410,20 +410,20 @@ const Dashboard = () => {
               <AreaChart data={weeklyData}>
                 <defs>
                   <linearGradient id="colorRep" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(142, 71%, 45%)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(142, 71%, 45%)" stopOpacity={0} />
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
                   </linearGradient>
                   <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(262, 83%, 58%)" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(262, 83%, 58%)" stopOpacity={0} />
+                    <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(217, 33%, 22%)" />
-                <XAxis dataKey="date" stroke="hsl(215, 20%, 65%)" />
-                <YAxis stroke="hsl(215, 20%, 65%)" />
-                <Tooltip contentStyle={{ backgroundColor: "hsl(222, 47%, 13%)", border: "1px solid hsl(217, 33%, 22%)", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(210, 40%, 98%)" }} />
-                {showRepairs && <Area type="monotone" dataKey={t("dashboard.repairsCount")} stroke="hsl(142, 71%, 45%)" fillOpacity={1} fill="url(#colorRep)" />}
-                {showSales && <Area type="monotone" dataKey={t("dashboard.salesCount")} stroke="hsl(262, 83%, 58%)" fillOpacity={1} fill="url(#colorSales)" />}
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="date" stroke="hsl(var(--muted-foreground))" />
+                <YAxis stroke="hsl(var(--muted-foreground))" />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(var(--foreground))" }} />
+                {showRepairs && <Area type="monotone" dataKey={t("dashboard.repairsCount")} stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorRep)" />}
+                {showSales && <Area type="monotone" dataKey={t("dashboard.salesCount")} stroke="hsl(var(--accent))" fillOpacity={1} fill="url(#colorSales)" />}
               </AreaChart>
             </ResponsiveContainer>
             <div className="flex justify-center gap-6 mt-2">
@@ -444,7 +444,7 @@ const Dashboard = () => {
                   <Pie data={statusData} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={5} dataKey="value">
                     {statusData.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                   </Pie>
-                  <Tooltip contentStyle={{ backgroundColor: "hsl(222, 47%, 13%)", border: "1px solid hsl(217, 33%, 22%)", borderRadius: "0.5rem" }} />
+                  <Tooltip contentStyle={{ backgroundColor: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: "0.5rem" }} />
                 </PieChart>
               </ResponsiveContainer>
               <div className="flex flex-wrap justify-center gap-4 mt-4">
@@ -464,11 +464,11 @@ const Dashboard = () => {
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={repairTypeData} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(217, 33%, 22%)" />
-                <XAxis type="number" stroke="hsl(215, 20%, 65%)" />
-                <YAxis dataKey="name" type="category" stroke="hsl(215, 20%, 65%)" width={100} />
-                <Tooltip contentStyle={{ backgroundColor: "hsl(222, 47%, 13%)", border: "1px solid hsl(217, 33%, 22%)", borderRadius: "0.5rem" }} />
-                <Bar dataKey="count" fill="hsl(262, 83%, 58%)" radius={[0, 4, 4, 0]} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis type="number" stroke="hsl(var(--muted-foreground))" />
+                <YAxis dataKey="name" type="category" stroke="hsl(var(--muted-foreground))" width={100} />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: "0.5rem" }} />
+                <Bar dataKey="count" fill="hsl(var(--accent))" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -514,12 +514,12 @@ const Dashboard = () => {
           <CardContent>
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={monthlyStatsData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(217, 33%, 22%)" />
-                <XAxis dataKey="month" stroke="hsl(215, 20%, 65%)" />
-                <YAxis stroke="hsl(215, 20%, 65%)" />
-                <Tooltip contentStyle={{ backgroundColor: "hsl(222, 47%, 13%)", border: "1px solid hsl(217, 33%, 22%)", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(210, 40%, 98%)" }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" />
+                <YAxis stroke="hsl(var(--muted-foreground))" />
+                <Tooltip contentStyle={{ backgroundColor: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: "0.5rem" }} labelStyle={{ color: "hsl(var(--foreground))" }} />
                 {showRepairs && <Bar dataKey={t("dashboard.repairsCount")} fill="hsl(199, 89%, 48%)" radius={[4, 4, 0, 0]} />}
-                {showSales && <Bar dataKey={t("dashboard.salesCount")} fill="hsl(262, 83%, 58%)" radius={[4, 4, 0, 0]} />}
+                {showSales && <Bar dataKey={t("dashboard.salesCount")} fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />}
               </BarChart>
             </ResponsiveContainer>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
