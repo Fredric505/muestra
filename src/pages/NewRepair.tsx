@@ -35,6 +35,9 @@ const NewRepair = () => {
   const ticketRef = useRef<HTMLDivElement>(null);
   const [devicePhotoReceived, setDevicePhotoReceived] = useState<File | null>(null);
   const [devicePhotoPreview, setDevicePhotoPreview] = useState<string | null>(null);
+  const [unlockType, setUnlockType] = useState<string>("none");
+  const [unlockValue, setUnlockValue] = useState<string>("");
+  const [unlockPattern, setUnlockPattern] = useState<number[]>([]);
 
   const netProfit = estimatedPrice - partsCost;
   const symbol = getCurrencySymbol(currency);
