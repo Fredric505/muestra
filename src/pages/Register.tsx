@@ -132,9 +132,25 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
-      <div className="w-full max-w-lg">
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/15 blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-accent/15 blur-3xl" />
+      </div>
+      <div className="w-full max-w-lg relative z-10 animate-scale-in">
+        <div className="flex items-center gap-2 mb-8 justify-between">
+          <div className="flex items-center gap-2">
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
+            <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
+              <Smartphone className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-bold font-display">RepairControl</span>
+          </div>
+          <LanguageSelector variant="ghost" />
+        </div>
+        <div className="hidden">
           <div className="flex items-center gap-2">
             <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-5 w-5" />
