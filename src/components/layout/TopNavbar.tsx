@@ -84,7 +84,7 @@ export function TopNavbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur-md">
+      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-card/80 backdrop-blur-xl shadow-soft">
         <div className="flex items-center h-14 px-4 gap-3">
           {/* Logo */}
           <div className="flex items-center gap-2 flex-shrink-0">
