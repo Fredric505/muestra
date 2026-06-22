@@ -28,7 +28,7 @@ const defaultBrand: BrandSettings = {
   business_name: "",
   tagline: "",
   logo_url: null,
-  theme_preset: "green",
+  theme_preset: "indigo",
   custom_primary_color: null,
   color_mode: "dark",
   invoice_size: "commercial",
