@@ -13,6 +13,19 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["DM Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Space Grotesk", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
+      backgroundImage: {
+        "gradient-primary": "linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%)",
+        "gradient-surface": "linear-gradient(160deg, hsl(var(--card)) 0%, hsl(var(--background)) 100%)",
+      },
+      boxShadow: {
+        soft: "0 2px 8px -2px hsl(var(--background) / 0.4), 0 4px 16px -4px hsl(var(--background) / 0.3)",
+        elegant: "0 8px 30px -8px hsl(var(--primary) / 0.35)",
+        glow: "0 0 24px -4px hsl(var(--primary) / 0.45)",
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
