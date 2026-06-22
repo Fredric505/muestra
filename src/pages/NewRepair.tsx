@@ -82,6 +82,13 @@ const NewRepair = () => {
       delivery_date: formData.get("delivery_date") as string || undefined,
       delivery_time: formData.get("delivery_time") as string || undefined,
       warranty_days: warrantyDays, currency, status: "received" as const,
+      device_unlock_type: unlockType === "none" ? undefined : unlockType,
+      device_unlock_value:
+        unlockType === "none"
+          ? undefined
+          : unlockType === "pattern"
+            ? unlockPattern.join("-")
+            : unlockValue || undefined,
     };
     try {
       const result = await createRepair.mutateAsync(repair);
