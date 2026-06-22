@@ -60,62 +60,68 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[hsl(222,47%,7%)] p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute -bottom-32 -right-32 h-96 w-96 rounded-full bg-accent/20 blur-3xl" />
+      </div>
+      <div className="w-full max-w-md relative z-10 animate-scale-in">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-2">
-            <Link to="/" className="text-gray-400 hover:text-white transition-colors">
+            <Link to="/" className="text-muted-foreground hover:text-foreground transition-colors">
               <ArrowLeft className="h-5 w-5" />
             </Link>
-            <Smartphone className="h-6 w-6 text-cyan-400" />
-            <span className="text-lg font-bold text-white">RepairControl</span>
+            <div className="h-9 w-9 rounded-xl gradient-primary flex items-center justify-center shadow-glow">
+              <Smartphone className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-bold font-display text-foreground">RepairControl</span>
           </div>
           <LanguageSelector variant="ghost" />
         </div>
 
-        <Card className="bg-white/[0.03] border-white/10">
+        <Card className="glass-card border-border/60">
           <CardHeader className="text-center">
-            <CardTitle className="text-xl text-white">{t("auth.loginTitle")}</CardTitle>
-            <CardDescription className="text-gray-400">
+            <CardTitle className="text-2xl font-display">{t("auth.loginTitle")}</CardTitle>
+            <CardDescription className="text-muted-foreground">
               {t("auth.loginSubtitle")}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="login-email" className="text-gray-300">{t("auth.emailLabel")}</Label>
+                <Label htmlFor="login-email">{t("auth.emailLabel")}</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="login-email"
                     name="email"
                     type="email"
                     placeholder="tu@email.com"
-                    className="pl-10 bg-white/5 border-white/10 text-white"
+                    className="pl-10"
                     required
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="login-password" className="text-gray-300">{t("auth.passwordLabel")}</Label>
+                <Label htmlFor="login-password">{t("auth.passwordLabel")}</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     id="login-password"
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    className="pl-10 bg-white/5 border-white/10 text-white"
+                    className="pl-10"
                     required
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-full" disabled={isLoading}>
+              <Button type="submit" className="w-full gradient-primary text-primary-foreground font-semibold hover-lift" disabled={isLoading}>
                 {isLoading ? t("auth.loggingIn") : t("auth.loginButton")}
               </Button>
-              <p className="text-center text-sm text-gray-400">
+              <p className="text-center text-sm text-muted-foreground">
                 {t("auth.noAccount")}{" "}
-                <Link to="/register" className="text-cyan-400 hover:underline">
+                <Link to="/register" className="text-primary hover:underline font-medium">
                   {t("auth.registerWorkshop")}
                 </Link>
               </p>
@@ -128,3 +134,4 @@ const Login = () => {
 };
 
 export default Login;
+
