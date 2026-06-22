@@ -12,9 +12,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Smartphone, User, Phone, Calendar, Clock, DollarSign, FileText, Wrench, Save, ArrowLeft, Package, Coins, Shield, Printer, Tag, Camera, ImageIcon } from "lucide-react";
+import { Smartphone, User, Phone, Calendar, Clock, DollarSign, FileText, Wrench, Save, ArrowLeft, Package, Coins, Shield, Printer, Tag, Camera, ImageIcon, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { RepairLabel } from "@/components/RepairLabel";
+import { PatternLock } from "@/components/PatternLock";
 import { getCurrencySymbol } from "@/lib/currency";
 
 const NewRepair = () => {
