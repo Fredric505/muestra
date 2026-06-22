@@ -222,52 +222,53 @@ const Dashboard = () => {
 
 
       {/* Quick Access Shortcuts */}
-      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+      <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2.5">
         {showRepairs && (
           <>
-            <button onClick={() => navigate("/panel/repairs/new")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
-              <PlusCircle className="h-5 w-5 text-primary" />
+            <button onClick={() => navigate("/panel/repairs/new")} className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border/60 glass-card hover-lift active:scale-95">
+              <span className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center transition-colors group-hover:bg-primary/25"><PlusCircle className="h-5 w-5 text-primary" /></span>
               <span className="text-xs font-medium text-foreground">{t("dashboard.newRep")}</span>
             </button>
-            <button onClick={() => navigate("/panel/repairs")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
-              <Wrench className="h-5 w-5 text-primary" />
+            <button onClick={() => navigate("/panel/repairs")} className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border/60 glass-card hover-lift active:scale-95">
+              <span className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center transition-colors group-hover:bg-primary/25"><Wrench className="h-5 w-5 text-primary" /></span>
               <span className="text-xs font-medium text-foreground">{t("dashboard.repairs")}</span>
             </button>
-            <button onClick={() => navigate("/panel/history")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
-              <Clock className="h-5 w-5 text-muted-foreground" />
+            <button onClick={() => navigate("/panel/history")} className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border/60 glass-card hover-lift active:scale-95">
+              <span className="h-10 w-10 rounded-xl bg-muted/60 flex items-center justify-center transition-colors group-hover:bg-muted"><Clock className="h-5 w-5 text-muted-foreground" /></span>
               <span className="text-xs font-medium text-foreground">{t("dashboard.history")}</span>
             </button>
-            <button onClick={() => navigate("/panel/income")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
-              <DollarSign className="h-5 w-5 text-success" />
+            <button onClick={() => navigate("/panel/income")} className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border/60 glass-card hover-lift active:scale-95">
+              <span className="h-10 w-10 rounded-xl bg-success/15 flex items-center justify-center transition-colors group-hover:bg-success/25"><DollarSign className="h-5 w-5 text-success" /></span>
               <span className="text-xs font-medium text-foreground">{t("dashboard.income")}</span>
             </button>
           </>
         )}
         {showSales && (
           <>
-            <button onClick={() => navigate("/panel/sales/new")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
-              <ShoppingBag className="h-5 w-5 text-accent" />
+            <button onClick={() => navigate("/panel/sales/new")} className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border/60 glass-card hover-lift active:scale-95">
+              <span className="h-10 w-10 rounded-xl bg-accent/15 flex items-center justify-center transition-colors group-hover:bg-accent/25"><ShoppingBag className="h-5 w-5 text-accent" /></span>
               <span className="text-xs font-medium text-foreground">{t("dashboard.newSale")}</span>
             </button>
-            <button onClick={() => navigate("/panel/sales")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
-              <ShoppingBag className="h-5 w-5 text-muted-foreground" />
+            <button onClick={() => navigate("/panel/sales")} className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border/60 glass-card hover-lift active:scale-95">
+              <span className="h-10 w-10 rounded-xl bg-muted/60 flex items-center justify-center transition-colors group-hover:bg-muted"><ShoppingBag className="h-5 w-5 text-muted-foreground" /></span>
               <span className="text-xs font-medium text-foreground">{t("dashboard.sales")}</span>
             </button>
           </>
         )}
         {isAdminOrSuper && (
           <>
-            <button onClick={() => navigate("/panel/products")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
-              <Package className="h-5 w-5 text-muted-foreground" />
+            <button onClick={() => navigate("/panel/products")} className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border/60 glass-card hover-lift active:scale-95">
+              <span className="h-10 w-10 rounded-xl bg-muted/60 flex items-center justify-center transition-colors group-hover:bg-muted"><Package className="h-5 w-5 text-muted-foreground" /></span>
               <span className="text-xs font-medium text-foreground">{t("dashboard.inventory")}</span>
             </button>
-            <button onClick={() => navigate("/panel/employees")} className="flex flex-col items-center gap-1.5 p-3 rounded-lg border border-border bg-card hover:bg-secondary/80 hover:border-primary/30 transition-all active:scale-95">
-              <Users className="h-5 w-5 text-muted-foreground" />
+            <button onClick={() => navigate("/panel/employees")} className="group flex flex-col items-center gap-2 p-4 rounded-xl border border-border/60 glass-card hover-lift active:scale-95">
+              <span className="h-10 w-10 rounded-xl bg-muted/60 flex items-center justify-center transition-colors group-hover:bg-muted"><Users className="h-5 w-5 text-muted-foreground" /></span>
               <span className="text-xs font-medium text-foreground">{t("dashboard.employees")}</span>
             </button>
           </>
         )}
       </div>
+
 
       {/* Stats Cards */}
       <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
