@@ -59,28 +59,32 @@ export function TopNavbar() {
 
   const NavItems = ({ onClick }: { onClick?: () => void }) => (
     <>
-      {allItems.map((item) => (
-        <NavLink
-          key={item.url}
-          to={item.url}
-          onClick={onClick}
-          className={cn(
-            "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap",
-            location.pathname === item.url
-              ? "bg-primary/15 text-primary"
-              : "text-muted-foreground hover:text-foreground hover:bg-secondary/80"
-          )}
-        >
-          <item.icon className="h-4 w-4 flex-shrink-0" />
-          <span>{item.title}</span>
-        </NavLink>
-      ))}
+      {allItems.map((item) => {
+        const active = location.pathname === item.url;
+        return (
+          <NavLink
+            key={item.url}
+            to={item.url}
+            onClick={onClick}
+            className={cn(
+              "group flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 whitespace-nowrap",
+              active
+                ? "gradient-primary text-primary-foreground shadow-elegant"
+                : "text-muted-foreground hover:text-foreground hover:bg-secondary/70"
+            )}
+          >
+            <item.icon className={cn("h-4 w-4 flex-shrink-0 transition-transform duration-300 group-hover:scale-110", active && "scale-110")} />
+            <span>{item.title}</span>
+          </NavLink>
+        );
+      })}
     </>
   );
 
+
   return (
     <>
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur-md">
+      <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-card/80 backdrop-blur-xl shadow-soft">
         <div className="flex items-center h-14 px-4 gap-3">
           {/* Logo */}
           <div className="flex items-center gap-2 flex-shrink-0">

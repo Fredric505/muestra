@@ -13,8 +13,9 @@ export interface ThemePreset {
 }
 
 export const THEME_PRESETS: ThemePreset[] = [
-  { key: "green",   label: "Verde",    emoji: "🟢", primary: "142 71% 45%",  accent: "162 63% 44%",  ring: "142 71% 45%",  sidebarPrimary: "142 71% 45%" },
+  { key: "indigo",  label: "Indigo",   emoji: "🔷", primary: "245 76% 60%",  accent: "258 82% 68%",  ring: "245 76% 60%",  sidebarPrimary: "245 76% 60%" },
   { key: "blue",    label: "Azul",     emoji: "🔵", primary: "217 91% 60%",  accent: "199 89% 48%",  ring: "217 91% 60%",  sidebarPrimary: "217 91% 60%" },
+  { key: "green",   label: "Verde",    emoji: "🟢", primary: "142 71% 45%",  accent: "162 63% 44%",  ring: "142 71% 45%",  sidebarPrimary: "142 71% 45%" },
   { key: "red",     label: "Rojo",     emoji: "🔴", primary: "0 84% 60%",    accent: "350 89% 60%",  ring: "0 84% 60%",    sidebarPrimary: "0 84% 60%" },
   { key: "purple",  label: "Púrpura",  emoji: "🟣", primary: "262 83% 58%",  accent: "280 65% 60%",  ring: "262 83% 58%",  sidebarPrimary: "262 83% 58%" },
   { key: "orange",  label: "Naranja",  emoji: "🟠", primary: "25 95% 53%",   accent: "38 92% 50%",   ring: "25 95% 53%",   sidebarPrimary: "25 95% 53%" },
@@ -25,24 +26,24 @@ export const THEME_PRESETS: ThemePreset[] = [
 
 // ── Dark / Light base tokens ───────────────────────────────────
 const DARK_BASE = {
-  background: "222 47% 11%",
-  foreground: "210 40% 98%",
-  card: "222 47% 13%",
-  cardForeground: "210 40% 98%",
-  popover: "222 47% 13%",
-  popoverForeground: "210 40% 98%",
-  primaryForeground: "222 47% 11%",
-  secondary: "217 33% 17%",
-  secondaryForeground: "210 40% 98%",
-  muted: "217 33% 17%",
-  mutedForeground: "215 20% 65%",
-  border: "217 33% 22%",
-  input: "217 33% 22%",
-  sidebarBackground: "222 47% 9%",
-  sidebarForeground: "210 40% 98%",
-  sidebarAccent: "217 33% 17%",
-  sidebarAccentForeground: "210 40% 98%",
-  sidebarBorder: "217 33% 22%",
+  background: "240 42% 6%",
+  foreground: "220 30% 96%",
+  card: "240 38% 11%",
+  cardForeground: "220 30% 96%",
+  popover: "240 40% 9%",
+  popoverForeground: "220 30% 96%",
+  primaryForeground: "0 0% 100%",
+  secondary: "240 32% 17%",
+  secondaryForeground: "220 30% 96%",
+  muted: "240 30% 16%",
+  mutedForeground: "230 16% 66%",
+  border: "240 30% 20%",
+  input: "240 30% 20%",
+  sidebarBackground: "240 44% 7%",
+  sidebarForeground: "220 30% 96%",
+  sidebarAccent: "240 32% 15%",
+  sidebarAccentForeground: "220 30% 96%",
+  sidebarBorder: "240 30% 18%",
 };
 
 const LIGHT_BASE = {
@@ -166,7 +167,7 @@ export const useTheme = () => useContext(ThemeContext);
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const { brand } = useBrand();
 
-  const themePresetKey = (brand as any)?.theme_preset || "green";
+  const themePresetKey = (brand as any)?.theme_preset || "indigo";
   const customColor = (brand as any)?.custom_primary_color || null;
   const colorMode: "dark" | "light" = (brand as any)?.color_mode === "light" ? "light" : "dark";
 
