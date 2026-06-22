@@ -220,6 +220,47 @@ const NewRepair = () => {
         </Card>
 
         <Card className="glass-card">
+          <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Lock className="h-5 w-5 text-primary" />{t("newRepair.deviceUnlock")}</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">{t("newRepair.deviceUnlockDesc")}</p>
+            <div className="space-y-2 max-w-xs">
+              <Label>{t("newRepair.unlockType")}</Label>
+              <Select value={unlockType} onValueChange={(v) => { setUnlockType(v); setUnlockValue(""); setUnlockPattern([]); }}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">{t("newRepair.unlockNone")}</SelectItem>
+                  <SelectItem value="pin">{t("newRepair.unlockPin")}</SelectItem>
+                  <SelectItem value="password">{t("newRepair.unlockPassword")}</SelectItem>
+                  <SelectItem value="pattern">{t("newRepair.unlockPattern")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            {unlockType === "pin" && (
+              <div className="space-y-2 max-w-xs">
+                <Label htmlFor="unlock_pin">{t("newRepair.unlockPin")}</Label>
+                <Input id="unlock_pin" inputMode="numeric" placeholder="1234" value={unlockValue} onChange={(e) => setUnlockValue(e.target.value)} />
+              </div>
+            )}
+            {unlockType === "password" && (
+              <div className="space-y-2 max-w-xs">
+                <Label htmlFor="unlock_pwd">{t("newRepair.unlockPassword")}</Label>
+                <Input id="unlock_pwd" placeholder="••••••" value={unlockValue} onChange={(e) => setUnlockValue(e.target.value)} />
+              </div>
+            )}
+            {unlockType === "pattern" && (
+              <div className="space-y-2">
+                <Label>{t("newRepair.unlockPattern")}</Label>
+                <PatternLock value={unlockPattern} onChange={setUnlockPattern} />
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-muted-foreground">{unlockPattern.length > 0 ? unlockPattern.join(" → ") : t("newRepair.drawPattern")}</span>
+                  {unlockPattern.length > 0 && (<Button type="button" variant="ghost" size="sm" onClick={() => setUnlockPattern([])}>{t("common.clear", "Limpiar")}</Button>)}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
           <CardHeader><CardTitle className="text-lg flex items-center gap-2"><Wrench className="h-5 w-5 text-primary" />{t("newRepair.repairDetails")}</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <div className="grid gap-4 md:grid-cols-3">
