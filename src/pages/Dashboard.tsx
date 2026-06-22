@@ -33,8 +33,8 @@ const Dashboard = () => {
     received: t("repairStatus.received"), in_progress: t("repairStatus.in_progress"), ready: t("repairStatus.ready"), delivered: t("repairStatus.delivered"),
   };
   const statusColors: Record<string, string> = {
-    received: "hsl(38, 92%, 50%)", in_progress: "hsl(199, 89%, 48%)",
-    ready: "hsl(var(--primary))", delivered: "hsl(var(--accent))",
+    received: "hsl(var(--warning))", in_progress: "hsl(var(--info))",
+    ready: "hsl(var(--success))", delivered: "hsl(var(--accent))",
   };
 
   const { isAdmin, employeeType, workshop } = useAuth();
