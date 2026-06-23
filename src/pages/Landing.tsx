@@ -249,7 +249,10 @@ const Landing = () => {
           <p className="text-sm text-indigo-100/40">© {new Date().getFullYear()} RepairControl. {t("landing.allRightsReserved")}</p>
         </div>
       </footer>
+
+      <FloatingScrollButton />
     </div>
+
   );
 };
 
