@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
@@ -19,6 +19,7 @@ import {
   Zap,
   Smartphone,
   ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { getCurrencySymbol } from "@/lib/currency";
@@ -35,6 +36,49 @@ const fadeUp = {
     transition: { duration: 0.6, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] as const },
   }),
 };
+
+function FloatingScrollButton() {
+  const [atBottom, setAtBottom] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const scrolled = window.scrollY + window.innerHeight;
+      const full = document.documentElement.scrollHeight;
+      setAtBottom(scrolled >= full - 120);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const handleClick = () => {
+    if (atBottom) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      document.getElementById("pricing")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  return (
+    <motion.button
+      onClick={handleClick}
+      aria-label={atBottom ? "Subir" : "Ver precios"}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.92 }}
+      className="fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 via-rose-500 to-fuchsia-500 text-white shadow-xl shadow-fuchsia-500/40"
+    >
+      <motion.span
+        animate={{ y: atBottom ? [0, -5, 0] : [0, 5, 0] }}
+        transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+      >
+        {atBottom ? <ChevronUp className="h-6 w-6" /> : <ChevronDown className="h-6 w-6" />}
+      </motion.span>
+    </motion.button>
+  );
+}
+
 
 const Landing = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -152,26 +196,8 @@ const Landing = () => {
             <PhoneTeardown />
           </motion.div>
         </div>
-
-        {/* Scroll-down indicator */}
-        <motion.a
-          href="#pricing"
-          aria-label={t("landing.viewPricing")}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 0.6 }}
-          className="mt-16 flex flex-col items-center gap-2 text-indigo-100/50 hover:text-white transition-colors"
-        >
-          <span className="text-xs font-medium uppercase tracking-widest">{t("landing.viewPricing")}</span>
-          <motion.span
-            animate={{ y: [0, 8, 0] }}
-            transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5"
-          >
-            <ChevronDown className="h-5 w-5" />
-          </motion.span>
-        </motion.a>
       </section>
+
 
 
       {/* Features */}
@@ -223,7 +249,10 @@ const Landing = () => {
           <p className="text-sm text-indigo-100/40">© {new Date().getFullYear()} RepairControl. {t("landing.allRightsReserved")}</p>
         </div>
       </footer>
+
+      <FloatingScrollButton />
     </div>
+
   );
 };
 
