@@ -1,3 +1,5 @@
+import { Suspense, lazy } from "react";
+import { Loader2 } from "lucide-react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,26 +13,33 @@ import { SubscriptionGate } from "@/components/SubscriptionGate";
 import { SuperAdminRoute } from "@/components/SuperAdminRoute";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { SuperAdminLayout } from "@/components/layout/SuperAdminLayout";
-import Landing from "./pages/Landing";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Payment from "./pages/Payment";
-import Dashboard from "./pages/Dashboard";
-import NewRepair from "./pages/NewRepair";
-import Repairs from "./pages/Repairs";
-import History from "./pages/History";
-import Income from "./pages/Income";
-import Employees from "./pages/Employees";
-import MyEarnings from "./pages/MyEarnings";
-import Settings from "./pages/Settings";
-import Products from "./pages/Products";
-import Sales from "./pages/Sales";
-import NewSale from "./pages/NewSale";
-import ExportData from "./pages/ExportData";
-import SuperAdminDashboard from "./pages/SuperAdminDashboard";
-import NotFound from "./pages/NotFound";
+
+const Landing = lazy(() => import("./pages/Landing"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Payment = lazy(() => import("./pages/Payment"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const NewRepair = lazy(() => import("./pages/NewRepair"));
+const Repairs = lazy(() => import("./pages/Repairs"));
+const History = lazy(() => import("./pages/History"));
+const Income = lazy(() => import("./pages/Income"));
+const Employees = lazy(() => import("./pages/Employees"));
+const MyEarnings = lazy(() => import("./pages/MyEarnings"));
+const Settings = lazy(() => import("./pages/Settings"));
+const Products = lazy(() => import("./pages/Products"));
+const Sales = lazy(() => import("./pages/Sales"));
+const NewSale = lazy(() => import("./pages/NewSale"));
+const ExportData = lazy(() => import("./pages/ExportData"));
+const SuperAdminDashboard = lazy(() => import("./pages/SuperAdminDashboard"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
+
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+  </div>
+);
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
