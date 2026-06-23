@@ -18,6 +18,7 @@ import {
   Star,
   Zap,
   Smartphone,
+  ChevronDown,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { getCurrencySymbol } from "@/lib/currency";
