@@ -18,6 +18,7 @@ import {
   Star,
   Zap,
   Smartphone,
+  ChevronDown,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { getCurrencySymbol } from "@/lib/currency";
@@ -151,7 +152,27 @@ const Landing = () => {
             <PhoneTeardown />
           </motion.div>
         </div>
+
+        {/* Scroll-down indicator */}
+        <motion.a
+          href="#pricing"
+          aria-label={t("landing.viewPricing")}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 0.6 }}
+          className="mt-16 flex flex-col items-center gap-2 text-indigo-100/50 hover:text-white transition-colors"
+        >
+          <span className="text-xs font-medium uppercase tracking-widest">{t("landing.viewPricing")}</span>
+          <motion.span
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 1.6, ease: "easeInOut" }}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-white/5"
+          >
+            <ChevronDown className="h-5 w-5" />
+          </motion.span>
+        </motion.a>
       </section>
+
 
       {/* Features */}
       <section id="features" className="relative z-10 py-24 px-4 border-t border-white/5">
