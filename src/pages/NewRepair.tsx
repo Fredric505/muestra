@@ -170,11 +170,11 @@ const NewRepair = () => {
 
   return (
     <div className="space-y-6 animate-fade-in max-w-4xl mx-auto">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="shrink-0"><ArrowLeft className="h-5 w-5" /></Button>
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">{t("newRepair.title")}</h1>
-          <p className="text-muted-foreground">{t("newRepair.subtitle")}</p>
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label={t("common.back", "Volver")} className="shrink-0"><ArrowLeft className="h-5 w-5" /></Button>
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground truncate">{t("newRepair.title")}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">{t("newRepair.subtitle")}</p>
         </div>
       </div>
 
