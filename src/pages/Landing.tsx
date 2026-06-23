@@ -60,16 +60,19 @@ const Landing = () => {
           </div>
         </div>
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-white/5 bg-[hsl(222,47%,7%)] p-4 space-y-3">
-            <a href="#features" className="block text-gray-400 hover:text-white">{t("landing.features")}</a>
-            <a href="#pricing" className="block text-gray-400 hover:text-white">{t("landing.pricing")}</a>
-            <LanguageSelector variant="outline" />
-            <Link to="/login" className="block font-semibold">{t("landing.login")}</Link>
-            <Link to="/register">
+          <div className="md:hidden border-t border-white/5 bg-[hsl(222,47%,7%)] px-4 py-5 flex flex-col gap-4">
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-base text-gray-300 hover:text-white transition-colors">{t("landing.features")}</a>
+            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-base text-gray-300 hover:text-white transition-colors">{t("landing.pricing")}</a>
+            <div className="py-1">
+              <LanguageSelector variant="outline" />
+            </div>
+            <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-base font-semibold text-white hover:text-cyan-400 transition-colors">{t("landing.login")}</Link>
+            <Link to="/register" onClick={() => setMobileMenuOpen(false)} className="pt-1">
               <Button className="w-full bg-cyan-500 hover:bg-cyan-600 text-black font-semibold rounded-full">{t("landing.freeTrial")}</Button>
             </Link>
           </div>
         )}
+
       </nav>
 
       {/* Hero */}
