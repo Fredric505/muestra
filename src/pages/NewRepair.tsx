@@ -170,11 +170,11 @@ const NewRepair = () => {
 
   return (
     <div className="space-y-6 animate-fade-in max-w-4xl mx-auto">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="shrink-0"><ArrowLeft className="h-5 w-5" /></Button>
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">{t("newRepair.title")}</h1>
-          <p className="text-muted-foreground">{t("newRepair.subtitle")}</p>
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label={t("common.back", "Volver")} className="shrink-0"><ArrowLeft className="h-5 w-5" /></Button>
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground truncate">{t("newRepair.title")}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">{t("newRepair.subtitle")}</p>
         </div>
       </div>
 
@@ -295,7 +295,7 @@ const NewRepair = () => {
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label>{t("newRepair.netProfit")}</Label>
-                <div className={`p-3 rounded-lg border ${netProfit >= 0 ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
+                <div className={`p-3 rounded-lg border ${netProfit >= 0 ? 'bg-success/10 border-success/30 text-success' : 'bg-destructive/10 border-destructive/30 text-destructive'}`}>
                   <span className="text-lg font-bold">{symbol}{netProfit.toFixed(2)}</span>
                   <span className="text-sm ml-2 opacity-70">({t("common.price")}: {symbol}{estimatedPrice.toFixed(2)} - {t("newRepair.partsCost")}: {symbol}{partsCost.toFixed(2)})</span>
                 </div>
@@ -322,9 +322,9 @@ const NewRepair = () => {
           </CardContent>
         </Card>
 
-        <div className="flex gap-4 justify-end">
-          <Button type="button" variant="outline" onClick={() => navigate(-1)}>{t("common.cancel")}</Button>
-          <Button type="submit" disabled={isSubmitting}><Save className="h-4 w-4 mr-2" />{isSubmitting ? t("common.saving") : t("newRepair.saveRepair")}</Button>
+        <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 sm:justify-end">
+          <Button type="button" variant="outline" onClick={() => navigate(-1)} className="w-full sm:w-auto">{t("common.cancel")}</Button>
+          <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto"><Save className="h-4 w-4 mr-2" />{isSubmitting ? t("common.saving") : t("newRepair.saveRepair")}</Button>
         </div>
       </form>
 

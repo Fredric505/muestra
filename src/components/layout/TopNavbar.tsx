@@ -109,21 +109,22 @@ export function TopNavbar() {
             <LanguageSelector />
             <button
               onClick={() => setProfileDialogOpen(true)}
-              className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30 transition-colors"
+              className="h-9 w-9 rounded-full bg-primary/20 flex items-center justify-center hover:bg-primary/30 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               title={t("nav.editProfile")}
+              aria-label={t("nav.editProfile")}
             >
               <span className="text-xs font-medium text-primary">
                 {profile?.full_name?.charAt(0).toUpperCase() || "U"}
               </span>
             </button>
-            <Button variant="ghost" size="icon" onClick={signOut} className="text-muted-foreground hover:text-destructive h-8 w-8">
+            <Button variant="ghost" size="icon" onClick={signOut} aria-label={t("nav.logout", "Cerrar sesión")} className="text-muted-foreground hover:text-destructive h-9 w-9">
               <LogOut className="h-4 w-4" />
             </Button>
 
             {/* Mobile hamburger */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden h-8 w-8">
+                <Button variant="ghost" size="icon" aria-label={t("common.menu", "Menú")} className="lg:hidden h-9 w-9">
                   <Menu className="h-5 w-5" />
                 </Button>
               </SheetTrigger>
