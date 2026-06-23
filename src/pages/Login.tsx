@@ -44,10 +44,22 @@ const Login = () => {
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const parsed = loginSchema.safeParse({
+      email: formData.get("email"),
+      password: formData.get("password"),
+    });
 
-    const { error } = await signIn(email, password);
+    if (!parsed.success) {
+      toast({
+        title: t("auth.loginError"),
+        description: parsed.error.issues[0].message,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    const { error } = await signIn(parsed.data.email, parsed.data.password);
 
     if (error) {
       toast({
