@@ -19,6 +19,7 @@ import {
   Zap,
   Smartphone,
   ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { getCurrencySymbol } from "@/lib/currency";
