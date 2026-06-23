@@ -231,7 +231,7 @@ const History = () => {
                         <TableCell>{repair.completed_at && format(parseISO(repair.completed_at), "dd MMM yyyy", { locale: dateLoc })}</TableCell>
                         {isAdmin && (
                           <TableCell className="text-right">
-                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive" onClick={() => openDeleteDialog(repair.id)}>
+                            <Button variant="ghost" size="icon" aria-label={t("common.delete")} className="text-destructive hover:text-destructive" onClick={() => openDeleteDialog(repair.id)}>
                               <Trash2 className="h-4 w-4" />
                             </Button>
                           </TableCell>

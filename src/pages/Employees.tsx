@@ -220,9 +220,9 @@ const Employees = () => {
                           <TableCell><Badge variant={employee.is_active ? "default" : "secondary"}>{employee.is_active ? t("employeesPage.active") : t("employeesPage.inactive")}</Badge></TableCell>
                           <TableCell className="text-right">
                             <div className="flex items-center justify-end gap-1">
-                              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" onClick={() => openResetPasswordDialog(employee)} title={t("employeesPage.resetPassword")}><KeyRound className="h-4 w-4" /></Button>
+                              <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary" onClick={() => openResetPasswordDialog(employee)} title={t("employeesPage.resetPassword")} aria-label={t("employeesPage.resetPassword")}><KeyRound className="h-4 w-4" /></Button>
                               <AlertDialog>
-                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
+                                <AlertDialogTrigger asChild><Button variant="ghost" size="icon" aria-label={t("common.delete")} className="text-destructive hover:text-destructive/80 hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
                                 <AlertDialogContent>
                                   <AlertDialogHeader><AlertDialogTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-destructive" />{t("employeesPage.deleteEmployee")}</AlertDialogTitle><AlertDialogDescription>{t("employeesPage.deleteEmployeeWarning")}</AlertDialogDescription></AlertDialogHeader>
                                   <AlertDialogFooter><AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel><AlertDialogAction onClick={() => handleDeleteEmployee(employee.id)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">{t("common.delete")}</AlertDialogAction></AlertDialogFooter>

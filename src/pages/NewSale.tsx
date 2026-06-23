@@ -146,11 +146,11 @@ const NewSale = () => {
 
   return (
     <div className="space-y-6 animate-fade-in max-w-4xl mx-auto">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5" /></Button>
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">{t("newSale.title")}</h1>
-          <p className="text-muted-foreground">{t("newSale.subtitle")}</p>
+      <div className="flex items-center gap-3 sm:gap-4">
+        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} aria-label={t("common.back", "Volver")} className="shrink-0"><ArrowLeft className="h-5 w-5" /></Button>
+        <div className="min-w-0">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground truncate">{t("newSale.title")}</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">{t("newSale.subtitle")}</p>
         </div>
       </div>
 
@@ -208,7 +208,7 @@ const NewSale = () => {
               <div key={idx} className="border border-border rounded-lg p-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-muted-foreground">{t("newSale.product")} {idx + 1}</span>
-                  {items.length > 1 && <Button type="button" variant="ghost" size="icon" onClick={() => removeItem(idx)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
+                  {items.length > 1 && <Button type="button" variant="ghost" size="icon" aria-label={t("common.delete")} onClick={() => removeItem(idx)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">

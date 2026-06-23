@@ -236,9 +236,9 @@ const Products = () => {
                         <TableCell>{p.warranty_days} {t("common.days")}</TableCell>
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" onClick={() => openEdit(p)}><Edit className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="icon" aria-label={t("common.edit")} onClick={() => openEdit(p)}><Edit className="h-4 w-4" /></Button>
                             <AlertDialog>
-                              <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-destructive"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
+                              <AlertDialogTrigger asChild><Button variant="ghost" size="icon" aria-label={t("common.delete")} className="text-destructive"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
                               <AlertDialogContent>
                                 <AlertDialogHeader><AlertDialogTitle>{t("productsPage.deleteProduct")}</AlertDialogTitle><AlertDialogDescription>{t("productsPage.deleteProductWarning")}</AlertDialogDescription></AlertDialogHeader>
                                 <AlertDialogFooter><AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel><AlertDialogAction onClick={() => deleteProduct.mutate(p.id)} className="bg-destructive text-destructive-foreground">{t("common.delete")}</AlertDialogAction></AlertDialogFooter>
