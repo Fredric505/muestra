@@ -350,7 +350,7 @@ const Repairs = () => {
                             <TableCell><p className="text-xs">{format(parseISO(repair.created_at), "dd MMM", { locale: dateLoc })}</p></TableCell>
                             <TableCell className="text-right">
                               <DropdownMenu>
-                                <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
+                                <DropdownMenuTrigger asChild><Button variant="ghost" size="icon" aria-label={t("common.actions")} className="h-8 w-8"><MoreHorizontal className="h-4 w-4" /></Button></DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
                                   {nextStatus[repair.status] && (
                                     <DropdownMenuItem onClick={() => handleAdvanceStatus(repair.id, repair.status)}>
@@ -415,9 +415,9 @@ const Repairs = () => {
                 </div>
               </div>
             </div>
-            <div className={`p-3 rounded-lg border ${netProfit >= 0 ? 'bg-green-500/10 border-green-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
+            <div className={`p-3 rounded-lg border ${netProfit >= 0 ? 'bg-success/10 border-success/30' : 'bg-destructive/10 border-destructive/30'}`}>
               <p className="text-sm text-muted-foreground">{t("newRepair.netProfit")}:</p>
-              <p className={`text-xl font-bold ${netProfit >= 0 ? 'text-green-400' : 'text-red-400'}`}>{symbol}{netProfit.toFixed(2)}</p>
+              <p className={`text-xl font-bold ${netProfit >= 0 ? 'text-success' : 'text-destructive'}`}>{symbol}{netProfit.toFixed(2)}</p>
             </div>
             <div className="space-y-2">
               <Label>{t("repairs.technician")} *</Label>

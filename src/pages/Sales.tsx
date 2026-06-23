@@ -117,7 +117,7 @@ const Sales = () => {
                 <Button size="sm" variant="ghost" onClick={() => handlePrintInvoice(sale)}><Printer className="h-4 w-4" /></Button>
                 {isAdmin && (
                   <AlertDialog>
-                    <AlertDialogTrigger asChild><Button variant="ghost" size="icon" className="text-destructive"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
+                    <AlertDialogTrigger asChild><Button variant="ghost" size="icon" aria-label={t("common.delete")} className="text-destructive"><Trash2 className="h-4 w-4" /></Button></AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>{t("salesPage.deleteSale")}</AlertDialogTitle>
@@ -216,7 +216,7 @@ const Sales = () => {
             </CardContent></Card>
             <Card className="glass-card"><CardContent className="p-4">
               <div className="text-sm text-muted-foreground">{t("salesPage.netProfit")}</div>
-              <div className={`text-2xl font-bold ${totalProfit >= 0 ? "text-green-500" : "text-red-500"}`}>{currencySymbol}{totalProfit.toFixed(2)}</div>
+              <div className={`text-2xl font-bold ${totalProfit >= 0 ? "text-success" : "text-destructive"}`}>{currencySymbol}{totalProfit.toFixed(2)}</div>
             </CardContent></Card>
           </>
         ) : (
