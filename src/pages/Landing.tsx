@@ -17,9 +17,11 @@ import {
   Sparkles,
   Star,
   Zap,
+  Smartphone,
 } from "lucide-react";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { getCurrencySymbol } from "@/lib/currency";
+import { PhoneTeardown } from "@/components/PhoneTeardown";
 
 const fontDisplay = { fontFamily: "'Sora', ui-sans-serif, system-ui, sans-serif" };
 const fontBody = { fontFamily: "'Manrope', ui-sans-serif, system-ui, sans-serif" };
@@ -47,31 +49,31 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a1410] text-emerald-50 overflow-x-hidden" style={fontBody}>
+    <div className="min-h-screen bg-[#0c0816] text-indigo-50 overflow-x-hidden" style={fontBody}>
       {/* Ambient gradient backdrop */}
       <div className="pointer-events-none fixed inset-0 z-0">
-        <div className="absolute -top-32 -left-32 h-[34rem] w-[34rem] rounded-full bg-emerald-500/15 blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 h-[32rem] w-[32rem] rounded-full bg-amber-400/10 blur-[120px]" />
-        <div className="absolute bottom-0 left-1/4 h-[28rem] w-[28rem] rounded-full bg-teal-500/10 blur-[120px]" />
+        <div className="absolute -top-32 -left-32 h-[34rem] w-[34rem] rounded-full bg-violet-600/20 blur-[120px]" />
+        <div className="absolute top-1/4 -right-40 h-[32rem] w-[32rem] rounded-full bg-orange-500/15 blur-[120px]" />
+        <div className="absolute bottom-0 left-1/3 h-[28rem] w-[28rem] rounded-full bg-fuchsia-600/15 blur-[120px]" />
       </div>
 
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-emerald-400/10 bg-[#0a1410]/70 backdrop-blur-xl">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#0c0816]/70 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-teal-500 shadow-lg shadow-emerald-500/30">
-                <Wrench className="h-5 w-5 text-[#0a1410]" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-orange-400 via-rose-500 to-fuchsia-500 shadow-lg shadow-fuchsia-500/30">
+                <Smartphone className="h-5 w-5 text-white" />
               </div>
               <span className="text-xl font-bold tracking-tight" style={fontDisplay}>RepairControl</span>
             </div>
             <div className="hidden md:flex items-center gap-8">
-              <a href="#features" className="text-sm text-emerald-100/60 hover:text-emerald-50 transition-colors">{t("landing.features")}</a>
-              <a href="#pricing" className="text-sm text-emerald-100/60 hover:text-emerald-50 transition-colors">{t("landing.pricing")}</a>
+              <a href="#features" className="text-sm text-indigo-100/60 hover:text-white transition-colors">{t("landing.features")}</a>
+              <a href="#pricing" className="text-sm text-indigo-100/60 hover:text-white transition-colors">{t("landing.pricing")}</a>
               <LanguageSelector variant="ghost" />
-              <Link to="/login" className="text-sm font-semibold hover:text-emerald-300 transition-colors">{t("landing.login")}</Link>
+              <Link to="/login" className="text-sm font-semibold hover:text-orange-300 transition-colors">{t("landing.login")}</Link>
               <Link to="/register">
-                <Button className="bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-[#0a1410] font-bold rounded-full px-6 shadow-lg shadow-emerald-500/25 transition-all hover:shadow-emerald-400/40">
+                <Button className="bg-gradient-to-r from-orange-400 via-rose-500 to-fuchsia-500 hover:opacity-90 text-white font-bold rounded-full px-6 shadow-lg shadow-fuchsia-500/25 transition-all">
                   {t("landing.freeTrial")}
                 </Button>
               </Link>
@@ -85,69 +87,81 @@ const Landing = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="md:hidden border-t border-emerald-400/10 bg-[#0a1410] px-5 py-6 flex flex-col gap-5"
+            className="md:hidden border-t border-white/5 bg-[#0c0816] px-5 py-6 flex flex-col gap-5"
           >
-            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-base text-emerald-100/80 hover:text-emerald-50 transition-colors">{t("landing.features")}</a>
-            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="text-base text-emerald-100/80 hover:text-emerald-50 transition-colors">{t("landing.pricing")}</a>
+            <a href="#features" onClick={() => setMobileMenuOpen(false)} className="text-base text-indigo-100/80 hover:text-white transition-colors">{t("landing.features")}</a>
+            <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="text-base text-indigo-100/80 hover:text-white transition-colors">{t("landing.pricing")}</a>
             <div><LanguageSelector variant="outline" /></div>
-            <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-emerald-50 hover:text-emerald-300 transition-colors">{t("landing.login")}</Link>
+            <Link to="/login" onClick={() => setMobileMenuOpen(false)} className="text-base font-semibold text-white hover:text-orange-300 transition-colors">{t("landing.login")}</Link>
             <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-              <Button className="w-full bg-gradient-to-r from-emerald-400 to-teal-500 text-[#0a1410] font-bold rounded-full">{t("landing.freeTrial")}</Button>
+              <Button className="w-full bg-gradient-to-r from-orange-400 via-rose-500 to-fuchsia-500 text-white font-bold rounded-full">{t("landing.freeTrial")}</Button>
             </Link>
           </motion.div>
         )}
       </nav>
 
-      {/* Hero */}
-      <section className="relative z-10 pt-36 pb-24 px-4">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div variants={fadeUp} initial="hidden" animate="show" className="mb-8 inline-flex items-center gap-2 rounded-full border border-emerald-400/25 bg-emerald-400/10 px-4 py-1.5 text-sm text-emerald-200">
-            <Sparkles className="h-3.5 w-3.5" />
-            {t("landing.heroSubtitle")}
-          </motion.div>
-          <motion.h1 variants={fadeUp} custom={1} initial="hidden" animate="show" className="text-4xl sm:text-6xl md:text-7xl font-extrabold leading-[1.05] mb-6 tracking-tight" style={fontDisplay}>
-            {t("landing.heroTitle1")}{" "}
-            <span className="bg-gradient-to-r from-emerald-300 via-teal-300 to-amber-300 bg-clip-text text-transparent">
-              {t("landing.heroTitleHighlight")}
-            </span>{" "}
-            {t("landing.heroTitle2")}
-          </motion.h1>
-          <motion.p variants={fadeUp} custom={2} initial="hidden" animate="show" className="text-lg sm:text-xl text-emerald-100/60 max-w-2xl mx-auto mb-10">
-            {t("landing.heroDescription")}
-          </motion.p>
-          <motion.div variants={fadeUp} custom={3} initial="hidden" animate="show" className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/register">
-              <Button size="lg" className="group bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-[#0a1410] font-bold rounded-full px-8 text-base shadow-xl shadow-emerald-500/30 transition-all">
-                {t("landing.freeTrialDays")}
-                <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
-            <a href="#pricing">
-              <Button size="lg" variant="outline" className="border-emerald-400/25 bg-white/5 text-emerald-50 hover:bg-white/10 hover:text-emerald-50 rounded-full px-8 text-base">
-                {t("landing.viewPricing")}
-              </Button>
-            </a>
-          </motion.div>
-          <motion.div variants={fadeUp} custom={4} initial="hidden" animate="show" className="mt-10 flex items-center justify-center gap-2 text-sm text-emerald-100/50">
-            <div className="flex">
-              {[0, 1, 2, 3, 4].map((s) => (
-                <Star key={s} className="h-4 w-4 fill-amber-300 text-amber-300" />
-              ))}
-            </div>
-            <span>4.9/5 · {new Date().getFullYear()}</span>
+      {/* Hero - split layout */}
+      <section className="relative z-10 pt-32 pb-24 px-4">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-center lg:text-left">
+            <motion.div variants={fadeUp} initial="hidden" animate="show" className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-sm text-orange-200">
+              <Sparkles className="h-3.5 w-3.5" />
+              {t("landing.heroSubtitle")}
+            </motion.div>
+            <motion.h1 variants={fadeUp} custom={1} initial="hidden" animate="show" className="text-4xl sm:text-6xl font-extrabold leading-[1.05] mb-6 tracking-tight" style={fontDisplay}>
+              {t("landing.heroTitle1")}{" "}
+              <span className="bg-gradient-to-r from-orange-300 via-rose-400 to-fuchsia-400 bg-clip-text text-transparent">
+                {t("landing.heroTitleHighlight")}
+              </span>{" "}
+              {t("landing.heroTitle2")}
+            </motion.h1>
+            <motion.p variants={fadeUp} custom={2} initial="hidden" animate="show" className="text-lg sm:text-xl text-indigo-100/60 max-w-xl mx-auto lg:mx-0 mb-10">
+              {t("landing.heroDescription")}
+            </motion.p>
+            <motion.div variants={fadeUp} custom={3} initial="hidden" animate="show" className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Link to="/register">
+                <Button size="lg" className="group bg-gradient-to-r from-orange-400 via-rose-500 to-fuchsia-500 hover:opacity-90 text-white font-bold rounded-full px-8 text-base shadow-xl shadow-fuchsia-500/30 transition-all">
+                  {t("landing.freeTrialDays")}
+                  <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
+                </Button>
+              </Link>
+              <a href="#pricing">
+                <Button size="lg" variant="outline" className="border-white/20 bg-white/5 text-white hover:bg-white/10 hover:text-white rounded-full px-8 text-base">
+                  {t("landing.viewPricing")}
+                </Button>
+              </a>
+            </motion.div>
+            <motion.div variants={fadeUp} custom={4} initial="hidden" animate="show" className="mt-10 flex items-center justify-center lg:justify-start gap-2 text-sm text-indigo-100/50">
+              <div className="flex">
+                {[0, 1, 2, 3, 4].map((s) => (
+                  <Star key={s} className="h-4 w-4 fill-orange-300 text-orange-300" />
+                ))}
+              </div>
+              <span>4.9/5 · {new Date().getFullYear()}</span>
+            </motion.div>
+          </div>
+
+          {/* Animated phone teardown */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="order-first lg:order-last"
+          >
+            <PhoneTeardown />
           </motion.div>
         </div>
       </section>
 
       {/* Features */}
-      <section id="features" className="relative z-10 py-24 px-4 border-t border-emerald-400/10">
+      <section id="features" className="relative z-10 py-24 px-4 border-t border-white/5">
         <div className="max-w-6xl mx-auto">
           <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }} className="text-center mb-16">
-            <span className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-300 mb-3">
+            <span className="inline-flex items-center gap-2 text-sm font-semibold text-orange-300 mb-3">
               <Zap className="h-4 w-4" /> {t("landing.features")}
             </span>
             <h2 className="text-3xl sm:text-5xl font-bold mb-4 tracking-tight" style={fontDisplay}>{t("landing.allYouNeed")}</h2>
-            <p className="text-emerald-100/60 text-lg">{t("landing.allYouNeedDesc")}</p>
+            <p className="text-indigo-100/60 text-lg">{t("landing.allYouNeedDesc")}</p>
           </motion.div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {features.map((f, i) => (
@@ -158,13 +172,13 @@ const Landing = () => {
                 initial="hidden"
                 whileInView="show"
                 viewport={{ once: true, margin: "-60px" }}
-                className="group relative p-7 rounded-3xl border border-emerald-400/10 bg-gradient-to-b from-white/[0.05] to-white/[0.02] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-emerald-400/30 hover:shadow-2xl hover:shadow-emerald-500/10"
+                className="group relative p-7 rounded-3xl border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.02] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-fuchsia-400/30 hover:shadow-2xl hover:shadow-fuchsia-500/10"
               >
-                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400/20 to-teal-500/10 ring-1 ring-emerald-400/20 transition-transform duration-300 group-hover:scale-110">
-                  <f.icon className="h-7 w-7 text-emerald-300" />
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400/20 to-fuchsia-500/15 ring-1 ring-white/10 transition-transform duration-300 group-hover:scale-110">
+                  <f.icon className="h-7 w-7 text-orange-300" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2" style={fontDisplay}>{f.title}</h3>
-                <p className="text-emerald-100/55 text-sm leading-relaxed">{f.description}</p>
+                <p className="text-indigo-100/55 text-sm leading-relaxed">{f.description}</p>
               </motion.div>
             ))}
           </div>
@@ -172,20 +186,20 @@ const Landing = () => {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="relative z-10 py-24 px-4 border-t border-emerald-400/10">
+      <section id="pricing" className="relative z-10 py-24 px-4 border-t border-white/5">
         <PricingSection />
       </section>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-emerald-400/10 py-10 px-4">
+      <footer className="relative z-10 border-t border-white/5 py-10 px-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500">
-              <Wrench className="h-4 w-4 text-[#0a1410]" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-orange-400 via-rose-500 to-fuchsia-500">
+              <Smartphone className="h-4 w-4 text-white" />
             </div>
             <span className="font-bold" style={fontDisplay}>RepairControl</span>
           </div>
-          <p className="text-sm text-emerald-100/40">© {new Date().getFullYear()} RepairControl. {t("landing.allRightsReserved")}</p>
+          <p className="text-sm text-indigo-100/40">© {new Date().getFullYear()} RepairControl. {t("landing.allRightsReserved")}</p>
         </div>
       </footer>
     </div>
@@ -216,12 +230,12 @@ export function PricingSection() {
     <div className="max-w-6xl mx-auto">
       <motion.div variants={fadeUp} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }} className="text-center mb-12">
         <h2 className="text-3xl sm:text-5xl font-bold mb-4 tracking-tight" style={fontDisplay}>{t("landing.plansAndPricing")}</h2>
-        <p className="text-emerald-100/60 text-lg mb-8">{t("landing.plansDesc")}</p>
-        <div className="inline-flex bg-white/5 ring-1 ring-emerald-400/15 rounded-full p-1">
+        <p className="text-indigo-100/60 text-lg mb-8">{t("landing.plansDesc")}</p>
+        <div className="inline-flex bg-white/5 ring-1 ring-white/10 rounded-full p-1">
           <button
             onClick={() => setBillingPeriod("monthly")}
             className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${
-              billingPeriod === "monthly" ? "bg-gradient-to-r from-emerald-400 to-teal-500 text-[#0a1410]" : "text-emerald-100/60 hover:text-emerald-50"
+              billingPeriod === "monthly" ? "bg-gradient-to-r from-orange-400 via-rose-500 to-fuchsia-500 text-white" : "text-indigo-100/60 hover:text-white"
             }`}
           >
             {t("landing.monthly")}
@@ -229,7 +243,7 @@ export function PricingSection() {
           <button
             onClick={() => setBillingPeriod("annual")}
             className={`px-6 py-2 rounded-full text-sm font-semibold transition-all ${
-              billingPeriod === "annual" ? "bg-gradient-to-r from-emerald-400 to-teal-500 text-[#0a1410]" : "text-emerald-100/60 hover:text-emerald-50"
+              billingPeriod === "annual" ? "bg-gradient-to-r from-orange-400 via-rose-500 to-fuchsia-500 text-white" : "text-indigo-100/60 hover:text-white"
             }`}
           >
             {t("landing.annual")} <span className="text-xs opacity-80">(-17%)</span>
@@ -255,30 +269,30 @@ export function PricingSection() {
               viewport={{ once: true, margin: "-60px" }}
               className={`relative p-7 rounded-3xl border transition-all duration-300 hover:-translate-y-1.5 ${
                 isPopular
-                  ? "border-emerald-400/40 bg-gradient-to-b from-emerald-400/10 to-teal-500/[0.03] shadow-2xl shadow-emerald-500/15 lg:scale-105"
-                  : "border-emerald-400/10 bg-white/[0.03] hover:border-emerald-400/25"
+                  ? "border-fuchsia-400/40 bg-gradient-to-b from-fuchsia-500/10 to-orange-500/[0.03] shadow-2xl shadow-fuchsia-500/15 lg:scale-105"
+                  : "border-white/10 bg-white/[0.03] hover:border-white/25"
               }`}
             >
               {isPopular && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-amber-300 to-amber-400 px-4 py-1 text-xs font-bold text-[#0a1410] shadow-lg">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-gradient-to-r from-orange-400 to-fuchsia-500 px-4 py-1 text-xs font-bold text-white shadow-lg">
                   {t("landing.mostPopular")}
                 </span>
               )}
               <h3 className="text-xl font-bold mb-1" style={fontDisplay}>{planName}</h3>
-              <p className="text-emerald-100/55 text-sm mb-4">{planDesc}</p>
+              <p className="text-indigo-100/55 text-sm mb-4">{planDesc}</p>
               <div className="mb-6">
                 <span className="text-4xl font-extrabold" style={fontDisplay}>{getCurrencySymbol(plan.currency)}{perMonth}</span>
-                <span className="text-emerald-100/50 text-sm">{t("landing.perMonth")}</span>
+                <span className="text-indigo-100/50 text-sm">{t("landing.perMonth")}</span>
                 {billingPeriod === "annual" && (
-                  <p className="text-xs text-emerald-100/40 mt-1">{getCurrencySymbol(plan.currency)}{price} {t("landing.billedAnnually")}</p>
+                  <p className="text-xs text-indigo-100/40 mt-1">{getCurrencySymbol(plan.currency)}{price} {t("landing.billedAnnually")}</p>
                 )}
               </div>
               <Link to="/register">
                 <Button
                   className={`w-full rounded-full font-bold mb-6 ${
                     isPopular
-                      ? "bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-[#0a1410] shadow-lg shadow-emerald-500/25"
-                      : "bg-white/10 hover:bg-white/20 text-emerald-50"
+                      ? "bg-gradient-to-r from-orange-400 via-rose-500 to-fuchsia-500 hover:opacity-90 text-white shadow-lg shadow-fuchsia-500/25"
+                      : "bg-white/10 hover:bg-white/20 text-white"
                   }`}
                 >
                   {plan.has_free_trial ? t("landing.freeTrialPlanDays", { days: plan.trial_days }) : t("landing.startNow")}
@@ -286,9 +300,9 @@ export function PricingSection() {
               </Link>
               <ul className="space-y-3">
                 {(Array.isArray(features) ? features : []).map((feature: string, fi: number) => (
-                  <li key={fi} className="flex items-start gap-2.5 text-sm text-emerald-100/75">
-                    <span className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-emerald-400/20">
-                      <Check className="h-3 w-3 text-emerald-300" />
+                  <li key={fi} className="flex items-start gap-2.5 text-sm text-indigo-100/75">
+                    <span className="mt-0.5 flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-fuchsia-400/20">
+                      <Check className="h-3 w-3 text-orange-300" />
                     </span>
                     {feature}
                   </li>
