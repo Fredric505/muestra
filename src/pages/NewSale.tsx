@@ -208,7 +208,7 @@ const NewSale = () => {
               <div key={idx} className="border border-border rounded-lg p-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-muted-foreground">{t("newSale.product")} {idx + 1}</span>
-                  {items.length > 1 && <Button type="button" variant="ghost" size="icon" onClick={() => removeItem(idx)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
+                  {items.length > 1 && <Button type="button" variant="ghost" size="icon" aria-label={t("common.delete")} onClick={() => removeItem(idx)}><Trash2 className="h-4 w-4 text-destructive" /></Button>}
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
