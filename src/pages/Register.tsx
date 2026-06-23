@@ -52,13 +52,27 @@ const Register = () => {
     setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const fullName = formData.get("full_name") as string;
-    const workshopName = formData.get("workshop_name") as string;
-    const phone = formData.get("phone") as string;
-    const whatsapp = formData.get("whatsapp") as string;
-    const address = formData.get("address") as string;
+    const parsed = registerSchema.safeParse({
+      email: formData.get("email"),
+      password: formData.get("password"),
+      fullName: formData.get("full_name"),
+      workshopName: formData.get("workshop_name"),
+      phone: formData.get("phone"),
+      whatsapp: formData.get("whatsapp"),
+      address: formData.get("address"),
+    });
+
+    if (!parsed.success) {
+      toast({
+        title: t("common.error"),
+        description: parsed.error.issues[0].message,
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    const { email, password, fullName, workshopName, phone, whatsapp, address } = parsed.data;
 
     try {
       try {
