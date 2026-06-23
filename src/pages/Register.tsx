@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,16 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { getCurrencySymbol } from "@/lib/currency";
 
 const currencies = ["USD", "NIO", "HNL", "GTQ", "CRC", "PAB", "MXN", "COP", "PEN", "ARS", "CLP", "BRL", "EUR"];
+
+const registerSchema = z.object({
+  fullName: z.string().trim().min(1).max(100),
+  workshopName: z.string().trim().min(1).max(100),
+  email: z.string().trim().email().max(255),
+  password: z.string().min(6).max(72),
+  phone: z.string().trim().max(30).optional().or(z.literal("")),
+  whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
+  address: z.string().trim().max(255).optional().or(z.literal("")),
+});
 
 const Register = () => {
   const { t } = useTranslation();
