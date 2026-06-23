@@ -295,7 +295,7 @@ const NewRepair = () => {
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label>{t("newRepair.netProfit")}</Label>
-                <div className={`p-3 rounded-lg border ${netProfit >= 0 ? 'bg-green-500/10 border-green-500/30 text-green-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
+                <div className={`p-3 rounded-lg border ${netProfit >= 0 ? 'bg-success/10 border-success/30 text-success' : 'bg-destructive/10 border-destructive/30 text-destructive'}`}>
                   <span className="text-lg font-bold">{symbol}{netProfit.toFixed(2)}</span>
                   <span className="text-sm ml-2 opacity-70">({t("common.price")}: {symbol}{estimatedPrice.toFixed(2)} - {t("newRepair.partsCost")}: {symbol}{partsCost.toFixed(2)})</span>
                 </div>
