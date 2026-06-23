@@ -322,9 +322,9 @@ const NewRepair = () => {
           </CardContent>
         </Card>
 
-        <div className="flex gap-4 justify-end">
-          <Button type="button" variant="outline" onClick={() => navigate(-1)}>{t("common.cancel")}</Button>
-          <Button type="submit" disabled={isSubmitting}><Save className="h-4 w-4 mr-2" />{isSubmitting ? t("common.saving") : t("newRepair.saveRepair")}</Button>
+        <div className="flex flex-col-reverse sm:flex-row gap-3 sm:gap-4 sm:justify-end">
+          <Button type="button" variant="outline" onClick={() => navigate(-1)} className="w-full sm:w-auto">{t("common.cancel")}</Button>
+          <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto"><Save className="h-4 w-4 mr-2" />{isSubmitting ? t("common.saving") : t("newRepair.saveRepair")}</Button>
         </div>
       </form>
 
