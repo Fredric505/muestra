@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { z } from "zod";
 import { useAuth } from "@/contexts/AuthContext";
 
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Mail, Lock, Smartphone, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { LanguageSelector } from "@/components/LanguageSelector";
+
+const loginSchema = z.object({
+  email: z.string().trim().email().max(255),
+  password: z.string().min(1).max(72),
+});
 
 const Login = () => {
   const { t } = useTranslation();
@@ -38,10 +44,22 @@ const Login = () => {
     setIsLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    const parsed = loginSchema.safeParse({
+      email: formData.get("email"),
+      password: formData.get("password"),
+    });
 
-    const { error } = await signIn(email, password);
+    if (!parsed.success) {
+      toast({
+        title: t("auth.loginError"),
+        description: parsed.error.issues[0].message,
+        variant: "destructive",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    const { error } = await signIn(parsed.data.email, parsed.data.password);
 
     if (error) {
       toast({

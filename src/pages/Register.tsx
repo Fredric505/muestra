@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
+import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,16 @@ import { LanguageSelector } from "@/components/LanguageSelector";
 import { getCurrencySymbol } from "@/lib/currency";
 
 const currencies = ["USD", "NIO", "HNL", "GTQ", "CRC", "PAB", "MXN", "COP", "PEN", "ARS", "CLP", "BRL", "EUR"];
+
+const registerSchema = z.object({
+  fullName: z.string().trim().min(1).max(100),
+  workshopName: z.string().trim().min(1).max(100),
+  email: z.string().trim().email().max(255),
+  password: z.string().min(6).max(72),
+  phone: z.string().trim().max(30).optional().or(z.literal("")),
+  whatsapp: z.string().trim().max(30).optional().or(z.literal("")),
+  address: z.string().trim().max(255).optional().or(z.literal("")),
+});
 
 const Register = () => {
   const { t } = useTranslation();
@@ -41,13 +52,27 @@ const Register = () => {
     setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const fullName = formData.get("full_name") as string;
-    const workshopName = formData.get("workshop_name") as string;
-    const phone = formData.get("phone") as string;
-    const whatsapp = formData.get("whatsapp") as string;
-    const address = formData.get("address") as string;
+    const parsed = registerSchema.safeParse({
+      email: formData.get("email"),
+      password: formData.get("password"),
+      fullName: formData.get("full_name"),
+      workshopName: formData.get("workshop_name"),
+      phone: formData.get("phone"),
+      whatsapp: formData.get("whatsapp"),
+      address: formData.get("address"),
+    });
+
+    if (!parsed.success) {
+      toast({
+        title: t("common.error"),
+        description: parsed.error.issues[0].message,
+        variant: "destructive",
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    const { email, password, fullName, workshopName, phone, whatsapp, address } = parsed.data;
 
     try {
       try {
