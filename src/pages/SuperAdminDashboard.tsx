@@ -625,6 +625,55 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
                   </Select>
                 </div>
               </div>
+              {(() => {
+                const isTrial = editingWs.subscription_status === "trial";
+                const field = isTrial ? "trial_ends_at" : "subscription_ends_at";
+                const current = editingWs[field] as string | null;
+                const toLocalInput = (iso: string | null) => {
+                  if (!iso) return "";
+                  const d = new Date(iso);
+                  const off = d.getTimezoneOffset();
+                  return new Date(d.getTime() - off * 60000).toISOString().slice(0, 16);
+                };
+                const setDate = (iso: string | null) => setEditingWs({ ...editingWs, [field]: iso });
+                const adjustDays = (days: number) => {
+                  const base = current ? new Date(current) : new Date();
+                  base.setDate(base.getDate() + days);
+                  setDate(base.toISOString());
+                };
+                return (
+                  <div className="space-y-2 rounded-lg border border-border p-3">
+                    <Label>{isTrial ? "Vencimiento de la prueba" : "Vencimiento de la suscripción"}</Label>
+                    <Input
+                      type="datetime-local"
+                      value={toLocalInput(current)}
+                      onChange={(e) => setDate(e.target.value ? new Date(e.target.value).toISOString() : null)}
+                    />
+                    <div className="flex flex-wrap gap-2">
+                      {[7, 15, 30, 90].map((d) => (
+                        <Button key={`p${d}`} type="button" size="sm" variant="outline" onClick={() => adjustDays(d)}>
+                          +{d}d
+                        </Button>
+                      ))}
+                      {[7, 30].map((d) => (
+                        <Button key={`m${d}`} type="button" size="sm" variant="outline" onClick={() => adjustDays(-d)}>
+                          -{d}d
+                        </Button>
+                      ))}
+                      <Button type="button" size="sm" variant="ghost" onClick={() => setDate(new Date().toISOString())}>
+                        Hoy
+                      </Button>
+                    </div>
+                    {current && (
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(current) > new Date()
+                          ? `Faltan ${Math.ceil((new Date(current).getTime() - Date.now()) / 86400000)} día(s)`
+                          : "Vencido"}
+                      </p>
+                    )}
+                  </div>
+                );
+              })()}
               <div className="flex items-center gap-2">
                 <Switch checked={editingWs.is_active} onCheckedChange={(v) => setEditingWs({ ...editingWs, is_active: v })} />
                 <Label>Taller activo</Label>
