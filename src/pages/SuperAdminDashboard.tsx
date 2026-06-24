@@ -337,11 +337,21 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
     },
   });
 
+  // Derive the correct status when un-pausing so trial accounts aren't silently upgraded to paid
+  const restoredStatus = (ws: any) => {
+    const now = new Date();
+    if (ws?.subscription_ends_at && new Date(ws.subscription_ends_at) > now) return "active";
+    if (ws?.trial_ends_at && new Date(ws.trial_ends_at) > now) return "trial";
+    return "expired";
+  };
+
   const unpauseWorkshop = useMutation({
     mutationFn: async (id: string) => {
+      const ws = workshops.find((w) => w.id === id);
+      const status = restoredStatus(ws);
       const { error } = await supabase.from("workshops").update({
-        subscription_status: "active",
-        is_active: true,
+        subscription_status: status,
+        is_active: status !== "expired",
         pause_type: null,
         pause_reason: null,
         pause_estimated_resume: null,
