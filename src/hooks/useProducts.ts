@@ -37,7 +37,7 @@ export const useProducts = () => {
   const { toast } = useToast();
 
   const productsQuery = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", workshopId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
