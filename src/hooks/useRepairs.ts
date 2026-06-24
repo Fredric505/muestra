@@ -52,7 +52,7 @@ export const useRepairs = (filterByTechnician = false) => {
   const { toast } = useToast();
 
   const repairsQuery = useQuery({
-    queryKey: ["repairs", filterByTechnician, user?.id, isAdmin],
+    queryKey: ["repairs", workshopId, filterByTechnician, user?.id, isAdmin],
     queryFn: async () => {
       let query = supabase
         .from("repairs")
