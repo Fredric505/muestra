@@ -337,11 +337,21 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
     },
   });
 
+  // Derive the correct status when un-pausing so trial accounts aren't silently upgraded to paid
+  const restoredStatus = (ws: any) => {
+    const now = new Date();
+    if (ws?.subscription_ends_at && new Date(ws.subscription_ends_at) > now) return "active";
+    if (ws?.trial_ends_at && new Date(ws.trial_ends_at) > now) return "trial";
+    return "expired";
+  };
+
   const unpauseWorkshop = useMutation({
     mutationFn: async (id: string) => {
+      const ws = workshops.find((w) => w.id === id);
+      const status = restoredStatus(ws);
       const { error } = await supabase.from("workshops").update({
-        subscription_status: "active",
-        is_active: true,
+        subscription_status: status,
+        is_active: status !== "expired",
         pause_type: null,
         pause_reason: null,
         pause_estimated_resume: null,
@@ -428,16 +438,20 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
 
   const unpauseAllWorkshops = useMutation({
     mutationFn: async () => {
-      const pausedIds = workshops.filter(w => w.subscription_status === "paused" && w.pause_type === "maintenance").map(w => w.id);
-      if (pausedIds.length === 0) throw new Error("No hay talleres en mantenimiento");
-      const { error } = await supabase.from("workshops").update({
-        subscription_status: "active",
-        is_active: true,
-        pause_type: null,
-        pause_reason: null,
-        pause_estimated_resume: null,
-      }).in("id", pausedIds);
-      if (error) throw error;
+      const paused = workshops.filter(w => w.subscription_status === "paused" && w.pause_type === "maintenance");
+      if (paused.length === 0) throw new Error("No hay talleres en mantenimiento");
+      // Restore each workshop to its correct status individually (trial vs active vs expired)
+      for (const ws of paused) {
+        const status = restoredStatus(ws);
+        const { error } = await supabase.from("workshops").update({
+          subscription_status: status,
+          is_active: status !== "expired",
+          pause_type: null,
+          pause_reason: null,
+          pause_estimated_resume: null,
+        }).eq("id", ws.id);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sa_workshops"] });
@@ -996,7 +1010,7 @@ function PaymentsTab({ requests }: { requests: any[] }) {
   };
 
   const reviewPayment = useMutation({
-    mutationFn: async ({ id, status, workshopId }: { id: string; status: "approved" | "rejected"; workshopId: string }) => {
+    mutationFn: async ({ id, status, workshopId, billingPeriod }: { id: string; status: "approved" | "rejected"; workshopId: string; billingPeriod?: string }) => {
       const { error } = await supabase.from("payment_requests").update({
         status,
         reviewed_at: new Date().toISOString(),
@@ -1005,10 +1019,21 @@ function PaymentsTab({ requests }: { requests: any[] }) {
       if (error) throw error;
 
       if (status === "approved") {
+        // Respect the billing period the workshop actually paid for
+        const days = billingPeriod === "annual" ? 365 : 30;
+        // Extend from the current end date if the subscription is still active (renewal)
+        const { data: ws } = await supabase
+          .from("workshops")
+          .select("subscription_ends_at")
+          .eq("id", workshopId)
+          .maybeSingle();
+        const currentEnd = ws?.subscription_ends_at ? new Date(ws.subscription_ends_at) : null;
+        const base = currentEnd && currentEnd > new Date() ? currentEnd : new Date();
+        const newEnd = new Date(base.getTime() + days * 86400000);
         await supabase.from("workshops").update({
           is_active: true,
           subscription_status: "active",
-          subscription_ends_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+          subscription_ends_at: newEnd.toISOString(),
         }).eq("id", workshopId);
       }
     },
@@ -1074,7 +1099,7 @@ function PaymentsTab({ requests }: { requests: any[] }) {
                   <TableCell>
                     {req.status === "pending" && (
                       <div className="flex gap-1">
-                        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => reviewPayment.mutate({ id: req.id, status: "approved", workshopId: req.workshop_id })}>
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => reviewPayment.mutate({ id: req.id, status: "approved", workshopId: req.workshop_id, billingPeriod: req.billing_period })}>
                           <CheckCircle className="h-4 w-4" />
                         </Button>
                         <Button size="sm" variant="destructive" onClick={() => reviewPayment.mutate({ id: req.id, status: "rejected", workshopId: req.workshop_id })}>

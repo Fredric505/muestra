@@ -53,7 +53,7 @@ const Income = () => {
       return isWithinInterval(date, { start: monthStart, end: monthEnd });
     });
 
-    const byCurrency = {
+    const byCurrency: Record<string, { income: number; netProfit: number; deposits: number; count: number }> = {
       NIO: { income: 0, netProfit: 0, deposits: 0, count: 0 },
       USD: { income: 0, netProfit: 0, deposits: 0, count: 0 },
     };
@@ -62,6 +62,7 @@ const Income = () => {
       const currency = r.currency || "NIO";
       const price = r.final_price || r.estimated_price || 0;
       const parts = r.parts_cost || 0;
+      if (!byCurrency[currency]) byCurrency[currency] = { income: 0, netProfit: 0, deposits: 0, count: 0 };
       byCurrency[currency].income += price;
       byCurrency[currency].netProfit += price - parts;
       byCurrency[currency].deposits += r.deposit || 0;
@@ -111,11 +112,12 @@ const Income = () => {
       const date = parseISO(r.completed_at);
       return isWithinInterval(date, { start: prevMonthStart, end: prevMonthEnd });
     });
-    const prevByCurrency = { NIO: { netProfit: 0 }, USD: { netProfit: 0 } };
+    const prevByCurrency: Record<string, { netProfit: number }> = { NIO: { netProfit: 0 }, USD: { netProfit: 0 } };
     prevMonthRepairs.forEach((r) => {
       const currency = r.currency || "NIO";
       const price = r.final_price || r.estimated_price || 0;
       const parts = r.parts_cost || 0;
+      if (!prevByCurrency[currency]) prevByCurrency[currency] = { netProfit: 0 };
       prevByCurrency[currency].netProfit += price - parts;
     });
     const calcChange = (current: number, prev: number) => prev > 0 ? ((current - prev) / prev) * 100 : 0;

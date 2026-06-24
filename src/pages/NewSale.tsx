@@ -17,6 +17,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ArrowLeft, User, Phone, ShoppingBag, Plus, Trash2, Camera, ImageIcon, Printer, Save, Coins } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getCurrencySymbol } from "@/lib/currency";
+import { printLetterInvoice, printTicketInvoice } from "@/lib/invoiceUtils";
+import { getDateLocale } from "@/lib/dateLocale";
 
 type Currency = string;
 
@@ -114,11 +116,16 @@ const NewSale = () => {
           }
         }
       }
+      // Aggregate quantities per product so duplicate line-items reduce stock correctly
+      const qtyByProduct = new Map<string, number>();
       for (const item of items) {
         if (item.product_id) {
-          const product = products.find(p => p.id === item.product_id);
-          if (product) { await updateProduct.mutateAsync({ id: product.id, stock: Math.max(0, product.stock - item.quantity) }); }
+          qtyByProduct.set(item.product_id, (qtyByProduct.get(item.product_id) || 0) + item.quantity);
         }
+      }
+      for (const [productId, qty] of qtyByProduct) {
+        const product = products.find(p => p.id === productId);
+        if (product) { await updateProduct.mutateAsync({ id: product.id, stock: Math.max(0, product.stock - qty) }); }
       }
       setSavedSale({ ...result, items, customerName, customerPhone, currency, total });
       setShowPrintDialog(true);
@@ -127,8 +134,7 @@ const NewSale = () => {
 
   const handlePrintInvoice = () => {
     if (!savedSale) return;
-    const { printLetterInvoice, printTicketInvoice } = require("@/lib/invoiceUtils");
-    const dateLoc = require("@/lib/dateLocale").getDateLocale(i18n.language);
+    const dateLoc = getDateLocale(i18n.language);
     const saleForPrint = {
       id: savedSale.id, customer_name: savedSale.customerName, customer_phone: savedSale.customerPhone,
       sale_date: new Date().toISOString(), total_amount: savedSale.total, currency,

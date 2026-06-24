@@ -115,6 +115,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         if (!isMounted) return;
+        // The initial session is handled by initializeAuth() below to avoid a
+        // duplicate concurrent fetchUserData call (race condition).
+        if (event === "INITIAL_SESSION") return;
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
 

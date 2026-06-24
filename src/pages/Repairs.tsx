@@ -35,6 +35,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { format, parseISO } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
+import { printRepairInvoice } from "@/lib/invoiceUtils";
 import { RepairProgressView, getWhatsAppMessage } from "@/components/RepairProgressView";
 import { getCurrencySymbol } from "@/lib/currency";
 
@@ -181,7 +182,6 @@ const Repairs = () => {
   };
 
   const handlePrintInvoice = (repair: any) => {
-    const { printRepairInvoice } = require("@/lib/invoiceUtils");
     printRepairInvoice(repair, brand, workshop, t, dateLoc, (brand as any).invoice_size || 'commercial', (brand as any).invoice_text_overrides);
   };
 
