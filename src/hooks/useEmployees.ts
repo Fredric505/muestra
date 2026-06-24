@@ -290,9 +290,15 @@ export const useEmployees = () => {
              earningDate <= endDate;
     });
 
-    const pendingLoans = loans.filter(l => 
-      l.employee_id === employeeId && !l.is_paid
-    );
+    // Only deduct loans issued within this pay period, otherwise the same loan
+    // would be subtracted again in every future biweekly period until paid.
+    const pendingLoans = loans.filter(l => {
+      const loanDate = new Date(l.loan_date);
+      return l.employee_id === employeeId &&
+             !l.is_paid &&
+             loanDate >= startDate &&
+             loanDate <= endDate;
+    });
 
     const totalCommission = periodEarnings.reduce((sum, e) => sum + e.commission_earned, 0);
     const totalLoans = pendingLoans.reduce((sum, l) => sum + l.amount, 0);
