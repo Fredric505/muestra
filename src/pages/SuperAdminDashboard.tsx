@@ -438,16 +438,20 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
 
   const unpauseAllWorkshops = useMutation({
     mutationFn: async () => {
-      const pausedIds = workshops.filter(w => w.subscription_status === "paused" && w.pause_type === "maintenance").map(w => w.id);
-      if (pausedIds.length === 0) throw new Error("No hay talleres en mantenimiento");
-      const { error } = await supabase.from("workshops").update({
-        subscription_status: "active",
-        is_active: true,
-        pause_type: null,
-        pause_reason: null,
-        pause_estimated_resume: null,
-      }).in("id", pausedIds);
-      if (error) throw error;
+      const paused = workshops.filter(w => w.subscription_status === "paused" && w.pause_type === "maintenance");
+      if (paused.length === 0) throw new Error("No hay talleres en mantenimiento");
+      // Restore each workshop to its correct status individually (trial vs active vs expired)
+      for (const ws of paused) {
+        const status = restoredStatus(ws);
+        const { error } = await supabase.from("workshops").update({
+          subscription_status: status,
+          is_active: status !== "expired",
+          pause_type: null,
+          pause_reason: null,
+          pause_estimated_resume: null,
+        }).eq("id", ws.id);
+        if (error) throw error;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sa_workshops"] });
