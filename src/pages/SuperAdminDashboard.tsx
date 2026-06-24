@@ -1085,7 +1085,7 @@ function PaymentsTab({ requests }: { requests: any[] }) {
                   <TableCell>
                     {req.status === "pending" && (
                       <div className="flex gap-1">
-                        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => reviewPayment.mutate({ id: req.id, status: "approved", workshopId: req.workshop_id })}>
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700" onClick={() => reviewPayment.mutate({ id: req.id, status: "approved", workshopId: req.workshop_id, billingPeriod: req.billing_period })}>
                           <CheckCircle className="h-4 w-4" />
                         </Button>
                         <Button size="sm" variant="destructive" onClick={() => reviewPayment.mutate({ id: req.id, status: "rejected", workshopId: req.workshop_id })}>
