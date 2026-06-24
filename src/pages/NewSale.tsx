@@ -116,11 +116,16 @@ const NewSale = () => {
           }
         }
       }
+      // Aggregate quantities per product so duplicate line-items reduce stock correctly
+      const qtyByProduct = new Map<string, number>();
       for (const item of items) {
         if (item.product_id) {
-          const product = products.find(p => p.id === item.product_id);
-          if (product) { await updateProduct.mutateAsync({ id: product.id, stock: Math.max(0, product.stock - item.quantity) }); }
+          qtyByProduct.set(item.product_id, (qtyByProduct.get(item.product_id) || 0) + item.quantity);
         }
+      }
+      for (const [productId, qty] of qtyByProduct) {
+        const product = products.find(p => p.id === productId);
+        if (product) { await updateProduct.mutateAsync({ id: product.id, stock: Math.max(0, product.stock - qty) }); }
       }
       setSavedSale({ ...result, items, customerName, customerPhone, currency, total });
       setShowPrintDialog(true);
