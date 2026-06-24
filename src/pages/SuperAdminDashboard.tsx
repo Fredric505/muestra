@@ -996,7 +996,7 @@ function PaymentsTab({ requests }: { requests: any[] }) {
   };
 
   const reviewPayment = useMutation({
-    mutationFn: async ({ id, status, workshopId }: { id: string; status: "approved" | "rejected"; workshopId: string }) => {
+    mutationFn: async ({ id, status, workshopId, billingPeriod }: { id: string; status: "approved" | "rejected"; workshopId: string; billingPeriod?: string }) => {
       const { error } = await supabase.from("payment_requests").update({
         status,
         reviewed_at: new Date().toISOString(),
@@ -1005,10 +1005,21 @@ function PaymentsTab({ requests }: { requests: any[] }) {
       if (error) throw error;
 
       if (status === "approved") {
+        // Respect the billing period the workshop actually paid for
+        const days = billingPeriod === "annual" ? 365 : 30;
+        // Extend from the current end date if the subscription is still active (renewal)
+        const { data: ws } = await supabase
+          .from("workshops")
+          .select("subscription_ends_at")
+          .eq("id", workshopId)
+          .maybeSingle();
+        const currentEnd = ws?.subscription_ends_at ? new Date(ws.subscription_ends_at) : null;
+        const base = currentEnd && currentEnd > new Date() ? currentEnd : new Date();
+        const newEnd = new Date(base.getTime() + days * 86400000);
         await supabase.from("workshops").update({
           is_active: true,
           subscription_status: "active",
-          subscription_ends_at: new Date(Date.now() + 30 * 86400000).toISOString(),
+          subscription_ends_at: newEnd.toISOString(),
         }).eq("id", workshopId);
       }
     },
