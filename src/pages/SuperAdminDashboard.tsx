@@ -300,6 +300,8 @@ function WorkshopsTab({ workshops, plans }: { workshops: any[]; plans: any[] }) 
         address: ws.address,
         plan_id: ws.plan_id || null,
         subscription_status: ws.subscription_status,
+        subscription_ends_at: ws.subscription_ends_at || null,
+        trial_ends_at: ws.trial_ends_at || null,
         is_active: ws.is_active,
       }).eq("id", ws.id);
       if (error) throw error;
