@@ -182,7 +182,6 @@ const Repairs = () => {
   };
 
   const handlePrintInvoice = (repair: any) => {
-    const { printRepairInvoice } = require("@/lib/invoiceUtils");
     printRepairInvoice(repair, brand, workshop, t, dateLoc, (brand as any).invoice_size || 'commercial', (brand as any).invoice_text_overrides);
   };
 
