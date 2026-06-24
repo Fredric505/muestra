@@ -17,6 +17,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ArrowLeft, User, Phone, ShoppingBag, Plus, Trash2, Camera, ImageIcon, Printer, Save, Coins } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getCurrencySymbol } from "@/lib/currency";
+import { printLetterInvoice, printTicketInvoice } from "@/lib/invoiceUtils";
+import { getDateLocale } from "@/lib/dateLocale";
 
 type Currency = string;
 
