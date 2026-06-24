@@ -53,7 +53,7 @@ const Income = () => {
       return isWithinInterval(date, { start: monthStart, end: monthEnd });
     });
 
-    const byCurrency = {
+    const byCurrency: Record<string, { income: number; netProfit: number; deposits: number; count: number }> = {
       NIO: { income: 0, netProfit: 0, deposits: 0, count: 0 },
       USD: { income: 0, netProfit: 0, deposits: 0, count: 0 },
     };
@@ -62,6 +62,7 @@ const Income = () => {
       const currency = r.currency || "NIO";
       const price = r.final_price || r.estimated_price || 0;
       const parts = r.parts_cost || 0;
+      if (!byCurrency[currency]) byCurrency[currency] = { income: 0, netProfit: 0, deposits: 0, count: 0 };
       byCurrency[currency].income += price;
       byCurrency[currency].netProfit += price - parts;
       byCurrency[currency].deposits += r.deposit || 0;
