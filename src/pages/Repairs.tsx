@@ -35,6 +35,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { format, parseISO } from "date-fns";
 import { getDateLocale } from "@/lib/dateLocale";
+import { printRepairInvoice } from "@/lib/invoiceUtils";
 import { RepairProgressView, getWhatsAppMessage } from "@/components/RepairProgressView";
 import { getCurrencySymbol } from "@/lib/currency";
 
