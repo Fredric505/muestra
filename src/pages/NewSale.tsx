@@ -127,8 +127,7 @@ const NewSale = () => {
 
   const handlePrintInvoice = () => {
     if (!savedSale) return;
-    const { printLetterInvoice, printTicketInvoice } = require("@/lib/invoiceUtils");
-    const dateLoc = require("@/lib/dateLocale").getDateLocale(i18n.language);
+    const dateLoc = getDateLocale(i18n.language);
     const saleForPrint = {
       id: savedSale.id, customer_name: savedSale.customerName, customer_phone: savedSale.customerPhone,
       sale_date: new Date().toISOString(), total_amount: savedSale.total, currency,
